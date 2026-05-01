@@ -1,0 +1,730 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #0A0A0A;
+  --card: #FFFFFF;
+  --card-foreground: #0A0A0A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
+  --primary: #0A0A0A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F5;
+  --secondary-foreground: #0A0A0A;
+  --muted: #F5F5F5;
+  --muted-foreground: #737373;
+  --accent: #0A0A0A;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E5E5;
+  --input: #F5F5F5;
+  --ring: #0A0A0A;
+  --chart-1: #0A0A0A;
+  --chart-2: #525252;
+  --chart-3: #737373;
+  --chart-4: #A3A3A3;
+  --chart-5: #D4D4D4;
+  /**
+   * Editorial radius is intentionally 0 (everything snaps to the
+   * blueprint grid). Panels, cards and pills opt-in to non-zero
+   * radii via the dedicated tokens below.
+   */
+  --radius: 0rem;
+  --radius-pill: 9999px;
+  --radius-card: 1rem;
+  --radius-panel: 1.25rem;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #FFFFFF;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #262626;
+  --sidebar-ring: #FFFFFF;
+  /**
+   * Brand "voltage" accent — single sky-tinted token used for pulses,
+   * focus rings on cinematic surfaces, and the spotlight gradient.
+   */
+  --accent-volt: 14 165 233;
+  --accent-volt-strong: 56 189 248;
+  /* Depth — keeps flat tokens; use on panels / cards */
+  --surface-glow: rgb(var(--accent-volt) / 0.06);
+  --shadow-elevate:
+    0 1px 1px 0 rgb(0 0 0 / 0.025),
+    0 6px 14px -8px rgb(0 0 0 / 0.10),
+    0 22px 48px -22px rgb(0 0 0 / 0.16),
+    0 0 0 1px rgb(0 0 0 / 0.05);
+  --shadow-card-rest:
+    0 1px 1px 0 rgb(0 0 0 / 0.02),
+    0 8px 20px -12px rgb(0 0 0 / 0.10);
+  --shadow-card-hover:
+    0 2px 2px 0 rgb(0 0 0 / 0.025),
+    0 24px 50px -16px rgb(0 0 0 / 0.20),
+    0 0 0 1px rgb(var(--accent-volt) / 0.18);
+  --grain-strength: 0.04;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: #FAFAFA;
+  --card: #0A0A0A;
+  --card-foreground: #FAFAFA;
+  --popover: #0A0A0A;
+  --popover-foreground: #FAFAFA;
+  --primary: #FAFAFA;
+  --primary-foreground: #0A0A0A;
+  --secondary: #171717;
+  --secondary-foreground: #FAFAFA;
+  --muted: #262626;
+  --muted-foreground: #A3A3A3;
+  --accent: #FAFAFA;
+  --accent-foreground: #0A0A0A;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #262626;
+  --input: #171717;
+  --ring: #FAFAFA;
+  --chart-1: #FAFAFA;
+  --chart-2: #A3A3A3;
+  --chart-3: #737373;
+  --chart-4: #525252;
+  --chart-5: #262626;
+  --sidebar: #171717;
+  --sidebar-foreground: #FAFAFA;
+  --sidebar-primary: #FAFAFA;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #FAFAFA;
+  --sidebar-border: #262626;
+  --sidebar-ring: #FAFAFA;
+  --accent-volt: 56 189 248;
+  --accent-volt-strong: 125 211 252;
+  --surface-glow: rgb(var(--accent-volt) / 0.09);
+  --shadow-elevate:
+    0 1px 0 0 rgb(255 255 255 / 0.04) inset,
+    0 28px 64px -22px rgb(0 0 0 / 0.72);
+  --shadow-card-rest:
+    0 1px 0 0 rgb(255 255 255 / 0.03) inset,
+    0 18px 40px -22px rgb(0 0 0 / 0.65);
+  --shadow-card-hover:
+    0 1px 0 0 rgb(255 255 255 / 0.06) inset,
+    0 32px 70px -18px rgb(0 0 0 / 0.78),
+    0 0 0 1px rgb(var(--accent-volt) / 0.28);
+  --grain-strength: 0.06;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  --font-display: 'Inter Variable', Georgia, 'Times New Roman', serif;
+  --font-hero: 'Syne Variable', ui-sans-serif, system-ui, sans-serif;
+  /* Condensed poster headline — primary face from next/font on <html> */
+  --font-headline: var(--font-hero-slogan), ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer utilities {
+  /** Explicit stack so hero copy never falls back to Inter when theme tokens differ. */
+  .font-hero-slogan {
+    font-family: var(--font-hero-slogan), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /** Premium B2B panel — shadow + hairline; pair with rounded-* in markup */
+  .shadow-elevate {
+    box-shadow: var(--shadow-elevate);
+  }
+
+  /**
+   * Cinematic image grade — applied to wrappers around `<Image>` blocks
+   * on inner-route hero shots. Combines a small contrast lift, a top/
+   * bottom dim, and a subtle vignette so monochrome catalogue photos
+   * read as "shot for a film, then printed in greyscale" instead of
+   * flat product stills. The wrapper still owns its own border-radius
+   * and overflow:hidden — `.cine-grade` only adds the optical layer.
+   *
+   * Pair with grayscale on the Image element itself so the filter does
+   * not stack twice. The pseudo overlay sits below content (z-[1]) so
+   * absolute-positioned captions (e.g. badges, labels) remain crisp.
+   */
+  .cine-grade {
+    position: relative;
+  }
+  .cine-grade > :where(img, video, [data-cine-target]) {
+    filter: contrast(1.06) brightness(0.97);
+  }
+  .cine-grade::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(8, 16, 28, 0.18) 0%,
+        rgba(0, 0, 0, 0) 28%,
+        rgba(0, 0, 0, 0) 65%,
+        rgba(0, 0, 0, 0.24) 100%
+      ),
+      radial-gradient(
+        130% 90% at 50% 50%,
+        transparent 55%,
+        rgba(0, 0, 0, 0.22) 100%
+      );
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  .dark .cine-grade::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.32) 0%,
+        rgba(0, 0, 0, 0) 30%,
+        rgba(0, 0, 0, 0) 62%,
+        rgba(0, 0, 0, 0.42) 100%
+      ),
+      radial-gradient(
+        130% 90% at 50% 50%,
+        transparent 50%,
+        rgba(0, 0, 0, 0.38) 100%
+      );
+  }
+
+  /** Tabular numerals for engineering KPI tiles. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .interactive-lift {
+    transition-property: transform, box-shadow, border-color;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: var(--shadow-card-rest);
+  }
+
+  @media (hover: hover) {
+    .interactive-lift:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-card-hover);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .interactive-lift,
+    .interactive-lift:hover {
+      transition-duration: 0.01ms;
+      transform: none !important;
+    }
+  }
+
+  /**
+   * Cursor-tracking spotlight surface. Pairs with `<Spotlight>` which
+   * writes `--mx`/`--my` on mousemove. Renders gradient via pseudo so
+   * consumers can keep their own background.
+   */
+  .card-spotlight {
+    position: relative;
+    isolation: isolate;
+  }
+  .card-spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      var(--spot-size, 280px) circle at var(--mx, 50%) var(--my, 50%),
+      rgb(var(--accent-volt) / 0.18),
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+  }
+  @media (hover: hover) {
+    .card-spotlight:hover::before {
+      opacity: 1;
+    }
+  }
+  .card-spotlight > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /**
+   * Subtle film grain overlay. Apply to a sibling absolute element
+   * over an image so monochrome stills feel like 35mm prints.
+   */
+  .grain-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    opacity: var(--grain-strength);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch' seed='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+  }
+
+  /**
+   * Voltage flow — signature animated divider line. Used between key
+   * sections to give the page a rooted, electrical vocabulary instead
+   * of a generic gradient.
+   */
+  .voltage-flow {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    overflow: hidden;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgb(var(--accent-volt) / 0.10) 8%,
+      rgb(var(--accent-volt) / 0.18) 50%,
+      rgb(var(--accent-volt) / 0.10) 92%,
+      transparent 100%
+    );
+  }
+  .voltage-flow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(var(--accent-volt-strong) / 0.65) 45%,
+      rgb(var(--accent-volt-strong) / 0.85) 50%,
+      rgb(var(--accent-volt-strong) / 0.65) 55%,
+      transparent 100%
+    );
+    transform: translateX(-100%);
+    animation: voltage-flow-pulse 6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    will-change: transform;
+  }
+
+  /**
+   * Premium "depth pill" — used for CTA buttons that should feel
+   * physical rather than flat. Stack on top of `rounded-full`.
+   */
+  .pill-elevate {
+    box-shadow:
+      0 1px 0 0 rgb(255 255 255 / 0.18) inset,
+      0 8px 22px -8px rgb(0 0 0 / 0.35);
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (hover: hover) {
+    .pill-elevate:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 1px 0 0 rgb(255 255 255 / 0.22) inset,
+        0 14px 30px -10px rgb(0 0 0 / 0.45);
+    }
+  }
+  .dark .pill-elevate {
+    box-shadow:
+      0 1px 0 0 rgb(255 255 255 / 0.10) inset,
+      0 12px 26px -12px rgb(0 0 0 / 0.7);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(
+      118% 68% at 50% -16%,
+      var(--surface-glow),
+      transparent 50%
+    );
+    /**
+     * Containment for the reveal choreography.
+     *
+     * Several <HomeSectionSnap> variants animate `translate3d(±64px, …, 0)`
+     * on section-sized elements. Without containment that briefly pushes
+     * content past the viewport edge, and the browser shows a horizontal
+     * scrollbar (or black gutters when the hero only fills part of the
+     * widened viewport). `overflow-x: clip` prevents that gutter without
+     * creating a new containing block for `position: fixed` descendants
+     * (unlike `overflow: hidden`).
+     */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: rgb(var(--accent-volt) / 0.22);
+    color: inherit;
+  }
+
+  .dark ::selection {
+    background-color: rgb(var(--accent-volt) / 0.32);
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    /**
+     * Mirror body's `overflow-x: clip`. Some browsers propagate the
+     * body rule to the root viewport only when the html element also
+     * has an overflow value set — setting it explicitly keeps the
+     * rule reliable across engines (notably Safari on macOS).
+     */
+    overflow-x: clip;
+  }
+
+  /**
+   * Home page previously used `scroll-snap-type: y proximity`. It was
+   * removed because proximity-snap on a long editorial layout fights
+   * macOS trackpad momentum and causes the "scroll catches and then
+   * jumps" behaviour. Reveal choreography now handles the cinematic
+   * feel entirely through IntersectionObserver + CSS transitions on
+   * each <HomeSectionSnap>.
+   */
+  html[data-home-snap="true"] {
+    scroll-behavior: smooth;
+    scroll-snap-type: none;
+    /**
+     * Keep trackpad momentum calm at the top/bottom of the home feed
+     * so users don't accidentally bounce into the browser's overscroll
+     * behaviour while a section is still running its reveal.
+     */
+    overscroll-behavior-y: contain;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html[data-home-snap="true"] {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero slogan: one word per line — soft fade, lift, blur dissolve */
+@keyframes hero-word-fade {
+  from {
+    opacity: 0;
+    transform: translateY(2rem);
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Tagline / sub-hero block entering on scroll */
+@keyframes tagline-block-in {
+  from {
+    opacity: 0;
+    transform: translateY(2.75rem);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Full tagline “page” — section-scale entrance */
+@keyframes tagline-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(3.25rem) scale(0.965);
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Next full section entrance */
+@keyframes next-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(3rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-reveal-up {
+  animation: reveal-up 0.8s ease-out forwards;
+}
+
+.animate-reveal-left {
+  animation: reveal-left 0.8s ease-out forwards;
+}
+
+.animate-reveal-right {
+  animation: reveal-right 0.8s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.6s ease-out forwards;
+}
+
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+.animation-delay-600 { animation-delay: 600ms; }
+
+.grain-overlay::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  animation: grain 8s steps(10) infinite;
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px currentColor;
+  -webkit-text-fill-color: transparent;
+}
+
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+
+.clip-diagonal-reverse {
+  clip-path: polygon(0 15%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Fade in animation for images */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.7s ease-out forwards;
+}
+
+/**
+ * Marquee strip seamless loop. The MarqueeStrip component renders the
+ * sequence twice and translates the wrapper -50%.
+ */
+@keyframes marquee-strip {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/**
+ * Section-sweep — a luminous hairline travels across the top of a
+ * section as the user scrolls into it. It expands from the left edge
+ * to a full-width streak, then dissolves. Reads as a quiet film cut
+ * between scenes; never repeats.
+ *
+ * Phases:
+ *   0%   – invisible, compressed at the left edge
+ *   25%  – streak grows toward the right at full intensity
+ *   60%  – fully spans the boundary at peak luminance
+ *   100% – fades out, leaving the static blueprint divider in place
+ */
+@keyframes section-sweep {
+  0% {
+    transform: translate3d(-8%, 0, 0) scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+  }
+  25% {
+    transform: translate3d(-2%, 0, 0) scaleX(0.5);
+    transform-origin: left center;
+    opacity: 1;
+  }
+  60% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+    transform-origin: center center;
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+    transform-origin: center center;
+    opacity: 0;
+  }
+}
+
+/**
+ * Visible thin scrollbar for ScrollPan-wrapped tables / spec strips.
+ * Default Tailwind hides scrollbars on hover-capable devices, which
+ * destroys the affordance for "this content can be panned". Keep the
+ * track invisible and the thumb soft — it should read as a hint, not
+ * a UI chrome element.
+ */
+.scroll-pan-bar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(0 0 0 / 0.22) transparent;
+}
+.dark .scroll-pan-bar {
+  scrollbar-color: rgb(255 255 255 / 0.22) transparent;
+}
+.scroll-pan-bar::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-pan-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-pan-bar::-webkit-scrollbar-thumb {
+  background-color: rgb(0 0 0 / 0.22);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.scroll-pan-bar::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(0 0 0 / 0.38);
+}
+.dark .scroll-pan-bar::-webkit-scrollbar-thumb {
+  background-color: rgb(255 255 255 / 0.22);
+}
+.dark .scroll-pan-bar::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(255 255 255 / 0.38);
+}
+.scroll-pan-bar:active {
+  cursor: grabbing;
+}
