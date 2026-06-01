@@ -33,12 +33,17 @@ export function LenisProvider() {
     html.style.scrollBehavior = "auto";
 
     const lenis = new Lenis({
-      duration: 1.15,
+      // Slightly longer glide + lower lerp = silkier deceleration without
+      // feeling floaty. Values stay in the same ballpark as before so the
+      // rest of the scroll-driven UI (section reveals, word colour) still
+      // feels in sync with wheel input.
+      duration: 1.08,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      lerp: 0.1,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.4,
+      lerp: 0.078,
+      wheelMultiplier: 0.98,
+      touchMultiplier: 1.12,
+      syncTouch: true,
     });
 
     let rafId = 0;
@@ -54,12 +59,19 @@ export function LenisProvider() {
       const target = e.target as HTMLElement | null;
       const anchor = target?.closest("a[href^='#']") as HTMLAnchorElement | null;
       if (!anchor) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const href = anchor.getAttribute("href");
       if (!href || href === "#") return;
       const node = document.querySelector(href);
       if (!node) return;
       e.preventDefault();
-      lenis.scrollTo(node as HTMLElement, { offset: -32, duration: 1.4 });
+      // Keep anchor targets clear of the fixed header across breakpoints.
+      const headerOffset = window.innerWidth >= 768 ? 96 : 80;
+      lenis.scrollTo(node as HTMLElement, {
+        offset: -headerOffset,
+        duration: 1.25,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
     };
     document.addEventListener("click", onClick);
 

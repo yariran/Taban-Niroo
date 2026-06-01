@@ -180,13 +180,13 @@ export function PhilosophySection() {
       </div>
 
       {/* Description */}
-      <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-36 lg:pb-14">
-        <div className="text-center">
+      <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
+        <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Product range
           </p>
-          <p className="mt-8 leading-relaxed text-muted-foreground text-3xl text-center">
-            High-voltage composite accessories. Long rod, post, hybrid insulators. Transformer bushings. Cable accessories. IEC-tested. 11 kV–1000 kV.
+          <p className="mt-6 text-balance text-lg leading-relaxed text-muted-foreground md:mt-8 md:text-xl lg:text-2xl">
+            High-voltage composite accessories. Long rod, post, hybrid insulators. Transformer bushings. Cable accessories. IEC-tested. 6-1000 kV.
           </p>
         </div>
       </div>

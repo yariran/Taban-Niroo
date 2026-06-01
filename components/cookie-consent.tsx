@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "tn:consent:v1";
@@ -25,6 +25,26 @@ export function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+
+  const persist = useCallback((value: "accept" | "decline") => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, value);
+    } catch {
+      // Storage may be disabled — silent fail.
+    }
+  }, []);
+
+  const accept = useCallback(() => {
+    persist("accept");
+    setAnimating(false);
+    window.setTimeout(() => setVisible(false), 320);
+  }, [persist]);
+
+  const decline = useCallback(() => {
+    persist("decline");
+    setAnimating(false);
+    window.setTimeout(() => setVisible(false), 320);
+  }, [persist]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -61,27 +81,7 @@ export function CookieConsent() {
       window.clearTimeout(showTimer);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
-
-  const persist = (value: "accept" | "decline") => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, value);
-    } catch {
-      // Storage may be disabled — silent fail.
-    }
-  };
-
-  const accept = () => {
-    persist("accept");
-    setAnimating(false);
-    window.setTimeout(() => setVisible(false), 320);
-  };
-
-  const decline = () => {
-    persist("decline");
-    setAnimating(false);
-    window.setTimeout(() => setVisible(false), 320);
-  };
+  }, [accept]);
 
   if (!visible) return null;
 
@@ -89,18 +89,8 @@ export function CookieConsent() {
     <div
       role="region"
       aria-label="Cookie & analytics notice"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center px-4 pb-4 sm:px-6 sm:pb-6"
-      style={{
-        opacity: reduceMotion ? 1 : animating ? 1 : 0,
-        transform: reduceMotion
-          ? "translate3d(0, 0, 0)"
-          : animating
-            ? "translate3d(0, 0, 0)"
-            : "translate3d(0, 24px, 0)",
-        transition: reduceMotion
-          ? "none"
-          : "opacity 320ms cubic-bezier(0.22, 1, 0.36, 1), transform 320ms cubic-bezier(0.22, 1, 0.36, 1)",
-      }}
+      data-animate={reduceMotion ? "off" : animating ? "in" : "out"}
+      className="cookie-consent-shell pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center px-4 pb-4 sm:px-6 sm:pb-6"
     >
       <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border/80 bg-background/95 px-5 py-4 text-foreground shadow-elevate backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-white/[0.08] dark:supports-[backdrop-filter]:bg-background/70 sm:px-6 sm:py-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">

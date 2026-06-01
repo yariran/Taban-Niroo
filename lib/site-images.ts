@@ -13,11 +13,13 @@ export const SITE_IMAGES = {
   productsHero: "/images/hero-main.png",
   testimonials: "/images/About.png",
   ceoPortrait: "/images/ceo-portrait.JPG",
+  newRelease: "/images/new-release-hollow-core.jpg",
   featured: {
     longRod: "/images/LONGROD_INSULATORS.png",
     post: "/images/PostInsulators.png",
     hybrid: "/images/HYBRIDINSULATORS.png",
     transformerBushings: "/images/TRANSFORMERBUSHINGS.png",
+    hollowCoreBushing: "/images/hollow-core-bushing.jpg",
     cableAccessories: "/images/CABLEACCESSORIES.png",
     creepageExtenders: "/images/CREEPAGEEXTENDERSANDCOVERS.png",
   },
@@ -30,6 +32,8 @@ export const SITE_IMAGES = {
     "/images/DSC09974.jpg",
     "/images/_MP_1454.jpg",
     "/images/_MP_1312.jpg",
+    "/images/gallery-factory-insulators.jpg",
+    "/images/gallery-substation-insulators.jpg",
   ] as const,
   collection: {
     phaseSpacers: "/images/_MG_0387.jpg",

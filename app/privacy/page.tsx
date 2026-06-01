@@ -48,7 +48,7 @@ export default function PrivacyPage() {
 
       <h2>How we use it</h2>
       <p>
-        Traffic statistics are used to understand which catalogue references
+        Traffic statistics are used to understand which product references
         are read most and to improve documentation. Enquiries received via the
         contact form are processed solely to reply to you. We never sell or
         share your data with advertisers.

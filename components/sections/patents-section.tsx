@@ -45,7 +45,7 @@ export function PatentsSection() {
       className="border-y border-border/50 bg-muted/10 dark:border-white/[0.06] dark:bg-white/[0.015]"
       aria-labelledby="patents-heading"
     >
-      <div className="px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40">
+      <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
         <div className="mx-auto max-w-6xl">
           {/* Header */}
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-16">

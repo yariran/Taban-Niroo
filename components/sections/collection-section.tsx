@@ -7,6 +7,7 @@ import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 const INSTALLATION_COUNTRIES = [
   "Afghanistan",
   "Iraq",
+  "Turkey",
   "Somalia",
   "Ghana",
   "Liberia",

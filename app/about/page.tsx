@@ -11,7 +11,7 @@ import { CountUp } from "@/components/ui/count-up";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Taban Niroo: high-voltage composite insulators and power transmission equipment from Shiraz Special Economic Zone. IEC-tested, serving the Middle East and beyond since 1998.",
+    "Taban Niroo: high-voltage composite insulators and power transmission equipment from Shiraz Special Economic Zone. IEC-tested, serving the Middle East and beyond since 1997.",
   openGraph: {
     title: "About | Taban Niroo",
     description:
@@ -42,7 +42,7 @@ export default function AboutPage() {
               <RevealUp as="p" delay={420} className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
                 Taban Niroo is one of the leading manufacturers in the power and electricity
                 sector in the Middle East, with more than two decades of experience in high-voltage
-                power transmission projects and composite insulators. Our journey began in 1998 with
+                power transmission projects and composite insulators. Our journey began in 1997 with
                 a clear focus on innovation, reliability, and a safe working environment for our people.
               </RevealUp>
               <RevealUp as="p" delay={520} className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
@@ -57,7 +57,7 @@ export default function AboutPage() {
                     Founded
                   </p>
                   <p className="mt-2 text-xl font-medium text-foreground tabular">
-                    <CountUp to={1998} duration={1700} />
+                    <CountUp to={1997} duration={1700} />
                   </p>
                 </div>
                 <div>
@@ -70,10 +70,10 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                    Rated voltage
+                    RATED VOLTAGE
                   </p>
                   <p className="mt-2 text-xl font-medium text-foreground tabular">
-                    <CountUp to={1100} suffix=" kV" />
+                    6-1000 kV
                   </p>
                 </div>
                 <div>
@@ -81,7 +81,7 @@ export default function AboutPage() {
                     Countries
                   </p>
                   <p className="mt-2 text-xl font-medium text-foreground tabular">
-                    <CountUp to={9} />
+                    <CountUp to={10} />
                   </p>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, X } from "lucide-react";
@@ -20,6 +21,7 @@ export function Header() {
   const isHome = pathname === "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -34,16 +36,29 @@ export function Header() {
   }, []);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 60);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     if (!isMenuOpen) return;
+
+    const scrollY = window.scrollY;
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+
     const id = requestAnimationFrame(() => {
       firstMobileLinkRef.current?.focus();
     });
@@ -53,42 +68,50 @@ export function Header() {
     document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY);
       cancelAnimationFrame(id);
       document.removeEventListener("keydown", onKey);
     };
   }, [isMenuOpen, closeMobileMenu]);
 
-  const showHeaderSurface = !isHome || isScrolled;
-
   return (
     <header
       className={cn(
         "pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center",
-        "border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        showHeaderSurface
-          ? "border-border/45 shadow-[0_14px_40px_-18px_rgba(0,0,0,0.12)] supports-[backdrop-filter]:bg-background/72 supports-[backdrop-filter]:backdrop-blur-xl dark:border-white/[0.08] dark:shadow-[0_18px_48px_-16px_rgba(0,0,0,0.55)] dark:supports-[backdrop-filter]:bg-background/55"
-          : "border-transparent bg-transparent shadow-none backdrop-blur-0",
+        "transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        isScrolled ? "px-3 pt-2 md:px-6 md:pt-3" : "px-4 pt-4 md:px-8 md:pt-6",
       )}
     >
-      <div className="pointer-events-none flex w-full max-w-6xl items-center justify-between gap-4 px-5 pt-4 sm:px-6 md:px-8 lg:px-10">
+      <div
+        className={cn(
+          "glass-header-pill pointer-events-auto flex w-full max-w-5xl items-center justify-between gap-3 rounded-full border px-3 py-1.5 sm:gap-4 sm:px-4 md:px-5 md:py-2",
+          "transition-[border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          onDarkHero ? "glass-header-pill--hero" : "glass-header-pill--default",
+        )}
+      >
         <Link
           href="/"
-          className={[
-            "pointer-events-auto hidden text-sm font-semibold uppercase tracking-[0.2em] md:inline-flex",
+          className={cn(
+            "hidden text-[11px] font-semibold uppercase tracking-[0.22em] md:inline-flex",
             "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
             onDarkHero ? "text-white" : "text-foreground",
-          ].join(" ")}
+          )}
         >
           Taban Niroo
         </Link>
 
         <nav
           aria-label="Primary"
-          className={[
-            "pointer-events-auto hidden md:flex md:items-center md:gap-7",
+          className={cn(
+            "hidden md:flex md:items-center md:gap-5",
             "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            onDarkHero ? "text-white/78" : "text-foreground/75",
-          ].join(" ")}
+            onDarkHero ? "text-white/80" : "text-foreground/75",
+          )}
         >
           {NAV_ITEMS.map(([label, href, hasMega]) => {
             const isActive =
@@ -110,14 +133,14 @@ export function Header() {
                 href={href}
                 aria-current={isActive ? "page" : undefined}
                 className={[
-                  "border-b border-transparent pb-0.5 text-sm font-medium",
+                  "relative text-[13px] font-medium",
                   "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   onDarkHero
                     ? isActive
-                      ? "border-white text-white"
+                      ? "text-white after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:bg-white"
                       : "hover:text-white"
                     : isActive
-                      ? "border-foreground text-foreground"
+                      ? "text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:bg-foreground"
                       : "hover:text-foreground",
                 ].join(" ")}
               >
@@ -128,125 +151,178 @@ export function Header() {
         </nav>
 
         <div
-          className={[
-            "pointer-events-auto hidden items-center gap-3 md:flex",
+          className={cn(
+            "hidden items-center gap-2 md:flex",
             "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
             onDarkHero ? "text-white" : "text-foreground",
-          ].join(" ")}
+          )}
         >
           <ThemeToggle
-            variant={onDarkHero ? "ghost" : "outline"}
+            variant="ghost"
             compact
-            className={
+            className={cn(
+              "size-7 rounded-full",
               onDarkHero
-                ? "border border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-                : "border-black/15 bg-white/70 backdrop-blur-sm"
-            }
+                ? "text-white hover:bg-white/15"
+                : "text-foreground hover:bg-foreground/10",
+            )}
           />
           <Link
             href="/contact"
-            className={[
-              "group flex items-center gap-2 text-sm font-medium",
+            className={cn(
+              "group inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium",
               "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-              onDarkHero ? "text-white/90 hover:text-white" : "text-foreground/85 hover:text-foreground",
-            ].join(" ")}
+              onDarkHero
+                ? "bg-white text-zinc-900 hover:bg-white/90"
+                : "bg-foreground text-background hover:bg-foreground/90",
+            )}
           >
-            <span
-              className={[
-                "inline-flex size-7 items-center justify-center rounded-full",
-                "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                onDarkHero ? "bg-white text-zinc-900" : "bg-foreground text-background",
-              ].join(" ")}
-            >
-              <ArrowRight size={14} aria-hidden />
-            </span>
             Contact
+            <ArrowRight size={12} aria-hidden className="transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
 
-        <div
-          className={[
-            "pointer-events-auto flex w-full items-center justify-between rounded-full border px-4 py-2 md:hidden",
-            "transition-[background-color,border-color,color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            onDarkHero
-              ? "border-white/30 bg-white/20 text-white backdrop-blur-md"
-              : "border-black/10 bg-white/90 text-foreground shadow-md backdrop-blur-xl",
-          ].join(" ")}
-        >
+        {/* Mobile contents (same pill, just different children) */}
+        <div className="flex w-full items-center justify-between md:hidden">
           <Link
             href="/"
-            className="text-xs font-semibold uppercase tracking-[0.18em] text-inherit"
+            className={cn(
+              "text-[11px] font-semibold uppercase tracking-[0.2em]",
+              onDarkHero ? "text-white" : "text-foreground",
+            )}
           >
             Taban Niroo
           </Link>
 
-          <ThemeToggle
-            variant={onDarkHero ? "ghost" : "outline"}
-            compact
-            className={
-              onDarkHero
-                ? "border border-white/30 text-white hover:bg-white/15 hover:text-white"
-                : ""
-            }
-          />
-          <button
-            ref={menuButtonRef}
-            type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={[
-              "rounded-full p-2 transition-colors",
-              onDarkHero ? "text-white" : "text-foreground",
-            ].join(" ")}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-primary-nav"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {isMenuOpen ? (
-              <X size={22} aria-hidden />
-            ) : (
-              <Menu size={22} aria-hidden />
-            )}
-          </button>
+          <div className="flex items-center gap-1.5">
+            <ThemeToggle
+              variant="ghost"
+              compact
+              className={cn(
+                "touch-target size-11 rounded-full md:size-7",
+                onDarkHero
+                  ? "text-white hover:bg-white/15"
+                  : "text-foreground hover:bg-foreground/10",
+              )}
+            />
+            <button
+              ref={menuButtonRef}
+              type="button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={cn(
+                "touch-target inline-flex size-11 items-center justify-center rounded-full transition-colors md:size-7",
+                onDarkHero
+                  ? "text-white hover:bg-white/15"
+                  : "text-foreground hover:bg-foreground/10",
+              )}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-primary-nav"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMenuOpen ? <X size={16} aria-hidden /> : <Menu size={16} aria-hidden />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {isMenuOpen && (
-        <>
-          <button
-            type="button"
-            className="pointer-events-auto fixed inset-0 z-40 bg-black/35 backdrop-blur-[2px] md:hidden"
-            aria-label="Close menu"
-            onClick={closeMobileMenu}
-          />
-          <div
-            id="mobile-primary-nav"
-            className="pointer-events-auto fixed inset-x-4 top-[4.5rem] z-40 max-h-[min(70vh,calc(100dvh-6rem))] overflow-y-auto overscroll-contain rounded-2xl border border-border bg-background/95 px-6 py-8 shadow-lg backdrop-blur-xl md:hidden"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Site menu"
-            data-lenis-prevent
-          >
-            <nav className="flex flex-col gap-6" aria-label="Mobile primary">
-              {NAV_ITEMS.map(([label, href], index) => (
+      {isMounted &&
+        isMenuOpen &&
+        createPortal(
+          <>
+            <button
+              type="button"
+              className="glass-mobile-scrim pointer-events-auto fixed inset-0 z-[48] md:hidden"
+              aria-label="Close menu"
+              onClick={closeMobileMenu}
+            />
+            <div
+              id="mobile-primary-nav"
+              className={cn(
+                "glass-mobile-menu pointer-events-auto fixed inset-x-0 bottom-0 z-[49] md:hidden",
+                "top-[calc(3.75rem+env(safe-area-inset-top,0px))]",
+                "flex flex-col overflow-y-auto overscroll-contain rounded-t-[1.35rem] border-t px-4 pt-2",
+                "pb-[max(1rem,env(safe-area-inset-bottom,0px))]",
+                "[-webkit-overflow-scrolling:touch]",
+                onDarkHero
+                  ? "glass-mobile-menu--hero border-white/10 bg-zinc-950 text-white"
+                  : "glass-mobile-menu--default border-border bg-background text-foreground",
+              )}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Site menu"
+              data-lenis-prevent
+            >
+              <nav
+                className={cn(
+                  "flex flex-col",
+                  onDarkHero ? "divide-white/10" : "divide-border/50",
+                  "divide-y",
+                )}
+                aria-label="Mobile primary"
+              >
+                {NAV_ITEMS.map(([label, href], index) => {
+                  const isActive =
+                    pathname === href || pathname.startsWith(`${href}/`);
+
+                  return (
+                    <Link
+                      key={href}
+                      ref={index === 0 ? firstMobileLinkRef : undefined}
+                      href={href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "touch-target flex min-h-12 items-center justify-between py-3 text-[15px] font-medium tracking-tight transition-colors",
+                        onDarkHero
+                          ? isActive
+                            ? "text-white"
+                            : "text-white/72 active:text-white"
+                          : isActive
+                            ? "text-foreground"
+                            : "text-foreground/70 active:text-foreground",
+                      )}
+                      onClick={closeMobileMenu}
+                    >
+                      <span>{label}</span>
+                      {isActive && (
+                        <span
+                          className={cn(
+                            "font-mono text-[10px] uppercase tracking-[0.2em]",
+                            onDarkHero ? "text-white/55" : "text-muted-foreground",
+                          )}
+                          aria-hidden
+                        >
+                          Now
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div
+                className={cn(
+                  "mt-3 border-t pt-3",
+                  onDarkHero ? "border-white/10" : "border-border/50",
+                )}
+              >
                 <Link
-                  key={href}
-                  ref={index === 0 ? firstMobileLinkRef : undefined}
-                  href={href}
-                  className={[
-                    "rounded-xl px-3 py-2 text-lg transition-colors",
-                    pathname === href || pathname.startsWith(`${href}/`)
-                      ? "bg-foreground text-background"
-                      : "text-foreground hover:bg-muted",
-                  ].join(" ")}
+                  href="/contact"
                   onClick={closeMobileMenu}
+                  className={cn(
+                    "touch-target flex min-h-11 items-center justify-center gap-2 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
+                    onDarkHero
+                      ? "border border-white/20 bg-white/10 text-white hover:bg-white/16"
+                      : "border border-foreground/15 bg-foreground text-background hover:bg-foreground/90",
+                  )}
                 >
-                  {label}
+                  Contact
+                  <ArrowRight size={12} aria-hidden />
                 </Link>
-              ))}
-            </nav>
-          </div>
-        </>
-      )}
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
     </header>
   );
 }

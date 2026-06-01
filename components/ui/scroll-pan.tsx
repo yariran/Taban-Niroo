@@ -26,6 +26,14 @@ type ScrollPanProps = {
   fadeFrom?: string;
   /** Optional aria-label for the scrollable region. */
   ariaLabel?: string;
+  /** When false, no edge fade overlays (e.g. full-bleed photo rails). */
+  edgeFades?: boolean;
+  /**
+   * When true, vertical wheel / trackpad scroll passes through to the page
+   * (or a parent scroll area such as a modal). Horizontal pan stays on
+   * this container. Use for wide datasheet tables and photo rails.
+   */
+  passVerticalScroll?: boolean;
 };
 
 /**
@@ -63,6 +71,8 @@ export function ScrollPan({
   innerClassName,
   fadeFrom = "from-background",
   ariaLabel,
+  edgeFades = true,
+  passVerticalScroll = false,
 }: ScrollPanProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
@@ -193,32 +203,39 @@ export function ScrollPan({
 
   return (
     <div className={cn("relative isolate", className)}>
-      <div
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r to-transparent transition-opacity duration-200",
-          fadeFrom,
-          showLeftFade ? "opacity-100" : "opacity-0",
-        )}
-      />
-      <div
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l to-transparent transition-opacity duration-200",
-          fadeFrom,
-          showRightFade ? "opacity-100" : "opacity-0",
-        )}
-      />
+      {edgeFades && (
+        <>
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r to-transparent transition-opacity duration-200",
+              fadeFrom,
+              showLeftFade ? "opacity-100" : "opacity-0",
+            )}
+          />
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l to-transparent transition-opacity duration-200",
+              fadeFrom,
+              showRightFade ? "opacity-100" : "opacity-0",
+            )}
+          />
+        </>
+      )}
 
       <div
         ref={ref}
         role="region"
         aria-label={ariaLabel}
         className={cn(
-          "scroll-pan-bar overflow-auto overscroll-contain cursor-grab",
+          "scroll-pan-bar cursor-grab",
+          passVerticalScroll
+            ? "overflow-x-auto overflow-y-visible overscroll-x-contain overscroll-y-auto"
+            : "overflow-auto overscroll-contain",
           innerClassName,
         )}
-        data-lenis-prevent
+        {...(!passVerticalScroll && { "data-lenis-prevent": true })}
         style={
           {
             // iOS momentum scroll — newer browsers ignore this prefix

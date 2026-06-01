@@ -31,7 +31,7 @@ import { ScrollRevealText } from "@/components/ui/scroll-reveal-text";
 const TITLE_WORDS = ["IEC.", "Standard.", "Industrial."] as const;
 
 const STATEMENT =
-  "IEC 61109, 62217, 61466, 60120, 60471. ECR core. HTV silicone. Galvanized fittings. Accredited laboratories. 11 kV–1000 kV.";
+  "IEC 61109, 62217, 61466, 60120, 60471. ECR core. HTV silicone. Galvanized fittings. Accredited laboratories. 6-1000 kV.";
 
 export function TechnologySection() {
   return (
@@ -75,7 +75,7 @@ export function TechnologySection() {
 
       {/* Act II — editorial statement block, theme-consistent */}
       <div className="relative border-t border-border/60 bg-background dark:border-white/[0.07]">
-        <div className="px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40">
+        <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
           <div className="mx-auto max-w-5xl">
             <RevealBlock delayMs={40} durationMs={700} distance={14}>
               <p className="text-xs uppercase tracking-widest text-muted-foreground">

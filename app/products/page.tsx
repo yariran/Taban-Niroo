@@ -13,7 +13,7 @@ import { RevealWords } from "@/components/ui/reveal-words";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Composite insulators, hybrid insulators, transformer bushings, and cable accessories. IEC 61109, 62217, and related standards. 11 kV–420 kV.",
+    "Composite insulators, hybrid insulators, transformer bushings, and cable accessories. IEC 61109, 62217, and related standards. 6-420 kV.",
   openGraph: {
     title: "Products | Taban Niroo",
     description:
@@ -35,7 +35,7 @@ export default function ProductsPage() {
     <main id="main-content" className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero — single, direct, ends in a clear CTA to the catalogue */}
+      {/* Hero — single, direct, ends in a clear CTA to the product explorer */}
       <section className="relative overflow-hidden bg-background">
         <div className="pointer-events-none absolute inset-0 opacity-[0.045] [background-image:linear-gradient(rgba(0,0,0,0.8)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.8)_1px,transparent_1px)] [background-size:80px_80px] dark:opacity-[0.08] dark:[background-image:linear-gradient(rgba(255,255,255,0.9)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.9)_1px,transparent_1px)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_45%_at_85%_15%,var(--surface-glow),transparent_65%)]" />
@@ -56,7 +56,7 @@ export default function ProductsPage() {
             <div>
               <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
                 <span className="inline-flex h-px w-10 bg-foreground/40" />
-                <span>Catalogue 2026</span>
+                <span>Product range</span>
               </div>
               <h1 className="font-hero-slogan mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] font-bold uppercase leading-[0.92] tracking-[-0.012em] text-foreground">
                 <RevealWords as="span" className="block">
@@ -103,7 +103,7 @@ export default function ProductsPage() {
 
               <p className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
                 <Search size={12} aria-hidden />
-                28 catalogue references · Search by voltage, DPL code or family
+                28 product references · Search by voltage, DPL code or family
               </p>
             </div>
 
@@ -136,10 +136,9 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      {/* Catalogue — the single browsing surface */}
       <ProductCatalogSection />
 
-      {/* DPL coding guide — helps procurement read any catalogue number */}
+      {/* DPL coding guide — helps procurement read any DPL reference */}
       <CodingGuideSection />
 
       {/* IEC end-fittings / couplings available across insulator families */}

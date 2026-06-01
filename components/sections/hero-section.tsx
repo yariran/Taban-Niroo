@@ -199,8 +199,8 @@ export function HeroSection() {
               };
             })()}
           >
-            High-voltage composite insulators. Power transmission. 11 kV–1000
-            kV. IEC.
+            High-voltage composite insulators. Power transmission. 6-1000 kV.
+            IEC.
           </p>
           <p
             className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground/85 will-change-[transform,opacity] md:text-lg"

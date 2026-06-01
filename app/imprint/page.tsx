@@ -65,7 +65,7 @@ export default function ImprintPage() {
       </p>
 
       <h2>Founded</h2>
-      <p>1998</p>
+      <p>1997</p>
 
       <h2>Sector</h2>
       <p>

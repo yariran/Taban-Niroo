@@ -11,7 +11,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const siteDescription =
-  "High-voltage composite insulators and power transmission. IEC-tested. 11 kV–1000 kV. Shiraz, Iran.";
+  "High-voltage composite insulators and power transmission. IEC-tested. 6-1000 kV. Shiraz, Iran.";
 
 const siteUrl = getSiteUrl();
 
@@ -86,6 +86,7 @@ const fontHeroSlogan = Oswald({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
   colorScheme: "dark light",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
@@ -103,9 +104,9 @@ const structuredData = {
       legalName: "Taban Niroo · Dena Power Line Insulators",
       url: siteUrl,
       logo: `${siteUrl}/icon.svg`,
-      foundingDate: "1998",
+      foundingDate: "1997",
       description: siteDescription,
-      areaServed: ["IR", "IQ", "AF", "GH", "LR", "MA", "SO", "GR", "PE", "CO"],
+      areaServed: ["IR", "IQ", "AF", "TR", "GH", "LR", "MA", "SO", "GR", "PE", "CO"],
       knowsAbout: [
         "High-voltage composite insulators",
         "Hybrid insulators",

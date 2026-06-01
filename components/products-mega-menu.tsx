@@ -157,7 +157,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
       <div
         ref={panelRef}
         role="menu"
-        aria-label="Product families"
+        aria-label="Product range"
         onMouseEnter={cancelClose}
         onMouseLeave={() => scheduleClose()}
         className={cn(
@@ -173,7 +173,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
         <div className="p-6 md:p-8">
           <div className="mb-5 flex items-center justify-between gap-4">
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-              Product families · 2026 catalogue
+              Product range
             </p>
             <Link
               href="/products"

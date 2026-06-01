@@ -1,14 +1,24 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { FadeImage } from "@/components/fade-image";
 import { SITE_IMAGES } from "@/lib/site-images";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 
-const features = [
+type Feature = {
+  title: string;
+  description: string;
+  image: string;
+  /** When true, the card spans two columns on `md+` for a subtle bento. */
+  feature?: boolean;
+};
+
+const features: readonly Feature[] = [
   {
     title: "Long Rod Insulators",
     description: "Distribution & Transmission",
     image: SITE_IMAGES.featured.longRod,
+    feature: true,
   },
   {
     title: "Post Insulators",
@@ -21,9 +31,9 @@ const features = [
     image: SITE_IMAGES.featured.hybrid,
   },
   {
-    title: "Transformer Bushings",
-    description: "Polymer & Hybrid",
-    image: SITE_IMAGES.featured.transformerBushings,
+    title: "Hollow Core Bushing",
+    description: "Polymer housed",
+    image: SITE_IMAGES.featured.hollowCoreBushing,
   },
   {
     title: "Cable Accessories",
@@ -46,65 +56,76 @@ export function FeaturedProductsSection() {
     >
       {/* Section Title */}
       <div className="px-6 py-20 text-center md:px-12 md:py-28 lg:px-20 lg:py-32 lg:pb-20">
+        <RevealBlock>
+          <p className="mb-4 text-xs uppercase tracking-[0.22em] text-muted-foreground md:mb-6">
+            Standards
+          </p>
+        </RevealBlock>
         <RevealText
           as="h2"
           splitLines
-          stepMs={70}
-          durationMs={1000}
-          className="text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl"
+          className="text-balance text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-6xl"
         >
           {"IEC-tested. | Accredited laboratories."}
         </RevealText>
         <span id="featured-products-heading" className="sr-only">
           IEC-tested. Accredited laboratories.
         </span>
-        <RevealBlock delayMs={260} durationMs={800} distance={18}>
-          <p className="mx-auto mt-6 max-w-md text-sm text-muted-foreground">
-            Standards
-          </p>
-        </RevealBlock>
       </div>
 
-      {/* Features Grid */}
+      {/* Features Grid — subtle bento: the first card spans two columns
+          on md+ to give the flagship product visual priority without
+          breaking the editorial grid. */}
       <RevealBlock
-        stagger={110}
-        delayMs={120}
-        durationMs={900}
-        distance={36}
-        className="grid grid-cols-1 gap-4 px-6 pb-20 md:grid-cols-3 md:px-12 lg:px-20"
+        className="grid grid-cols-1 gap-4 px-6 pb-24 md:grid-cols-3 md:gap-5 md:px-12 lg:px-20 lg:pb-32"
       >
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="group interactive-lift rounded-2xl border border-border/40 bg-card/90 shadow-elevate dark:border-white/[0.08] dark:bg-card/50"
+            className={cn(
+              "group interactive-lift overflow-hidden rounded-2xl border border-border/40 bg-card/90 shadow-elevate dark:border-white/[0.08] dark:bg-card/50",
+              feature.feature && "md:col-span-2 md:row-span-1"
+            )}
           >
             {/* Image */}
-            <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
+            <div
+              className={cn(
+                "relative overflow-hidden",
+                feature.feature ? "aspect-[16/9]" : "aspect-[4/3]"
+              )}
+            >
               <FadeImage
                 src={feature.image || "/placeholder.svg"}
                 alt={feature.title}
                 fill
-                className="object-cover group-hover:scale-105"
+                className="object-cover"
+                sizes={
+                  feature.feature
+                    ? "(min-width: 768px) 66vw, 100vw"
+                    : "(min-width: 768px) 33vw, 100vw"
+                }
               />
             </div>
 
             {/* Content */}
-            <div className="border-t border-border/30 px-1 py-6 dark:border-white/[0.06]">
+            <div className="border-t border-border/30 px-5 py-6 dark:border-white/[0.06] md:px-6">
               <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">
                 {feature.description}
               </p>
-              <h3 className="text-foreground text-xl font-semibold">
+              <h3
+                className={cn(
+                  "font-medium tracking-tight text-foreground",
+                  feature.feature
+                    ? "text-2xl md:text-3xl"
+                    : "text-xl md:text-2xl"
+                )}
+              >
                 {feature.title}
               </h3>
             </div>
           </div>
         ))}
       </RevealBlock>
-
-      {/* CTA Link */}
-      <div className="flex justify-center px-6 pb-28 md:px-12 lg:px-20">
-        
-      </div>
     </section>
   );
 }

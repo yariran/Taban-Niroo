@@ -10,7 +10,7 @@ export const contentType = "image/png";
  *
  * Brand-rooted instead of a generic gradient block: a deep night-sky
  * background, a single voltage hairline, the company name in a heavy
- * editorial cut, and a small "DPL · Since 1998" mono caps line. Renders
+ * editorial cut, and a small "DPL · Since 1997" mono caps line. Renders
  * on the edge so it costs nothing in cold-start latency.
  */
 export default async function Image() {
@@ -50,7 +50,7 @@ export default async function Image() {
               boxShadow: "0 0 16px rgba(125,211,252,0.65)",
             }}
           />
-          DPL · Since 1998
+          DPL · Since 1997
         </div>
 
         <div style={{ flex: 1 }} />
@@ -82,7 +82,7 @@ export default async function Image() {
               letterSpacing: "-0.01em",
             }}
           >
-            11 kV – 1000 kV · IEC-tested · Shiraz, Iran
+            6-1000 kV · IEC-tested · Shiraz, Iran
           </div>
         </div>
 

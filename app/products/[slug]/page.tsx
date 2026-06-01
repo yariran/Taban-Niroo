@@ -8,6 +8,12 @@ import { FooterSection } from "@/components/sections/footer-section";
 import { RevealUp, RevealWords } from "@/components/ui/reveal-words";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import {
+  techTableClass,
+  techTableHeadCellClass,
+  techTableHeadStickyClass,
+} from "@/components/ui/tech-table";
+import { cn } from "@/lib/utils";
+import {
   FAMILY_ANCHOR,
   FAMILY_INDEX,
   FAMILY_THUMBNAIL,
@@ -349,23 +355,24 @@ export default async function ProductDetailPage({ params }: Props) {
                 ariaLabel={`${product.name} variants table`}
                 fadeFrom="from-card"
                 className="rounded-2xl"
+                passVerticalScroll
               >
-                <table className="w-full min-w-[640px] border-collapse text-left text-sm tabular">
+                <table className={cn(techTableClass, "min-w-[640px] tabular")}>
                   <thead>
-                    <tr className="bg-muted/30 dark:bg-white/[0.02]">
-                      <th className="px-5 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                        Code
+                    <tr>
+                      <th scope="col" className={techTableHeadStickyClass}>
+                        Type
                       </th>
-                      <th className="px-5 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                        Voltage
+                      <th scope="col" className={techTableHeadCellClass}>
+                        Rated System Voltage (kV)
                       </th>
-                      <th className="px-5 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                        Section length
+                      <th scope="col" className={techTableHeadCellClass}>
+                        Section length (mm)
                       </th>
-                      <th className="px-5 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                        Creepage
+                      <th scope="col" className={techTableHeadCellClass}>
+                        Creepage distance (mm)
                       </th>
-                      <th className="px-5 py-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                      <th scope="col" className={techTableHeadCellClass}>
                         Notes
                       </th>
                     </tr>

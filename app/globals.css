@@ -175,6 +175,82 @@
   }
 
   /**
+   * Cross-platform glass surfaces (iOS Safari + Android Chrome).
+   * Always ships a readable fallback fill; blur/saturation enhance when supported.
+   */
+  .glass-blur {
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+
+  .glass-header-pill {
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+    transform: translateZ(0);
+  }
+  .glass-header-pill--hero {
+    border-color: rgb(255 255 255 / 0.15);
+    background-color: rgb(255 255 255 / 0.1);
+    box-shadow: 0 18px 40px -22px rgb(0 0 0 / 0.55);
+  }
+  .glass-header-pill--default {
+    border-color: rgb(0 0 0 / 0.1);
+    background-color: rgb(255 255 255 / 0.72);
+    box-shadow: 0 18px 40px -22px rgb(0 0 0 / 0.18);
+  }
+  .dark .glass-header-pill--default {
+    border-color: rgb(255 255 255 / 0.08);
+    background-color: rgb(10 10 10 / 0.58);
+    box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.6);
+  }
+
+  .glass-mobile-scrim {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgb(0 0 0 / 0.72);
+  }
+
+  .glass-mobile-menu {
+    transform: translateZ(0);
+    box-shadow: 0 -12px 40px -16px rgb(0 0 0 / 0.35);
+    /* Solid base — blur is optional enhancement only */
+    background-color: var(--background);
+  }
+  .glass-mobile-menu--hero {
+    background-color: #09090b;
+  }
+  .glass-mobile-menu--default {
+    background-color: var(--background);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-header-pill--hero {
+      background-color: rgb(22 22 24 / 0.94);
+    }
+    .glass-header-pill--default {
+      background-color: rgb(255 255 255 / 0.96);
+    }
+    .dark .glass-header-pill--default {
+      background-color: rgb(12 12 12 / 0.96);
+    }
+    .glass-mobile-scrim {
+      background-color: rgb(0 0 0 / 0.78);
+    }
+    .glass-mobile-menu--hero {
+      background-color: #09090b;
+    }
+    .glass-mobile-menu--default {
+      background-color: var(--background);
+    }
+  }
+
+  /** Consistent tap targets on iOS + Android (no grey flash, no 300ms delay). */
+  .touch-target {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /**
    * Cinematic image grade — applied to wrappers around `<Image>` blocks
    * on inner-route hero shots. Combines a small contrast lift, a top/
    * bottom dim, and a subtle vignette so monochrome catalogue photos
@@ -243,8 +319,36 @@
 
   @media (hover: hover) {
     .interactive-lift:hover {
-      transform: translateY(-3px);
+      transform: none;
       box-shadow: var(--shadow-card-hover);
+    }
+  }
+
+  /**
+   * Global anti-jitter guard:
+   * Many cards used hover scale/translate on images while their parent
+   * card also moved. On high-DPI displays this can cause visible shimmer
+   * on thin lines. Keep hover feedback via shadow/border, but freeze
+   * transform-based image motion.
+   */
+  .interactive-lift :where(img, video) {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (hover: hover) {
+    /**
+     * Anti-jitter: kill transform-based hover motion on images (it
+     * produced visible sub-pixel shimmer on high-DPI displays), but
+     * keep a soft, GPU-cheap brightness lift so cards still have a
+     * tactile hover response. Filter changes do not reflow.
+     */
+    .group:hover :where([class*="group-hover:scale"], [class*="group-hover:translate"]) {
+      transform: none !important;
+    }
+    .interactive-lift:hover :where(img, video) {
+      filter: brightness(1.04) saturate(1.04);
     }
   }
 
@@ -429,6 +533,11 @@
      * behaviour while a section is still running its reveal.
      */
     overscroll-behavior-y: contain;
+  }
+
+  /* Keep anchor targets visible below the fixed header. */
+  :where(main, body) :where(section[id], article[id], div[id], h2[id], h3[id]) {
+    scroll-margin-top: 6.5rem;
   }
 
 }
@@ -727,4 +836,30 @@
 }
 .scroll-pan-bar:active {
   cursor: grabbing;
+}
+
+/** Printed datasheet table — navy header survives light/dark theme. */
+.tech-table thead th.tech-table__head {
+  background-color: #1a3052;
+  color: #ffffff;
+}
+.tech-table thead th.tech-table__head[class*="sticky"] {
+  background-color: #1a3052;
+}
+
+/* Cookie banner entrance/exit motion without inline styles. */
+.cookie-consent-shell {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cookie-consent-shell[data-animate="in"],
+.cookie-consent-shell[data-animate="off"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.cookie-consent-shell[data-animate="off"] {
+  transition: none;
 }

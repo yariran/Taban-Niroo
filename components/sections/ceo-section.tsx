@@ -16,7 +16,7 @@ import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 export function CEOSection() {
   return (
     <section id="ceo" className="bg-background">
-      <div className="px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40">
+      <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
         <RevealBlock delayMs={40} durationMs={650} distance={12}>
           <p className="text-xs uppercase tracking-widest text-muted-foreground">
             Leadership
@@ -57,20 +57,20 @@ export function CEOSection() {
             distance={32}
             className="lg:col-span-2 flex flex-col items-start"
           >
-            <div className="relative aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-sm bg-secondary shadow-lg ring-1 ring-border/70 dark:shadow-black/50 dark:ring-white/10">
+            <div className="relative aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-2xl bg-secondary shadow-elevate ring-1 ring-border/70 dark:shadow-black/50 dark:ring-white/10">
               <Image
                 src={SITE_IMAGES.ceoPortrait}
                 alt="Asadollah Zamani, CEO, Taban Niroo"
                 fill
-                className="object-cover grayscale"
+                className="object-cover"
                 sizes="(max-width: 1024px) 280px, 320px"
               />
             </div>
             <p className="mt-8 font-serif text-xl italic tracking-tight text-foreground">
               Asadollah Zamani
             </p>
-            <p className="mt-1 text-sm text-muted-foreground" dir="rtl">
-              اسدالله زمانی
+            <p className="mt-1 text-sm text-muted-foreground">
+              Chief Executive Officer
             </p>
             <p className="mt-6 text-sm text-muted-foreground">
               October 2024

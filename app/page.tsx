@@ -4,6 +4,7 @@ import { HomeSectionSnap } from "@/components/home-section-snap";
 import { HeroSection } from "@/components/sections/hero-section";
 import { PhilosophySection } from "@/components/sections/philosophy-section";
 import { FeaturedProductsSection } from "@/components/sections/featured-products-section";
+import { NewReleaseShowcaseSection } from "@/components/sections/new-release-showcase-section";
 import { EngineeringDetailSection } from "@/components/sections/engineering-detail-section";
 import { TechnologySection } from "@/components/sections/technology-section";
 import { GallerySection } from "@/components/sections/gallery-section";
@@ -11,7 +12,6 @@ import { CollectionSection } from "@/components/sections/collection-section";
 import { TimelineSection } from "@/components/sections/timeline-section";
 import { EditorialSection } from "@/components/sections/editorial-section";
 import { WhyTabanSection } from "@/components/sections/why-taban-section";
-import { PatentsSection } from "@/components/sections/patents-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { CEOSection } from "@/components/sections/ceo-section";
 import { FooterSection } from "@/components/sections/footer-section";
@@ -40,14 +40,23 @@ export default function Home() {
             <HeroSection />
           </HomeSectionSnap>
 
+          <HomeSectionSnap
+            variant="fade-up"
+            index={1}
+            total={12}
+            chapter="New release"
+          >
+            <NewReleaseShowcaseSection />
+          </HomeSectionSnap>
+
           {/* Philosophy — internal sticky parallax already exists.
               `stickyChild` keeps the entrance to opacity-only so the
               sticky child is never trapped inside a transformed
               ancestor (which would disable sticky positioning). */}
           <HomeSectionSnap
-            variant="veil"
+            variant="fade-up"
             stickyChild
-            index={1}
+            index={2}
             total={12}
             chapter="Philosophy"
           >
@@ -55,9 +64,8 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="curtain"
-            parallax
-            index={2}
+            variant="fade-up"
+            index={3}
             total={12}
             chapter="Featured products"
           >
@@ -65,9 +73,8 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="slide-right"
-            parallax
-            index={3}
+            variant="fade-up"
+            index={4}
             total={12}
             chapter="Engineering DNA"
           >
@@ -75,9 +82,8 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="zoom"
-            parallax
-            index={4}
+            variant="fade-up"
+            index={5}
             total={12}
             chapter="Technology"
           >
@@ -89,9 +95,9 @@ export default function Home() {
               entrance to an opacity fade so no ancestor transform ever
               creates a containing block that would cancel the pin. */}
           <HomeSectionSnap
-            variant="iris"
+            variant="fade-up"
             stickyChild
-            index={5}
+            index={6}
             total={12}
             chapter="Gallery"
           >
@@ -99,9 +105,8 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="rise"
-            parallax
-            index={6}
+            variant="fade-up"
+            index={7}
             total={12}
             chapter="Collection"
           >
@@ -109,9 +114,8 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="dolly"
-            parallax
-            index={7}
+            variant="fade-up"
+            index={8}
             total={12}
             chapter="History"
           >
@@ -119,19 +123,17 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="tilt-top"
-            parallax
-            index={8}
+            variant="fade-up"
+            index={9}
             total={12}
-            chapter="By the numbers"
+            chapter="On the factory floor"
           >
             <EditorialSection />
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="focus-pull"
-            parallax
-            index={9}
+            variant="fade-up"
+            index={10}
             total={12}
             chapter="Why Taban Niroo"
           >
@@ -139,18 +141,7 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="slide-left"
-            parallax
-            index={10}
-            total={12}
-            chapter="Patents"
-          >
-            <PatentsSection />
-          </HomeSectionSnap>
-
-          <HomeSectionSnap
-            variant="curtain"
-            parallax
+            variant="fade-up"
             index={11}
             total={12}
             chapter="Testimonials"
@@ -159,8 +150,7 @@ export default function Home() {
           </HomeSectionSnap>
 
           <HomeSectionSnap
-            variant="rise"
-            parallax
+            variant="fade-up"
             index={12}
             total={12}
             chapter="From the CEO"

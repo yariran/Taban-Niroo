@@ -25,7 +25,7 @@ type SubmitState =
  */
 export function ContactForm() {
   const [state, setState] = useState<SubmitState>({ status: "idle" });
-  const formMounted = useRef<number>(Date.now());
+  const formMounted = useRef<number>(0);
 
   useEffect(() => {
     formMounted.current = Date.now();

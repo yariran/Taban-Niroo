@@ -6,9 +6,9 @@ import { RevealBlock } from "@/components/ui/reveal-text";
 
 export function TestimonialsSection() {
   return (
-    <section id="about" className="bg-background">
+    <section id="testimonials" className="bg-background">
       {/* Large Text Statement */}
-      <div className="px-6 py-24 md:px-12 md:py-32 lg:px-20 lg:py-40">
+      <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
         <RevealBlock
           durationMs={1100}
           distance={36}

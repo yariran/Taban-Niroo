@@ -4,8 +4,8 @@ import { ScanLine } from "lucide-react";
  * DPL coding guide.
  *
  * Static reference section that teaches the reader how to parse a Taban
- * Niroo catalogue number (e.g. `DPL 33-1180 PI`). Only content that is
- * explicitly documented in the 2026 catalogue / company profile is used
+ * Niroo DPL reference (e.g. `DPL 33-1180 PI`). Only content that is
+ * explicitly documented in company profile materials is used
  * here — no ratings are invented. Style matches the existing `Standards`
  * section so the page stays visually consistent.
  */
@@ -18,7 +18,7 @@ const SEGMENTS: {
     token: "DPL",
     title: "Family prefix",
     description:
-      "Identifies the product as a Taban Niroo design (Dehkade Power Line). Every catalogue reference in this site and the 2026 printed catalogue begins with this prefix.",
+      "Identifies the product as a Taban Niroo design (Dehkade Power Line). Every DPL reference on this site begins with this prefix.",
   },
   {
     token: "33",

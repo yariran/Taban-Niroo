@@ -10,7 +10,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Taban Niroo · Dena Power Line Insulators",
     short_name: "Taban Niroo",
     description:
-      "High-voltage composite insulators and power transmission. IEC-tested. 11 kV–1000 kV. Shiraz, Iran.",
+      "High-voltage composite insulators and power transmission. IEC-tested. 6-1000 kV. Shiraz, Iran.",
     start_url: "/",
     scope: "/",
     display: "standalone",

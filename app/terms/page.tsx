@@ -20,9 +20,9 @@ export default function TermsPage() {
     >
       <h2>1. Information accuracy</h2>
       <p>
-        Catalogue references, voltage classes and standards listed on this
+        Product references, voltage classes and standards listed on this
         website are provided in good faith and based on the most recent
-        Taban Niroo product catalogue. We make every reasonable effort to
+        Taban Niroo published specifications. We make every reasonable effort to
         keep the information current; however, technical specifications may
         change without notice and the official, signed product datasheet
         always prevails over information published here.

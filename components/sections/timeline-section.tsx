@@ -27,7 +27,7 @@ import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
  */
 const MILESTONES = [
   {
-    year: "1998",
+    year: "1997",
     title: "MV Insulators",
     description: "Design and production of medium-voltage composite insulators begins.",
   },
@@ -64,7 +64,7 @@ const MILESTONES = [
   {
     year: "2022",
     title: "Cable Accessories",
-    description: "Silicone outdoor terminations and joints complete the catalogue.",
+    description: "Silicone outdoor terminations and joints complete the product line.",
   },
 ] as const;
 
@@ -85,7 +85,7 @@ export function TimelineSection() {
   return (
     <section
       id="timeline"
-      className="bg-background py-24 md:py-32 lg:py-40"
+      className="bg-background py-20 md:py-28 lg:py-32"
       aria-labelledby="timeline-heading"
     >
       {/* Header — stays inside the normal editorial column. */}
@@ -116,9 +116,9 @@ export function TimelineSection() {
             className="mt-6 max-w-2xl"
           >
             <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-              Every milestone below added a new product family to the Taban
-              Niroo catalogue — from medium-voltage insulators in 1998 to a
-              complete cable-accessories range in 2022.
+              Every milestone below added a new product family to Taban
+              Niroo — from medium-voltage insulators in 1997 to a complete
+              cable-accessories range in 2022.
             </p>
           </RevealBlock>
         </div>
@@ -133,7 +133,7 @@ export function TimelineSection() {
         <div className="relative aspect-[1024/485] w-full">
           <Image
             src="/images/home/history-timeline.png"
-            alt="Timeline of Taban Niroo's product milestones from 1998 to 2022, illustrated with each generation of insulator, transformer bushing and cable accessory product."
+            alt="Timeline of Taban Niroo's product milestones from 1997 to 2022, illustrated with each generation of insulator, transformer bushing and cable accessory product."
             fill
             sizes="100vw"
             className="object-cover opacity-95 dark:invert"
@@ -145,7 +145,7 @@ export function TimelineSection() {
       {/* Mobile vertical list — semantic milestones for ≤ md. */}
       <div className="mt-12 px-6 md:hidden">
         <ol
-          aria-label="Taban Niroo product history, 1998 to 2022"
+          aria-label="Taban Niroo product history, 1997 to 2022"
           className="relative"
         >
           <span

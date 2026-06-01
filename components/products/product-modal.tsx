@@ -5,6 +5,13 @@ import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, Download, Mail, Table2, Ruler, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollPan } from "@/components/ui/scroll-pan";
+import {
+  techTableBodyCellClass,
+  techTableBodyStickyClass,
+  techTableClass,
+  techTableHeadCellClass,
+  techTableHeadStickyClass,
+} from "@/components/ui/tech-table";
 
 /**
  * Technical specification row for one catalogue reference.
@@ -40,6 +47,7 @@ export type TechnicalRow = {
   shedSpacing?: string;
   minimumCreepage?: string;
   impulseWithstand?: string;
+  impulseNegative?: string;
   wetWithstand?: string;
   weight?: string;
 };
@@ -92,47 +100,26 @@ type ProductModalProps = {
 };
 
 /**
- * Datasheet column schema. Each entry maps onto one field of
- * `TechnicalRow` and carries a two-line header: the descriptive name
- * on the top row and the short symbol/unit on the bottom row,
- * mirroring the printed catalogue exactly.
+ * Body column order — matches the two-row datasheet header (printed
+ * catalogue layout). Placeholder slots render "—" (e.g. Negative, Dry).
  */
-type TechColumn = {
-  key: keyof TechnicalRow;
-  title: string;
-  subtitle: string;
-};
+type TechBodyColumn =
+  | { key: keyof TechnicalRow }
+  | { placeholder: true };
 
-const TECH_COLUMNS: readonly TechColumn[] = [
-  { key: "shedNo", title: "Shed No.", subtitle: "—" },
-  { key: "ratedVoltage", title: "Rated Voltage", subtitle: "KV" },
-  { key: "sml", title: "Specified Mechanical Load", subtitle: "KN" },
-  { key: "couplingSize", title: "Coupling Size", subtitle: "—" },
-  { key: "sectionLength", title: "Section Length", subtitle: "H  mm" },
-  { key: "arcingDistance", title: "Arcing Distance", subtitle: "h  mm" },
-  { key: "shedDiameter", title: "Shed diameter", subtitle: "dl/d2  mm" },
-  { key: "shedSpacing", title: "Shed Spacing", subtitle: "B  mm" },
-  { key: "minimumCreepage", title: "Minimum Creepage", subtitle: "L  mm" },
-  {
-    key: "impulseWithstand",
-    title: "Full-Wave Impulse Withstand Voltage (Peak)",
-    subtitle: "kV",
-  },
-  {
-    key: "wetWithstand",
-    title: "1 Min Wet Power Frequency Withstand Voltage",
-    subtitle: "kV",
-  },
-  { key: "weight", title: "Weight (for Reference)", subtitle: "Kg" },
+const TECH_BODY_COLUMNS: readonly TechBodyColumn[] = [
+  { key: "ratedVoltage" },
+  { key: "sml" },
+  { key: "couplingSize" },
+  { key: "sectionLength" },
+  { key: "arcingDistance" },
+  { key: "shedDiameter" },
+  { key: "minimumCreepage" },
+  { key: "impulseWithstand" },
+  { placeholder: true },
+  { placeholder: true },
+  { key: "wetWithstand" },
 ];
-
-/**
- * Total row count displayed in the datasheet. Matches the printed
- * catalogue sheet — every product uses a fixed 26-row grid so that
- * engineers always see the same scannable shape, regardless of how
- * many variants have been populated for that product.
- */
-const DATASHEET_ROW_COUNT = 26;
 
 export function ProductModal({
   open,
@@ -419,39 +406,24 @@ function BackBar({ onBack, label }: { onBack: () => void; label: string }) {
 
 type DatasheetRow = { code: string; technical?: TechnicalRow };
 
-/**
- * Builds the datasheet row list for a given product and pads it to the
- * fixed `DATASHEET_ROW_COUNT` with empty placeholder rows.
- *
- * Any variants already defined on the product become the top N rows
- * (their `code` is used as the catalogue number); the remaining rows
- * are left blank so the grid always shows exactly 26 lines — ready to
- * be filled in with values by the catalogue owner.
- */
+/** One table row per populated product variant (no blank padding rows). */
 function buildTechRows(product: ProductSpec): DatasheetRow[] {
-  const variants = product.variants ?? [];
-  const baseRows: DatasheetRow[] = variants.map((v) => ({
+  return (product.variants ?? []).map((v) => ({
     code: v.code,
     technical: v.technical,
   }));
-
-  while (baseRows.length < DATASHEET_ROW_COUNT) {
-    baseRows.push({ code: "" });
-  }
-  return baseRows.slice(0, DATASHEET_ROW_COUNT);
 }
 
 /**
- * Renders the full 12-column datasheet grid used across the entire
- * catalogue. Every product shows the same fixed 26-row table so
- * procurement engineers always see the identical reference shape.
+ * Renders the full 12-column datasheet grid used across the catalogue.
+ * Row count follows the number of variants defined for the product.
  *
  * Layout choices:
- *   • Two-line header — top line carries the descriptive column name,
- *     bottom line carries the short symbol/unit, mirroring the printed
- *     catalogue page exactly.
- *   • Sticky first column — the Catalogue Number stays on-screen while
- *     the reader pans horizontally on narrow viewports.
+ *   • Two-row navy header — matches the printed catalogue grid (rowspan
+ *     labels + grouped flashover columns with Positive/Negative and
+ *     Dry/Wet sub-headers).
+ *   • Sticky first column — the Type / catalogue reference stays on-screen
+ *     while the reader pans horizontally on narrow viewports.
  *   • Uniform dash placeholder — every missing cell renders "—" so the
  *     overall rhythm of the grid survives data-less drafts.
  */
@@ -463,36 +435,55 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
       ariaLabel={`${product.name} technical data`}
       fadeFrom="from-card"
       className="rounded-2xl border border-border/70"
+      passVerticalScroll
     >
-      <table className="w-full min-w-[1100px] border-separate border-spacing-0 text-sm">
+      <table className={cn(techTableClass, "min-w-[1050px]")}>
         <thead>
           <tr>
-            <th
-              scope="col"
-              className="sticky left-0 z-10 border-b border-r border-border/70 bg-muted/60 px-4 py-3 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground/85"
-            >
-              Catalogue Number
+            <th rowSpan={2} scope="col" className={techTableHeadStickyClass}>
+              Type
             </th>
-            {TECH_COLUMNS.map((col, i) => (
-              <th
-                key={col.key}
-                scope="col"
-                className={cn(
-                  "border-b border-r border-border/70 bg-muted/40 px-2 py-2 text-center align-middle font-medium text-foreground/85",
-                  i === TECH_COLUMNS.length - 1 && "border-r-0",
-                )}
-                style={{ minWidth: 92 }}
-              >
-                <div className="flex flex-col items-center justify-center gap-1">
-                  <span className="text-[10px] uppercase leading-tight tracking-[0.08em]">
-                    {col.title}
-                  </span>
-                  <span className="text-[10px] font-normal leading-tight text-muted-foreground">
-                    {col.subtitle}
-                  </span>
-                </div>
-              </th>
-            ))}
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Rated System Voltage (kV)
+            </th>
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Specified mechanical load (kN)
+            </th>
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Coupling Size
+            </th>
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Section length (mm)
+            </th>
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Arcing distance (mm)
+            </th>
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Diameter of shed (mm)
+            </th>
+            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+              Creepage distance (mm)
+            </th>
+            <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
+              Lightning impulse flashover voltage (kV)
+            </th>
+            <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
+              Power frequency flashover voltage (kV)
+            </th>
+          </tr>
+          <tr>
+            <th scope="col" className={techTableHeadCellClass}>
+              Positive
+            </th>
+            <th scope="col" className={techTableHeadCellClass}>
+              Negative
+            </th>
+            <th scope="col" className={techTableHeadCellClass}>
+              Dry
+            </th>
+            <th scope="col" className={techTableHeadCellClass}>
+              Wet
+            </th>
           </tr>
         </thead>
 
@@ -503,20 +494,21 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
               <tr key={`${row.code || "empty"}-${idx}`} className="bg-background">
                 <td
                   className={cn(
-                    "sticky left-0 z-10 whitespace-nowrap border-r border-border/70 bg-background px-4 py-2.5 font-mono text-[12px] text-foreground",
-                    !isLast && "border-b",
+                    techTableBodyStickyClass,
+                    !isLast && "border-b border-border/70",
                   )}
                 >
                   {row.code || <span className="text-muted-foreground/50">—</span>}
                 </td>
-                {TECH_COLUMNS.map((col, i) => {
-                  const value = row.technical?.[col.key];
+                {TECH_BODY_COLUMNS.map((col, i) => {
+                  const value =
+                    "key" in col ? row.technical?.[col.key] : undefined;
                   return (
                     <td
-                      key={col.key}
+                      key={i}
                       className={cn(
-                        "whitespace-nowrap px-2 py-2.5 text-center text-foreground/85",
-                        i !== TECH_COLUMNS.length - 1 &&
+                        techTableBodyCellClass,
+                        i !== TECH_BODY_COLUMNS.length - 1 &&
                           "border-r border-border/70",
                         !isLast && "border-b border-border/70",
                       )}
@@ -560,19 +552,11 @@ function TableView({
             <p className="mt-1 text-sm text-foreground/85">
               {hasVariants ? (
                 <>
-                  {variants.length} catalogue reference
-                  {variants.length === 1 ? "" : "s"} populated ·{" "}
-                  {DATASHEET_ROW_COUNT - variants.length} blank row
-                  {DATASHEET_ROW_COUNT - variants.length === 1
-                    ? ""
-                    : "s"}{" "}
-                  ready for sizing values.
+                  {variants.length} product reference
+                  {variants.length === 1 ? "" : "s"} in datasheet.
                 </>
               ) : (
-                <>
-                  Datasheet grid with {DATASHEET_ROW_COUNT} rows ready — fill
-                  in per-variant values for the complete table.
-                </>
+                <>No variant rows defined for this product yet.</>
               )}
             </p>
           </div>
@@ -586,10 +570,10 @@ function TableView({
         <TechnicalDataTable product={product} />
 
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          Drag, swipe, or use the scrollbar to see all 13 columns. All
+          Drag, swipe, or use the scrollbar to see all columns. All
           dimensions in millimetres (mm) unless stated otherwise; voltages in
           kilovolts (kV); mechanical loads in kilonewtons (kN). Values are
-          typed per catalogue reference and confirmed by the individual test
+          typed per product reference and confirmed by the individual test
           report on request.
         </p>
       </div>

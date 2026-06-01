@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -98,7 +97,7 @@ type HomeSectionSnapProps = {
 };
 
 /** expo-out: heavy cinematic deceleration, no bounce. */
-const EASE_EXPO = "cubic-bezier(0.16, 1, 0.3, 1)";
+const EASE_EXPO = "cubic-bezier(0.22, 1, 0.36, 1)";
 /** quart-out: slightly softer entry for text-heavy sections. */
 const EASE_QUART = "cubic-bezier(0.25, 1, 0.35, 1)";
 /** sine-out: velvet finish for wide cinematic dollies. */
@@ -123,87 +122,87 @@ type VariantSpec = {
  */
 const VARIANTS: Record<SectionVariant, VariantSpec> = {
   rise: {
-    outerPre: { transform: "translate3d(0, 64px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 34px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 1100,
+    duration: 760,
     ease: EASE_EXPO,
   },
   veil: {
-    outerPre: { transform: "translate3d(0, 36px, 0) scale(1.015)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 24px, 0) scale(1.01)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1050,
+    duration: 740,
     ease: EASE_EXPO,
   },
   curtain: {
     outerPre: {
-      transform: "translate3d(0, 56px, 0) scale(0.975)",
+      transform: "translate3d(0, 30px, 0) scale(0.985)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1150,
+    duration: 820,
     ease: EASE_EXPO,
   },
   zoom: {
     outerPre: {
-      transform: "translate3d(0, 20px, 0) scale(1.05)",
+      transform: "translate3d(0, 16px, 0) scale(1.03)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1100,
+    duration: 780,
     ease: EASE_EXPO,
   },
   iris: {
-    outerPre: { transform: "translate3d(0, 0, 0) scale(0.94)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 0, 0) scale(0.97)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1150,
+    duration: 820,
     ease: EASE_EXPO,
   },
   "slide-right": {
-    outerPre: { transform: "translate3d(-72px, 20px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(-34px, 14px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 1100,
+    duration: 760,
     ease: EASE_QUART,
-    mobileScale: 0.55,
+    mobileScale: 0.72,
   },
   "slide-left": {
-    outerPre: { transform: "translate3d(72px, 20px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(34px, 14px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 1100,
+    duration: 760,
     ease: EASE_QUART,
-    mobileScale: 0.55,
+    mobileScale: 0.72,
   },
   "tilt-top": {
     outerPre: {
-      transform: "translate3d(0, 58px, 0) scale(0.985)",
+      transform: "translate3d(0, 30px, 0) scale(0.99)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1150,
+    duration: 820,
     ease: EASE_EXPO,
   },
   "focus-pull": {
     outerPre: {
-      transform: "translate3d(0, 28px, 0) scale(0.95)",
+      transform: "translate3d(0, 18px, 0) scale(0.97)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1200,
+    duration: 840,
     ease: EASE_EXPO,
   },
   dolly: {
     outerPre: {
-      transform: "translate3d(0, 48px, 0) scale(0.96)",
+      transform: "translate3d(0, 24px, 0) scale(0.98)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 1250,
+    duration: 860,
     ease: EASE_SINE,
   },
   "fade-up": {
-    outerPre: { transform: "translate3d(0, 34px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 14px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 950,
-    ease: EASE_QUART,
+    duration: 780,
+    ease: EASE_EXPO,
   },
 };
 
@@ -212,33 +211,13 @@ const VARIANTS: Record<SectionVariant, VariantSpec> = {
  * scrolls never land past a section with it still invisible (`scroll-
  * past fallback` handles the catastrophic case).
  */
-const REVEAL_RATIO = 0.1;
-const REVEAL_RATIO_COMPACT = 0.06;
-
 /** Maximum parallax drift in pixels (applied symmetrically around center). */
-const PARALLAX_RANGE_PX = 10;
-
-function isSectionEnteredView(el: HTMLElement, compact: boolean | undefined) {
-  const r = el.getBoundingClientRect();
-  const vh = window.innerHeight;
-  if (r.height <= 0) return false;
-
-  // Already scrolled past — force settled state, no pre-dim flicker.
-  if (r.top < vh * 0.35) return true;
-
-  const overlapTop = Math.max(r.top, 0);
-  const overlapBottom = Math.min(r.bottom, vh);
-  const overlap = Math.max(0, overlapBottom - overlapTop);
-  const visibleRatio = overlap / Math.min(r.height, vh);
-
-  const minRatio = compact ? REVEAL_RATIO_COMPACT : REVEAL_RATIO;
-  return visibleRatio >= minRatio;
-}
+const PARALLAX_RANGE_PX = 6;
 
 export function HomeSectionSnap({
   children,
   className,
-  compact,
+  compact = false,
   isFirst,
   variant = "rise",
   parallax = false,
@@ -248,17 +227,15 @@ export function HomeSectionSnap({
   total,
   chapter,
 }: HomeSectionSnapProps) {
-  // A sticky descendant cannot tolerate any transform on an ancestor,
-  // so transform-based parallax is silently disabled in that mode.
+  // Safe cinematic mode: lightweight reveal + optional mild parallax.
   const parallaxEnabled = parallax && !stickyChild;
   const rootRef = useRef<HTMLDivElement>(null);
   const parallaxRef = useRef<HTMLDivElement>(null);
   const [swappedIn, setSwappedIn] = useState(!!isFirst);
-  const [motionArmed, setMotionArmed] = useState(!!isFirst);
+  const [motionArmed] = useState(true);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [settled, setSettled] = useState(!!isFirst);
   const [isNarrow, setIsNarrow] = useState(false);
-  const scrollRaf = useRef<number | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -276,82 +253,64 @@ export function HomeSectionSnap({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  useLayoutEffect(() => {
-    if (isFirst) return;
-    setMotionArmed(true);
-  }, [isFirst]);
-
-  useEffect(() => {
-    if (isFirst) return;
-
-    if (prefersReducedMotion) {
-      setSwappedIn(true);
-      setSettled(true);
-      return;
-    }
-
-    const el = rootRef.current;
-    if (!el) return;
-
-    let done = false;
-
-    const tryReveal = () => {
-      if (done) return;
-      if (isSectionEnteredView(el, compact)) {
-        done = true;
-        setSwappedIn(true);
-      }
-    };
-
-    const scheduleTryReveal = () => {
-      if (done) return;
-      if (scrollRaf.current != null) return;
-      scrollRaf.current = requestAnimationFrame(() => {
-        scrollRaf.current = null;
-        tryReveal();
-      });
-    };
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) scheduleTryReveal();
-      },
-      {
-        rootMargin: "0px 0px -8% 0px",
-        threshold: compact
-          ? [0, REVEAL_RATIO_COMPACT, 0.35, 0.7]
-          : [0, REVEAL_RATIO, 0.45, 0.8],
-      }
-    );
-    obs.observe(el);
-
-    window.addEventListener("scroll", scheduleTryReveal, { passive: true });
-    window.addEventListener("scrollend", scheduleTryReveal, { passive: true });
-    window.addEventListener("resize", tryReveal, { passive: true });
-
-    scheduleTryReveal();
-
-    return () => {
-      obs.disconnect();
-      window.removeEventListener("scroll", scheduleTryReveal);
-      window.removeEventListener("scrollend", scheduleTryReveal);
-      window.removeEventListener("resize", tryReveal);
-      if (scrollRaf.current != null) cancelAnimationFrame(scrollRaf.current);
-    };
-  }, [isFirst, compact, prefersReducedMotion]);
-
   const spec = VARIANTS[variant];
   const durationMs = spec.duration;
   const ease = spec.ease;
 
   useEffect(() => {
-    if (!swappedIn || settled) return;
-    const id = window.setTimeout(
-      () => setSettled(true),
-      durationMs + 120
+    if (isFirst || prefersReducedMotion) {
+      setSwappedIn(true);
+      setSettled(true);
+      return;
+    }
+    const node = rootRef.current;
+    if (!node) return;
+
+    let raf: number | null = null;
+    const revealNow = () => {
+      if (swappedIn) return;
+      const r = node.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      if (r.top < vh * 0.9) {
+        setSwappedIn(true);
+      }
+    };
+    const scheduleReveal = () => {
+      if (raf != null) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        revealNow();
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) scheduleReveal();
+      },
+      { threshold: [0, compact ? 0.03 : 0.05], rootMargin: "0px 0px -4% 0px" }
     );
+    observer.observe(node);
+    scheduleReveal();
+    window.addEventListener("scroll", scheduleReveal, { passive: true });
+    window.addEventListener("resize", scheduleReveal, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", scheduleReveal);
+      window.removeEventListener("resize", scheduleReveal);
+      if (raf != null) cancelAnimationFrame(raf);
+    };
+  }, [isFirst, prefersReducedMotion, compact, swappedIn]);
+
+  useEffect(() => {
+    if (!swappedIn) return;
+    if (prefersReducedMotion) {
+      setSettled(true);
+      return;
+    }
+    const id = window.setTimeout(() => setSettled(true), durationMs + 90);
     return () => window.clearTimeout(id);
-  }, [swappedIn, settled, durationMs]);
+  }, [swappedIn, durationMs, prefersReducedMotion]);
 
   /**
    * Scroll-linked parallax: once the entrance has settled, drift the
@@ -429,20 +388,33 @@ export function HomeSectionSnap({
 
   // Sticky-safe mode: only opacity animates. Transforms on any
   // ancestor would break the sticky child, so we strip them entirely.
-  const stickyOuterPre: CSSProperties = { opacity: 0 };
+  const stickyOuterPre: CSSProperties = { opacity: 0.96 };
   const stickyOuterIn: CSSProperties = { opacity: 1 };
 
-  const outerState = stickyChild
+  const safePreState = (style: CSSProperties | undefined): CSSProperties => {
+    const pre = { ...(style ?? {}) };
+    const preOpacity =
+      typeof pre.opacity === "number"
+        ? Math.max(0.94, pre.opacity)
+        : 0.96;
+    return { ...pre, opacity: preOpacity };
+  };
+
+  // Footer / compact wrappers: opacity-only entrance so the page tail
+  // fades in without a late translate that can feel like a layout bump.
+  const opacityOnlyEntrance = stickyChild || (compact && !isFirst);
+
+  const outerState = opacityOnlyEntrance
     ? swappedIn
       ? stickyOuterIn
       : stickyOuterPre
     : swappedIn
       ? spec.outerIn
-      : narrowAdjust(spec.outerPre);
+      : safePreState(narrowAdjust(spec.outerPre));
 
   const outerStyle: CSSProperties = settled
     ? {}
-    : stickyChild
+    : opacityOnlyEntrance
       ? {
           ...outerState,
           transition: useMotion
@@ -456,7 +428,14 @@ export function HomeSectionSnap({
           willChange: "transform, opacity",
         };
 
-  const showBoundary = !isFirst && !hideBoundary;
+  // Home separators/labels disabled for a cleaner, premium composition.
+  const showBoundary =
+    false &&
+    !isFirst &&
+    !hideBoundary &&
+    typeof index === "number" &&
+    typeof total === "number" &&
+    Boolean(chapter);
 
   return (
     <div
@@ -475,6 +454,9 @@ export function HomeSectionSnap({
          * visible so the subtle rise / tilt transforms are not clipped.
          */
         "overflow-x-clip",
+        // Soft vertical breathing between scenes after removing
+        // hard separators. Keeps flow premium without visible dividers.
+        !isFirst && !compact && "pt-4 md:pt-6 lg:pt-8",
         // Hero keeps viewport height so the first fold feels cinematic.
         // All other sections flow at their own natural content height —
         // no more forced 100dvh gaps that create huge empty voids.
@@ -487,102 +469,19 @@ export function HomeSectionSnap({
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-0"
         >
-          {/* Scene-cut sweep — a soft luminous hairline travels across the
-              full section break before the blueprint divider settles.
-              Reads as a film cut between scenes. Plays once on entry,
-              and is skipped entirely for reduced-motion visitors. */}
-          <span
-            className={cn(
-              "absolute left-0 top-0 block h-px w-full",
-              "bg-gradient-to-r from-transparent via-foreground/65 to-transparent",
-              "dark:via-white/75"
-            )}
-            style={{
-              opacity: 0,
-              animation:
-                swappedIn && useMotion
-                  ? "section-sweep 1300ms cubic-bezier(0.16,1,0.3,1) both"
-                  : undefined,
-            }}
-          />
-          {/* Primary hairline — blueprint divider that draws in from center. */}
+          {/* Minimal blueprint divider for a cleaner, more ordered rhythm. */}
           <span
             className={cn(
               "absolute left-1/2 top-0 block h-px -translate-x-1/2",
               "bg-gradient-to-r from-transparent via-foreground/25 to-transparent",
-              "transition-[width,opacity] duration-[1100ms]",
+              "transition-[width,opacity] duration-[700ms]",
               "dark:via-white/25"
             )}
             style={{
-              width: swappedIn ? "62%" : "0%",
-              opacity: swappedIn ? 0.8 : 0,
+              width: swappedIn ? "56%" : "0%",
+              opacity: swappedIn ? 0.72 : 0,
               transitionTimingFunction: ease,
-              transitionDelay: "260ms",
-            }}
-          />
-          {/* Secondary accent — small darker segment for industrial cue. */}
-          <span
-            className={cn(
-              "absolute left-1/2 top-0 block h-[2px] -translate-x-1/2",
-              "bg-foreground/55 transition-[width,opacity] duration-[1100ms]",
-              "dark:bg-white/60"
-            )}
-            style={{
-              width: swappedIn ? "48px" : "0px",
-              opacity: swappedIn ? 1 : 0,
-              transitionTimingFunction: ease,
-              transitionDelay: "320ms",
-            }}
-          />
-          {/* Outer tick marks — evokes engineering drawings without clutter. */}
-          <span
-            className={cn(
-              "absolute top-0 block h-[7px] w-px bg-foreground/40",
-              "transition-[transform,opacity] duration-[900ms]",
-              "dark:bg-white/40"
-            )}
-            style={{
-              left: "calc(50% - 44px)",
-              transform: swappedIn
-                ? "translate3d(0, 0, 0)"
-                : "translate3d(0, -4px, 0)",
-              opacity: swappedIn ? 0.75 : 0,
-              transitionTimingFunction: ease,
-              transitionDelay: "440ms",
-            }}
-          />
-          <span
-            className={cn(
-              "absolute top-0 block h-[7px] w-px bg-foreground/40",
-              "transition-[transform,opacity] duration-[900ms]",
-              "dark:bg-white/40"
-            )}
-            style={{
-              left: "calc(50% + 44px)",
-              transform: swappedIn
-                ? "translate3d(0, 0, 0)"
-                : "translate3d(0, -4px, 0)",
-              opacity: swappedIn ? 0.75 : 0,
-              transitionTimingFunction: ease,
-              transitionDelay: "440ms",
-            }}
-          />
-          {/* Corner index — tiny numeric / square marker in the top-right,
-              a quiet blueprint signature that appears with each section. */}
-          <span
-            className={cn(
-              "absolute top-3 right-4 hidden h-1.5 w-1.5 rotate-45 md:block",
-              "border border-foreground/40 bg-transparent",
-              "transition-[transform,opacity] duration-[900ms]",
-              "dark:border-white/45"
-            )}
-            style={{
-              transform: swappedIn
-                ? "rotate(45deg) scale(1)"
-                : "rotate(45deg) scale(0.5)",
-              opacity: swappedIn ? 0.9 : 0,
-              transitionTimingFunction: ease,
-              transitionDelay: "520ms",
+              transitionDelay: "120ms",
             }}
           />
           {/* Chapter slug — the blueprint corner caption. Rendered on
@@ -594,16 +493,16 @@ export function HomeSectionSnap({
               className={cn(
                 "absolute right-3 top-3 block md:right-4 md:top-6",
                 "font-mono text-[9px] uppercase tracking-[0.22em] text-foreground/55 md:text-[10px]",
-                "transition-[opacity,transform] duration-[900ms]",
+                "transition-[opacity,transform] duration-[700ms]",
                 "dark:text-white/55"
               )}
               style={{
                 opacity: swappedIn ? 1 : 0,
                 transform: swappedIn
                   ? "translate3d(0, 0, 0)"
-                  : "translate3d(0, -3px, 0)",
+                  : "translate3d(0, -2px, 0)",
                 transitionTimingFunction: ease,
-                transitionDelay: "640ms",
+                transitionDelay: "220ms",
               }}
             >
               <span className="tabular">

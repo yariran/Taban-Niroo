@@ -20,10 +20,10 @@ import { cn } from "@/lib/utils";
  *    against both pale and dark hero shots.
  */
 const TICKER: readonly { label: string; value: string }[] = [
-  { label: "Voltage range", value: "11 — 1100 kV" },
-  { label: "Active since", value: "1998" },
+  { label: "RATED VOLTAGE", value: "6-1000 kV" },
+  { label: "Active since", value: "1997" },
   { label: "Registered patents", value: "03" },
-  { label: "Served countries", value: "09" },
+  { label: "Served countries", value: "10" },
   { label: "Production line", value: "Shiraz SEZ, Iran" },
   { label: "Compliance", value: "IEC 61109 · 62217" },
 ];
