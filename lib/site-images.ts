@@ -17,7 +17,7 @@ export const SITE_IMAGES = {
   featured: {
     longRod: "/images/LONGROD_INSULATORS.png",
     post: "/images/PostInsulators.png",
-    hybrid: "/images/HYBRIDINSULATORS.png",
+    hybrid: "/images/hybrid-post-insulators.jpg",
     transformerBushings: "/images/TRANSFORMERBUSHINGS.png",
     hollowCoreBushing: "/images/hollow-core-bushing.jpg",
     cableAccessories: "/images/CABLEACCESSORIES.png",

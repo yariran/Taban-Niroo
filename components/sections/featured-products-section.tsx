@@ -26,8 +26,8 @@ const features: readonly Feature[] = [
     image: SITE_IMAGES.featured.post,
   },
   {
-    title: "Hybrid Insulators",
-    description: "Silicone Ceramic",
+    title: "Hybrid Post Insulators",
+    description: "Silicone & porcelain",
     image: SITE_IMAGES.featured.hybrid,
   },
   {
