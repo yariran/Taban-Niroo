@@ -130,46 +130,46 @@ export function PhilosophySection() {
             {/* Product Grid */}
             <div className="relative z-10 grid grid-cols-1 gap-4 px-6 md:grid-cols-2 md:px-12 lg:px-20">
               {/* Alpine Image - comes from left */}
-              <div 
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-inset ring-white/25"
+              <div
+                className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#e9eaec] shadow-2xl ring-1 ring-inset ring-black/[0.06] dark:bg-zinc-900/80 dark:ring-white/10"
                 style={{
                   transform: `translate3d(${alpineX}%, 0, 0)`,
                   WebkitTransform: `translate3d(${alpineX}%, 0, 0)`,
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
                 }}
               >
                 <Image
                   src={SITE_IMAGES.philosophyLongRod}
                   alt="Long rod and transmission network insulators"
                   fill
-                  className="object-cover"
+                  className="object-contain object-center p-2 md:p-3"
                 />
                 <div className="absolute bottom-6 left-6">
-                  <span className="backdrop-blur-md px-4 py-2 text-sm font-medium rounded-full bg-[rgba(255,255,255,0.2)] text-white">
+                  <span className="rounded-full bg-black/35 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
                     Long Rod Insulators
                   </span>
                 </div>
               </div>
 
               {/* Forest Image - comes from right */}
-              <div 
-                className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-inset ring-white/25"
+              <div
+                className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#e9eaec] shadow-2xl ring-1 ring-inset ring-black/[0.06] dark:bg-zinc-900/80 dark:ring-white/10"
                 style={{
                   transform: `translate3d(${forestX}%, 0, 0)`,
                   WebkitTransform: `translate3d(${forestX}%, 0, 0)`,
-                  backfaceVisibility: 'hidden',
-                  WebkitBackfaceVisibility: 'hidden',
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",
                 }}
               >
                 <Image
                   src={SITE_IMAGES.philosophyPost}
                   alt="Post and hybrid insulators"
                   fill
-                  className="object-cover"
+                  className="object-contain object-center p-2 md:p-3"
                 />
                 <div className="absolute bottom-6 left-6">
-                  <span className="backdrop-blur-md px-4 py-2 text-sm font-medium rounded-full bg-[rgba(255,255,255,0.2)] text-white">
+                  <span className="rounded-full bg-black/35 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
                     Post Insulators
                   </span>
                 </div>

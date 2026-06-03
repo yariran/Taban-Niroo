@@ -11,6 +11,12 @@ type Feature = {
   image: string;
   /** When true, the card spans two columns on `md+` for a subtle bento. */
   feature?: boolean;
+  /** Show the full product without cropping (object-contain). */
+  showFullImage?: boolean;
+  /** Image area aspect ratio — defaults to 4/3 (16/9 when featured). */
+  imageAspect?: string;
+  /** Extra padding when showFullImage is true. */
+  imagePadding?: string;
 };
 
 const features: readonly Feature[] = [
@@ -29,6 +35,9 @@ const features: readonly Feature[] = [
     title: "Hybrid Post Insulators",
     description: "Silicone & porcelain",
     image: SITE_IMAGES.featured.hybrid,
+    showFullImage: true,
+    imageAspect: "aspect-[6/5]",
+    imagePadding: "p-4 md:p-5",
   },
   {
     title: "Hollow Core Bushing",
@@ -44,6 +53,8 @@ const features: readonly Feature[] = [
     title: "Creepage Extenders & Covers",
     description: "Patented product",
     image: SITE_IMAGES.featured.creepageExtenders,
+    showFullImage: true,
+    imageAspect: "aspect-[4/5]",
   },
 ];
 
@@ -91,14 +102,20 @@ export function FeaturedProductsSection() {
             <div
               className={cn(
                 "relative overflow-hidden",
-                feature.feature ? "aspect-[16/9]" : "aspect-[4/3]"
+                feature.imageAspect ??
+                  (feature.feature ? "aspect-[16/9]" : "aspect-[4/3]"),
+                feature.showFullImage && "bg-white dark:bg-zinc-950/40",
               )}
             >
               <FadeImage
                 src={feature.image || "/placeholder.svg"}
                 alt={feature.title}
                 fill
-                className="object-cover"
+                className={cn(
+                  feature.showFullImage
+                    ? cn("object-contain", feature.imagePadding ?? "p-3 md:p-4")
+                    : "object-cover",
+                )}
                 sizes={
                   feature.feature
                     ? "(min-width: 768px) 66vw, 100vw"

@@ -54,15 +54,26 @@ export function CollectionSection() {
       <div className="px-6 pb-24 pt-10 md:px-12 lg:px-20">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-12">
           <article className="lg:col-span-8">
-            <div className="relative overflow-hidden rounded-3xl border border-border bg-[#f2ede2] shadow-elevate ring-1 ring-black/[0.04] dark:bg-card dark:ring-white/[0.08]">
+            <div className="relative overflow-hidden rounded-3xl border border-border bg-[#121820] shadow-elevate ring-1 ring-black/[0.04] dark:border-white/[0.08] dark:bg-[#f2ede2] dark:ring-white/[0.08]">
               <div className="relative aspect-[16/10] md:aspect-[16/9]">
-                <FadeImage
-                  src={SITE_IMAGES.projectMap}
-                  alt="Taban Niroo global project and partner map"
-                  fill
-                  className="object-cover object-center"
-                  sizes="(min-width: 1024px) 66vw, 100vw"
-                />
+                <div className="absolute inset-0 dark:hidden">
+                  <FadeImage
+                    src={SITE_IMAGES.projectMap}
+                    alt="Taban Niroo global project and partner map"
+                    fill
+                    className="object-cover object-center"
+                    sizes="(min-width: 1024px) 66vw, 100vw"
+                  />
+                </div>
+                <div className="absolute inset-0 hidden dark:block">
+                  <FadeImage
+                    src={SITE_IMAGES.projectMapDark}
+                    alt="Taban Niroo global project and partner map"
+                    fill
+                    className="object-cover object-center"
+                    sizes="(min-width: 1024px) 66vw, 100vw"
+                  />
+                </div>
               </div>
             </div>
           </article>
