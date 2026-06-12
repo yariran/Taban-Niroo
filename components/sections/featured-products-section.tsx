@@ -17,6 +17,8 @@ type Feature = {
   imageAspect?: string;
   /** Extra padding when showFullImage is true. */
   imagePadding?: string;
+  /** Background behind contained product photos. */
+  imageBackground?: string;
 };
 
 const features: readonly Feature[] = [
@@ -30,14 +32,19 @@ const features: readonly Feature[] = [
     title: "Post Insulators",
     description: "Line Post, Station Post, Railway",
     image: SITE_IMAGES.featured.post,
+    showFullImage: true,
+    imageAspect: "aspect-[1024/650]",
+    imagePadding: "p-0",
+    imageBackground: "bg-[#ececee] dark:bg-[#ececee]",
   },
   {
     title: "Hybrid Post Insulators",
     description: "Silicone & porcelain",
     image: SITE_IMAGES.featured.hybrid,
     showFullImage: true,
-    imageAspect: "aspect-[6/5]",
-    imagePadding: "p-4 md:p-5",
+    imageAspect: "aspect-[1024/768]",
+    imagePadding: "p-2 md:p-3",
+    imageBackground: "bg-white dark:bg-white",
   },
   {
     title: "Hollow Core Bushing",
@@ -48,6 +55,10 @@ const features: readonly Feature[] = [
     title: "Cable Accessories",
     description: "Terminations & Joints",
     image: SITE_IMAGES.featured.cableAccessories,
+    showFullImage: true,
+    imageAspect: "aspect-[1024/909]",
+    imagePadding: "p-0",
+    imageBackground: "bg-[#ececee]",
   },
   {
     title: "Creepage Extenders & Covers",
@@ -104,13 +115,18 @@ export function FeaturedProductsSection() {
                 "relative overflow-hidden",
                 feature.imageAspect ??
                   (feature.feature ? "aspect-[16/9]" : "aspect-[4/3]"),
-                feature.showFullImage && "bg-white dark:bg-zinc-950/40",
+                feature.showFullImage &&
+                  (feature.imageBackground ?? "bg-white dark:bg-zinc-950/40"),
               )}
             >
               <FadeImage
                 src={feature.image || "/placeholder.svg"}
                 alt={feature.title}
                 fill
+                unoptimized={
+                  feature.title === "Post Insulators" ||
+                  feature.title === "Hybrid Post Insulators"
+                }
                 className={cn(
                   feature.showFullImage
                     ? cn("object-contain", feature.imagePadding ?? "p-3 md:p-4")

@@ -17,11 +17,11 @@ export const SITE_IMAGES = {
   newRelease: "/images/new-release-line-post-insulator.jpg",
   featured: {
     longRod: "/images/LONGROD_INSULATORS.png",
-    post: "/images/PostInsulators.png",
-    hybrid: "/images/featured-hybrid-post-insulators.png",
+    post: "/images/featured-post-line-station-railway-v2.jpg",
+    hybrid: "/images/featured-hybrid-post-insulators-v2.jpg",
     transformerBushings: "/images/TRANSFORMERBUSHINGS.png",
     hollowCoreBushing: "/images/featured-hollow-core-bushing.jpg",
-    cableAccessories: "/images/CABLEACCESSORIES.png",
+    cableAccessories: "/images/featured-cable-accessories-home.jpg",
     creepageExtenders: "/images/featured-creepage-extenders.png",
   },
   gallery: [
