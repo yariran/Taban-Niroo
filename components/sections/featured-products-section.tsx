@@ -123,10 +123,6 @@ export function FeaturedProductsSection() {
                 src={feature.image || "/placeholder.svg"}
                 alt={feature.title}
                 fill
-                unoptimized={
-                  feature.title === "Post Insulators" ||
-                  feature.title === "Hybrid Post Insulators"
-                }
                 className={cn(
                   feature.showFullImage
                     ? cn("object-contain", feature.imagePadding ?? "p-3 md:p-4")

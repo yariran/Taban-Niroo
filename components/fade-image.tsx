@@ -12,37 +12,43 @@ export function FadeImage({
   className,
   fadeDelay = 0,
   alt,
+  priority,
   ...props
 }: FadeImageProps) {
   const reduceMotion = usePrefersReducedMotion();
-  const [isVisible, setIsVisible] = useState(reduceMotion);
+  const eager = Boolean(priority);
+  const [isVisible, setIsVisible] = useState(reduceMotion || eager);
   const [isLoaded, setIsLoaded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    if (reduceMotion || eager) return;
+
+    let timer: number | undefined;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
+          timer = window.setTimeout(() => {
             setIsVisible(true);
           }, fadeDelay);
           observer.disconnect();
         }
       },
       {
-        threshold: 0.1,
-        rootMargin: "50px",
-      }
+        threshold: 0.01,
+        rootMargin: "480px 0px",
+      },
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    const node = ref.current;
+    if (node) observer.observe(node);
 
-    return () => observer.disconnect();
-  }, [fadeDelay, reduceMotion]);
+    return () => {
+      observer.disconnect();
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
+  }, [fadeDelay, eager, reduceMotion]);
 
   const revealed = isLoaded && (reduceMotion || isVisible);
 
@@ -51,8 +57,11 @@ export function FadeImage({
       <Image
         {...props}
         alt={alt ?? ""}
-        className={`${className || ""} transition-all duration-700 ease-out motion-reduce:transition-none ${
-          revealed ? "opacity-100 scale-100" : "opacity-0 scale-[1.02]"
+        priority={priority}
+        decoding="async"
+        quality={props.quality ?? 80}
+        className={`${className || ""} transition-opacity duration-300 ease-out motion-reduce:transition-none ${
+          revealed ? "opacity-100" : "opacity-0"
         }`}
         onLoad={() => setIsLoaded(true)}
         onError={() => {

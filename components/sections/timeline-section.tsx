@@ -70,8 +70,9 @@ function TimelineIllustration({
       alt="Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators."
       fill
       sizes={sizes}
-      unoptimized
       priority={priority}
+      decoding="async"
+      quality={80}
       className="object-contain"
     />
   );

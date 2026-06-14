@@ -49,6 +49,8 @@ const nextConfig = {
     deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600, 1920, 2400],
     imageSizes: [64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30,
+    /** Smaller default output on Vercel — faster complete decode on slow links. */
+    qualities: [75, 80, 85],
   },
   async headers() {
     const baseHeaders = [

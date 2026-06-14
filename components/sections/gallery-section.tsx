@@ -58,6 +58,8 @@ export function GallerySection() {
                   fill
                   className="object-cover"
                   sizes="(min-width: 1024px) 42vw, (min-width: 768px) 56vw, 80vw"
+                  quality={75}
+                  decoding="async"
                   priority={index < 2}
                 />
               </div>

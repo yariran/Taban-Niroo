@@ -93,6 +93,8 @@ export function HeroSection() {
           className="object-cover"
           priority
           sizes="100vw"
+          quality={85}
+          decoding="async"
         />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-black/[0.22] to-black/[0.62]"

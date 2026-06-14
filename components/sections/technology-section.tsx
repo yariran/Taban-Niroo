@@ -48,6 +48,8 @@ export function TechnologySection() {
           fill
           className="object-cover"
           sizes="100vw"
+          quality={80}
+          decoding="async"
         />
         <div className="absolute inset-0 bg-foreground/40" />
         <div className="absolute inset-0 flex flex-col justify-end overflow-hidden pb-8 md:pb-14 lg:pb-16">
