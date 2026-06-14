@@ -3,10 +3,8 @@
 import Image from "next/image";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
-import { cn } from "@/lib/utils";
 
-const TIMELINE_IMAGE = "/images/home/history-timeline-v2.jpg";
-const TIMELINE_IMAGE_DARK = "/images/home/history-timeline-v2-dark.jpg";
+const TIMELINE_IMAGE = "/images/home/history-timeline-v3.jpg";
 
 /**
  * Company history timeline.
@@ -14,6 +12,7 @@ const TIMELINE_IMAGE_DARK = "/images/home/history-timeline-v2-dark.jpg";
  * Desktop: full-bleed illustrated timeline (1024×345).
  * Mobile: same asset inside a horizontal ScrollPan so milestones stay
  * legible without shrinking the artwork.
+ * Light and dark mode share the same illustrated asset.
  */
 const MILESTONES = [
   {
@@ -59,37 +58,22 @@ const MILESTONES = [
 ] as const;
 
 function TimelineIllustration({
-  className,
   sizes,
   priority = false,
 }: {
-  className?: string;
   sizes: string;
   priority?: boolean;
 }) {
-  const imageClass = className ?? "object-contain";
-
   return (
-    <>
-      <Image
-        src={TIMELINE_IMAGE}
-        alt="Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators."
-        fill
-        sizes={sizes}
-        unoptimized
-        priority={priority}
-        className={cn(imageClass, "dark:hidden")}
-      />
-      <Image
-        src={TIMELINE_IMAGE_DARK}
-        alt=""
-        aria-hidden
-        fill
-        sizes={sizes}
-        unoptimized
-        className={cn(imageClass, "hidden dark:block")}
-      />
-    </>
+    <Image
+      src={TIMELINE_IMAGE}
+      alt="Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators."
+      fill
+      sizes={sizes}
+      unoptimized
+      priority={priority}
+      className="object-contain"
+    />
   );
 }
 
@@ -138,7 +122,7 @@ export function TimelineSection() {
 
       {/* Desktop illustration — full viewport width. */}
       <figure
-        className="mt-14 hidden w-full bg-white px-4 md:mt-20 md:block md:px-8 lg:px-12 dark:bg-black"
+        className="mt-14 hidden w-full bg-white px-4 md:mt-20 md:block md:px-8 lg:px-12 dark:bg-white"
         aria-describedby="timeline-heading"
       >
         <div className="relative mx-auto aspect-[1024/345] w-full max-w-[1400px]">
@@ -148,7 +132,7 @@ export function TimelineSection() {
 
       {/* Mobile — same illustration, horizontal pan for legibility. */}
       <figure
-        className="mt-12 bg-white md:hidden dark:bg-black"
+        className="mt-12 bg-white md:hidden dark:bg-white"
         aria-describedby="timeline-heading"
       >
         <ScrollPan
@@ -156,7 +140,7 @@ export function TimelineSection() {
           innerClassName="px-6 pb-2"
           ariaLabel="Company history timeline"
           edgeFades
-          fadeFrom="from-white dark:from-black"
+          fadeFrom="from-white"
           passVerticalScroll
         >
           <div className="relative aspect-[1024/345] w-[1024px] max-w-none shrink-0">
