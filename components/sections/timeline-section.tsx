@@ -1,29 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import type { CSSProperties } from "react";
+import { ScrollPan } from "@/components/ui/scroll-pan";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { cn } from "@/lib/utils";
+
+const TIMELINE_IMAGE = "/images/home/history-timeline-v2.jpg";
+const TIMELINE_IMAGE_DARK = "/images/home/history-timeline-v2-dark.jpg";
 
 /**
  * Company history timeline.
  *
- * Content is sourced verbatim from the 2025-2026 General Product Range
- * catalogue (p. 8-9) and the Company Profile (p. 3). Each milestone maps
- * 1:1 to the official "HISTORY TIMELINE" section — do not alter year,
- * order, or copy without an updated brand document.
- *
- * Layout:
- *   - The heading / subtitle stay centred within `max-w-6xl` so the
- *     editorial rhythm matches every other homepage section.
- *   - The illustration breaks out of that container and runs full-
- *     viewport-width on desktop. Side edges are softened with a linear
- *     mask so the artwork dissolves into the page background instead
- *     of leaving hard rectangular cuts at the section borders.
- *   - The asset is a transparent monochrome PNG rendered at 2x (2048-
- *     wide) specifically so it remains crisp on HiDPI / widescreen
- *     viewports; `dark:invert` handles the dark palette.
- *   - On small screens the illustration is swapped for a compact
- *     vertical list: the artwork is simply too wide to read sub-768px.
+ * Desktop: full-bleed illustrated timeline (1024×345).
+ * Mobile: same asset inside a horizontal ScrollPan so milestones stay
+ * legible without shrinking the artwork.
  */
 const MILESTONES = [
   {
@@ -68,18 +58,40 @@ const MILESTONES = [
   },
 ] as const;
 
-/**
- * Soft horizontal mask so the full-bleed illustration dissolves into
- * the section background instead of stopping abruptly. A touch of top
- * / bottom feathering keeps the timeline anchored to the page without
- * feeling clipped.
- */
-const EDGE_FADE_MASK: CSSProperties = {
-  WebkitMaskImage:
-    "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
-  maskImage:
-    "linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%)",
-};
+function TimelineIllustration({
+  className,
+  sizes,
+  priority = false,
+}: {
+  className?: string;
+  sizes: string;
+  priority?: boolean;
+}) {
+  const imageClass = className ?? "object-contain";
+
+  return (
+    <>
+      <Image
+        src={TIMELINE_IMAGE}
+        alt="Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators."
+        fill
+        sizes={sizes}
+        unoptimized
+        priority={priority}
+        className={cn(imageClass, "dark:hidden")}
+      />
+      <Image
+        src={TIMELINE_IMAGE_DARK}
+        alt=""
+        aria-hidden
+        fill
+        sizes={sizes}
+        unoptimized
+        className={cn(imageClass, "hidden dark:block")}
+      />
+    </>
+  );
+}
 
 export function TimelineSection() {
   return (
@@ -124,59 +136,48 @@ export function TimelineSection() {
         </div>
       </div>
 
-      {/* Desktop illustration — full viewport width, edges softened. */}
+      {/* Desktop illustration — full viewport width. */}
       <figure
-        className="mt-14 hidden w-full md:mt-20 md:block"
+        className="mt-14 hidden w-full bg-white px-4 md:mt-20 md:block md:px-8 lg:px-12 dark:bg-black"
         aria-describedby="timeline-heading"
-        style={EDGE_FADE_MASK}
       >
-        <div className="relative aspect-[1024/485] w-full">
-          <Image
-            src="/images/home/history-timeline.png"
-            alt="Timeline of Taban Niroo's product milestones from 1997 to 2022, illustrated with each generation of insulator, transformer bushing and cable accessory product."
-            fill
-            sizes="100vw"
-            className="object-cover opacity-95 dark:invert"
-            priority={false}
-          />
+        <div className="relative mx-auto aspect-[1024/345] w-full max-w-[1400px]">
+          <TimelineIllustration sizes="(min-width: 1024px) 1400px, 100vw" />
         </div>
       </figure>
 
-      {/* Mobile vertical list — semantic milestones for ≤ md. */}
-      <div className="mt-12 px-6 md:hidden">
-        <ol
-          aria-label="Taban Niroo product history, 1997 to 2022"
-          className="relative"
+      {/* Mobile — same illustration, horizontal pan for legibility. */}
+      <figure
+        className="mt-12 bg-white md:hidden dark:bg-black"
+        aria-describedby="timeline-heading"
+      >
+        <ScrollPan
+          className="px-0"
+          innerClassName="px-6 pb-2"
+          ariaLabel="Company history timeline"
+          edgeFades
+          fadeFrom="from-white dark:from-black"
+          passVerticalScroll
         >
+          <div className="relative aspect-[1024/345] w-[1024px] max-w-none shrink-0">
+            <TimelineIllustration sizes="1024px" />
+          </div>
+        </ScrollPan>
+        <figcaption className="mt-4 flex items-center justify-center gap-2 px-6 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
           <span
             aria-hidden
-            className="absolute left-[4px] top-2 bottom-2 w-px bg-border"
+            className="inline-block h-px w-6 bg-current opacity-60"
           />
-          <div className="space-y-10">
-            {MILESTONES.map((m) => (
-              <li key={m.year} className="relative pl-8">
-                <span
-                  aria-hidden
-                  className="absolute left-0 top-[7px] block h-[9px] w-[9px] rounded-full bg-foreground ring-4 ring-background"
-                />
-                <p className="text-sm font-medium tracking-tight text-foreground">
-                  {m.year}
-                </p>
-                <p className="mt-1 text-base font-medium text-foreground/90">
-                  {m.title}
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {m.description}
-                </p>
-              </li>
-            ))}
-          </div>
-        </ol>
-      </div>
+          <span>Scroll to explore timeline</span>
+          <span
+            aria-hidden
+            className="inline-block h-px w-6 bg-current opacity-60"
+          />
+        </figcaption>
+      </figure>
 
-      {/* Screen-reader-only milestone list so the desktop illustration
-          still ships full, indexable content. */}
-      <ol className="sr-only hidden md:block">
+      {/* Screen-reader milestone list — indexable content alongside the art. */}
+      <ol className="sr-only">
         {MILESTONES.map((m) => (
           <li key={`sr-${m.year}`}>
             <span>{m.year}</span>

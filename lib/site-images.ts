@@ -17,7 +17,7 @@ export const SITE_IMAGES = {
   newRelease: "/images/new-release-line-post-insulator.jpg",
   featured: {
     longRod: "/images/LONGROD_INSULATORS.png",
-    post: "/images/featured-post-line-station-railway-v2.jpg",
+    post: "/images/featured-post-line-station-railway-v3.jpg",
     hybrid: "/images/featured-hybrid-post-insulators-v2.jpg",
     transformerBushings: "/images/TRANSFORMERBUSHINGS.png",
     hollowCoreBushing: "/images/featured-hollow-core-bushing.jpg",

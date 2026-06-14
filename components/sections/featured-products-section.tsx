@@ -33,9 +33,9 @@ const features: readonly Feature[] = [
     description: "Line Post, Station Post, Railway",
     image: SITE_IMAGES.featured.post,
     showFullImage: true,
-    imageAspect: "aspect-[1024/650]",
+    imageAspect: "aspect-[1024/779]",
     imagePadding: "p-0",
-    imageBackground: "bg-[#ececee] dark:bg-[#ececee]",
+    imageBackground: "bg-white dark:bg-white",
   },
   {
     title: "Hybrid Post Insulators",
