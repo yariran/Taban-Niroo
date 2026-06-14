@@ -4,7 +4,7 @@
  */
 export const SITE_IMAGES = {
   hero: "/images/hero-main.png",
-  technology: "/images/gallery-factory-insulators.jpg",
+  technology: "/images/_L7A7232.JPG",
   philosophyLongRod: "/images/philosophy-long-rod.jpg",
   philosophyPost: "/images/philosophy-post-insulator.png",
   projectMap: "/images/partners-map-light-mode.jpg",
