@@ -1,0 +1,418 @@
+import type { ContentBlock, SiteContent } from "@/lib/cms-content-types";
+
+export type ContentFieldKey =
+  | "eyebrow"
+  | "title"
+  | "titleLine2"
+  | "titleLine3"
+  | "body"
+  | "ctaLabel"
+  | "ctaHref"
+  | "ctaLabel2"
+  | "ctaHref2"
+  | "image"
+  | "items";
+
+export type ContentSectionDef = {
+  key: string;
+  group: string;
+  label: string;
+  description: string;
+  previewPath: string;
+  fields: ContentFieldKey[];
+  /** Hint under items editor. */
+  itemsHint?: string;
+  get: (c: SiteContent) => ContentBlock | undefined;
+  set: (c: SiteContent, block: ContentBlock) => SiteContent;
+};
+
+function homeSet(
+  key: keyof SiteContent["home"],
+): Pick<ContentSectionDef, "get" | "set"> {
+  return {
+    get: (c) => c.home[key],
+    set: (c, b) => ({ ...c, home: { ...c.home, [key]: b } }),
+  };
+}
+
+export const CONTENT_GROUPS = [
+  "خانه",
+  "درباره ما",
+  "محصولات",
+  "پروژه‌ها",
+  "تماس",
+  "بلاگ",
+  "صفحات حقوقی",
+  "سراسری",
+] as const;
+
+export const CONTENT_SECTIONS: ContentSectionDef[] = [
+  {
+    key: "home.hero",
+    group: "خانه",
+    label: "هیرو اصلی",
+    description:
+      "تصویر تمام‌صفحه اول، کلمات شعار (هر خط یک کلمه در عنوان)، و متن کوتاه زیر آن.",
+    previewPath: "/#",
+    fields: ["title", "titleLine2", "titleLine3", "body", "eyebrow", "image", "ctaLabel"],
+    ...homeSet("hero"),
+  },
+  {
+    key: "home.newRelease",
+    group: "خانه",
+    label: "محصول جدید",
+    description: "بنر محصول تازه معرفی‌شده در ابتدای فید خانه.",
+    previewPath: "/#new-release",
+    fields: ["eyebrow", "title", "image", "ctaHref"],
+    ...homeSet("newRelease"),
+  },
+  {
+    key: "home.philosophy",
+    group: "خانه",
+    label: "فلسفه / Composite & Hybrid",
+    description: "عنوان و توضیح سکشن فلسفه برند.",
+    previewPath: "/#",
+    fields: ["eyebrow", "title", "body", "image"],
+    ...homeSet("philosophy"),
+  },
+  {
+    key: "home.featured",
+    group: "خانه",
+    label: "محصولات ویژه",
+    description: "عنوان سکشن محصولات ویژه خانه.",
+    previewPath: "/#featured-products",
+    fields: ["eyebrow", "title", "body"],
+    ...homeSet("featured"),
+  },
+  {
+    key: "home.technology",
+    group: "خانه",
+    label: "فناوری و استاندارد",
+    description: "تصویر سینمایی، عنوان و متن استانداردهای IEC.",
+    previewPath: "/#technology",
+    fields: ["eyebrow", "title", "body", "image", "ctaLabel"],
+    ...homeSet("technology"),
+  },
+  {
+    key: "home.engineering",
+    group: "خانه",
+    label: "مهندسی / DNA",
+    description: "عنوان و متن سکشن مهندسی.",
+    previewPath: "/#engineering",
+    fields: ["eyebrow", "title", "body"],
+    ...homeSet("engineering"),
+  },
+  {
+    key: "home.collection",
+    group: "خانه",
+    label: "نقشه جهانی / شرکا",
+    description: "عنوان سکشن ردپای جهانی؛ کشورها را در آیتم‌ها وارد کنید.",
+    previewPath: "/#installations",
+    fields: ["eyebrow", "title", "body", "image", "items"],
+    itemsHint: "هر آیتم = نام یک کشور (برچسب).",
+    ...homeSet("collection"),
+  },
+  {
+    key: "home.timeline",
+    group: "خانه",
+    label: "تاریخچه شرکت",
+    description: "عنوان و نقاط عطف؛ هر آیتم: برچسب=سال، عنوان=value، توضیح=body.",
+    previewPath: "/#",
+    fields: ["eyebrow", "title", "body", "image", "items"],
+    itemsHint: "برچسب = سال · مقدار = عنوان رویداد · متن = توضیح.",
+    ...homeSet("timeline"),
+  },
+  {
+    key: "home.testimonials",
+    group: "خانه",
+    label: "نقل‌قول / تصویر کارخانه",
+    description: "متن نقل‌قول بزرگ و تصویر زیر آن.",
+    previewPath: "/#testimonials",
+    fields: ["body", "image"],
+    ...homeSet("testimonials"),
+  },
+  {
+    key: "home.whyTaban",
+    group: "خانه",
+    label: "چرا تابان نیرو",
+    description: "عنوان و مقدمه؛ ارکان را در آیتم‌ها ویرایش کنید.",
+    previewPath: "/#why-taban",
+    fields: ["eyebrow", "title", "body", "items"],
+    itemsHint:
+      "KPIها: برچسب=نام متریک، مقدار=+80 یا 6-1000 kV. ارکان: برچسب=عنوان، متن=توضیح.",
+    ...homeSet("whyTaban"),
+  },
+  {
+    key: "home.ceo",
+    group: "خانه",
+    label: "پیام مدیرعامل",
+    description: "عنوان، متن پیام (پاراگراف‌ها با خط خالی جدا شوند) و تصویر.",
+    previewPath: "/#ceo",
+    fields: ["eyebrow", "title", "body", "image"],
+    ...homeSet("ceo"),
+  },
+  {
+    key: "home.productGallery",
+    group: "خانه",
+    label: "گالری محصول (عنوان)",
+    description:
+      "فقط عنوان راهنمای اسکرول. خود تصاویر را از منوی «گالری محصولات» مدیریت کنید.",
+    previewPath: "/#product-gallery",
+    fields: ["title", "eyebrow"],
+    ...homeSet("productGallery"),
+  },
+  {
+    key: "about.hero",
+    group: "درباره ما",
+    label: "هیرو درباره ما",
+    description: "عنوان دوخطی، متن معرفی و تصویر.",
+    previewPath: "/about",
+    fields: ["eyebrow", "title", "titleLine2", "body", "image"],
+    get: (c) => c.about?.hero,
+    set: (c, b) => ({ ...c, about: { ...c.about, hero: b } }),
+  },
+  {
+    key: "about.story",
+    group: "درباره ما",
+    label: "داستان شرکت",
+    description: "پاراگراف دوم معرفی در هیرو.",
+    previewPath: "/about",
+    fields: ["body"],
+    get: (c) => c.about?.story,
+    set: (c, b) => ({ ...c, about: { ...c.about, story: b } }),
+  },
+  {
+    key: "about.profile",
+    group: "درباره ما",
+    label: "پروفایل شرکت",
+    description: "بخش Company profile زیر هیرو.",
+    previewPath: "/about",
+    fields: ["eyebrow", "title", "body"],
+    get: (c) => c.about?.profile,
+    set: (c, b) => ({ ...c, about: { ...c.about, profile: b } }),
+  },
+  {
+    key: "about.values",
+    group: "درباره ما",
+    label: "ارزش‌ها و فرهنگ",
+    description: "متن‌های ارزش‌های سازمانی.",
+    previewPath: "/about",
+    fields: ["eyebrow", "title", "body", "items"],
+    itemsHint: "هر آیتم یک ارزش (برچسب + توضیح).",
+    get: (c) => c.about?.values,
+    set: (c, b) => ({ ...c, about: { ...c.about, values: b } }),
+  },
+  {
+    key: "about.social",
+    group: "درباره ما",
+    label: "مسئولیت اجتماعی",
+    description: "عنوان و سه تعهد اجتماعی.",
+    previewPath: "/about",
+    fields: ["eyebrow", "title", "body", "items"],
+    itemsHint: "برچسب = عنوان تعهد · متن = توضیح.",
+    get: (c) => c.about?.social,
+    set: (c, b) => ({ ...c, about: { ...c.about, social: b } }),
+  },
+  {
+    key: "products.hero",
+    group: "محصولات",
+    label: "هیرو صفحه محصولات",
+    description: "عنوان سه‌خطی، توضیح و دکمه‌های CTA.",
+    previewPath: "/products",
+    fields: [
+      "eyebrow",
+      "title",
+      "titleLine2",
+      "titleLine3",
+      "body",
+      "ctaLabel",
+      "ctaHref",
+      "ctaLabel2",
+      "ctaHref2",
+      "image",
+    ],
+    get: (c) => c.products?.hero,
+    set: (c, b) => ({ ...c, products: { ...c.products, hero: b } }),
+  },
+  {
+    key: "products.standards",
+    group: "محصولات",
+    label: "استانداردها و تست",
+    description: "بخش Type-tested در پایین صفحه محصولات.",
+    previewPath: "/products",
+    fields: ["eyebrow", "title", "body", "ctaLabel", "ctaHref", "items"],
+    itemsHint: "برچسب = کد IEC · متن = عنوان استاندارد.",
+    get: (c) => c.products?.standards,
+    set: (c, b) => ({ ...c, products: { ...c.products, standards: b } }),
+  },
+  {
+    key: "projects.hero",
+    group: "پروژه‌ها",
+    label: "هیرو پروژه‌ها",
+    description: "عنوان و تصویر صفحه پروژه‌ها.",
+    previewPath: "/projects",
+    fields: ["eyebrow", "title", "titleLine2", "body", "image"],
+    get: (c) => c.projects?.hero,
+    set: (c, b) => ({ ...c, projects: { ...c.projects, hero: b } }),
+  },
+  {
+    key: "projects.intro",
+    group: "پروژه‌ها",
+    label: "مناطق و معرفی",
+    description: "متن معرفی مناطق.",
+    previewPath: "/projects",
+    fields: ["eyebrow", "title", "body"],
+    get: (c) => c.projects?.intro,
+    set: (c, b) => ({ ...c, projects: { ...c.projects, intro: b } }),
+  },
+  {
+    key: "projects.regions",
+    group: "پروژه‌ها",
+    label: "کارت‌های منطقه",
+    description: "سه کارت منطقه (آفریقا، آمریکای جنوبی، خاورمیانه).",
+    previewPath: "/projects",
+    fields: ["items"],
+    itemsHint: "برچسب = نام منطقه · متن = توضیح.",
+    get: (c) => c.projects?.regions,
+    set: (c, b) => ({ ...c, projects: { ...c.projects, regions: b } }),
+  },
+  {
+    key: "contact.hero",
+    group: "تماس",
+    label: "هیرو تماس",
+    description: "عنوان صفحه تماس.",
+    previewPath: "/contact",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.contact?.hero,
+    set: (c, b) => ({ ...c, contact: { ...c.contact, hero: b } }),
+  },
+  {
+    key: "contact.intro",
+    group: "تماس",
+    label: "متن معرفی تماس",
+    description: "پاراگراف بالای فرم.",
+    previewPath: "/contact",
+    fields: ["body"],
+    get: (c) => c.contact?.intro,
+    set: (c, b) => ({ ...c, contact: { ...c.contact, intro: b } }),
+  },
+  {
+    key: "contact.offices",
+    group: "تماس",
+    label: "دفاتر و اطلاعات تماس",
+    description:
+      "هر آیتم یک دفتر: برچسب=نام دفتر، مقدار=تلفن، متن=آدرس (خطوط با Enter).",
+    previewPath: "/contact",
+    fields: ["items"],
+    itemsHint: "برچسب = عنوان دفتر · مقدار = تلفن · متن = آدرس.",
+    get: (c) => c.contact?.offices,
+    set: (c, b) => ({ ...c, contact: { ...c.contact, offices: b } }),
+  },
+  {
+    key: "blog.hero",
+    group: "بلاگ",
+    label: "هیرو بلاگ",
+    description: "عنوان و مقدمه لیست مطالب (خود مطالب از منوی بلاگ).",
+    previewPath: "/blog",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.blog?.hero,
+    set: (c, b) => ({ ...c, blog: { ...c.blog, hero: b } }),
+  },
+  {
+    key: "blog.rndOverview",
+    group: "بلاگ",
+    label: "معرفی تحقیق و توسعه",
+    description: "بخش اول صفحه R&D — عنوان دوخطی و پاراگراف معرفی.",
+    previewPath: "/blog",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.blog?.rndOverview,
+    set: (c, b) => ({ ...c, blog: { ...c.blog, rndOverview: b } }),
+  },
+  {
+    key: "blog.pollution",
+    group: "بلاگ",
+    label: "طراحی پروفیل و آلودگی",
+    description: "بخش IEC 60815-3 — مقدمه و شش معیار طراحی پروفیل چتری.",
+    previewPath: "/blog",
+    fields: ["eyebrow", "title", "titleLine2", "body", "items"],
+    itemsHint: "برچسب = نام معیار · متن = توضیح معیار.",
+    get: (c) => c.blog?.pollution,
+    set: (c, b) => ({ ...c, blog: { ...c.blog, pollution: b } }),
+  },
+  {
+    key: "blog.hybrid",
+    group: "بلاگ",
+    label: "توسعه مقره هیبرید",
+    description: "بخش مقره‌های هیبرید — مقدمه و سه زیربخش توضیحی.",
+    previewPath: "/blog",
+    fields: ["eyebrow", "title", "titleLine2", "body", "items"],
+    itemsHint: "برچسب = عنوان زیربخش · متن = پاراگراف زیربخش.",
+    get: (c) => c.blog?.hybrid,
+    set: (c, b) => ({ ...c, blog: { ...c.blog, hybrid: b } }),
+  },
+  {
+    key: "blog.patents",
+    group: "بلاگ",
+    label: "پتنت‌ها و نوآوری",
+    description:
+      "بخش پتنت‌ها — فقط عنوان و مقدمه. عنوان و متن سه کارت پتنت ثابت است و از کاتالوگ رسمی می‌آید.",
+    previewPath: "/blog",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.blog?.patents,
+    set: (c, b) => ({ ...c, blog: { ...c.blog, patents: b } }),
+  },
+  {
+    key: "legal.terms",
+    group: "صفحات حقوقی",
+    label: "شرایط استفاده",
+    description: "عنوان و متن کامل صفحه Terms (Markdown ساده / پاراگراف‌ها).",
+    previewPath: "/terms",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.legal?.terms,
+    set: (c, b) => ({ ...c, legal: { ...c.legal, terms: b } }),
+  },
+  {
+    key: "legal.privacy",
+    group: "صفحات حقوقی",
+    label: "حریم خصوصی",
+    description: "عنوان و متن صفحه Privacy.",
+    previewPath: "/privacy",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.legal?.privacy,
+    set: (c, b) => ({ ...c, legal: { ...c.legal, privacy: b } }),
+  },
+  {
+    key: "legal.imprint",
+    group: "صفحات حقوقی",
+    label: "اطلاعات حقوقی (Imprint)",
+    description: "عنوان و متن صفحه Imprint.",
+    previewPath: "/imprint",
+    fields: ["eyebrow", "title", "titleLine2", "body"],
+    get: (c) => c.legal?.imprint,
+    set: (c, b) => ({ ...c, legal: { ...c.legal, imprint: b } }),
+  },
+  {
+    key: "footer",
+    group: "سراسری",
+    label: "فوتر سایت",
+    description: "نام برند و توضیح کوتاه فوتر در همه صفحات.",
+    previewPath: "/",
+    fields: ["title", "body"],
+    get: (c) => c.footer,
+    set: (c, b) => ({ ...c, footer: b }),
+  },
+];
+
+export const FIELD_LABELS: Record<ContentFieldKey, string> = {
+  eyebrow: "برچسب بالای عنوان",
+  title: "عنوان اصلی",
+  titleLine2: "خط دوم عنوان (یا لید صفحه)",
+  titleLine3: "خط سوم عنوان",
+  body: "متن",
+  ctaLabel: "متن دکمه اصلی",
+  ctaHref: "لینک دکمه اصلی",
+  ctaLabel2: "متن دکمه دوم",
+  ctaHref2: "لینک دکمه دوم",
+  image: "تصویر",
+  items: "لیست آیتم‌ها",
+};
