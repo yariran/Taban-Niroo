@@ -5,25 +5,16 @@ import { SITE_IMAGES } from "@/lib/site-images";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 
 /**
- * Stable horizontal gallery.
- *
- * The previous sticky+scroll-scrub implementation could shimmer on fine
- * line details during vertical scroll (especially on high-DPI displays).
- * This version keeps the same visual style but switches to a native
- * horizontal pan area, which is jitter-free and predictable.
+ * Horizontal product gallery — static images, pan to browse.
  */
 
 const GALLERY_ALTS = [
   "Composite long rod insulator",
-  "Transmission line insulator",
   "Post insulator installation",
   "Hybrid insulator",
   "Transformer bushing",
-  "Cable accessories",
   "Interphase spacer",
   "DPL insulator product",
-  "Long rod insulators on the production floor",
-  "High-voltage insulators at a substation installation",
 ] as const;
 
 export function GallerySection() {
@@ -43,20 +34,21 @@ export function GallerySection() {
           className="px-0"
           innerClassName="px-6 pb-3 md:px-8 lg:px-10"
           ariaLabel="Scrollable product gallery"
-          edgeFades={false}
+          edgeFades
+          fadeFrom="from-background"
           passVerticalScroll
         >
           <div className="flex gap-4 md:gap-6">
             {images.map((image, index) => (
               <div
                 key={index}
-                className="relative h-[58vh] w-[80vw] flex-shrink-0 overflow-hidden rounded-2xl ring-1 ring-border/50 dark:ring-white/[0.06] md:h-[64vh] md:w-[56vw] lg:h-[68vh] lg:w-[42vw]"
+                className="relative h-[min(58vh,22rem)] w-[min(80vw,22rem)] flex-shrink-0 overflow-hidden rounded-2xl ring-1 ring-border/50 dark:ring-white/[0.06] md:h-[min(64vh,26rem)] md:w-[min(56vw,28rem)] lg:h-[min(68vh,30rem)] lg:w-[min(42vw,32rem)]"
               >
                 <Image
                   src={image.src || "/placeholder.svg"}
                   alt={image.alt}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-none"
                   sizes="(min-width: 1024px) 42vw, (min-width: 768px) 56vw, 80vw"
                   quality={75}
                   decoding="async"

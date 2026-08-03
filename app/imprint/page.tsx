@@ -1,23 +1,36 @@
 import type { Metadata } from "next";
-import { LegalPageShell } from "@/components/legal-page-shell";
+import { CmsProseBody, LegalPageShell } from "@/components/legal-page-shell";
+import { getSiteContent } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
+import { pageSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageSocial({
   title: "Imprint",
   description:
     "Legal information for the Taban Niroo (Dena Power Line Insulators) corporate website.",
-  alternates: { canonical: "/imprint" },
-};
+  path: "/imprint",
+});
 
 const LAST_UPDATED = "31 March 2026";
 
-export default function ImprintPage() {
+export default async function ImprintPage() {
+  const content = await getSiteContent();
+  const block = content.legal?.imprint;
+  const eyebrow = cmsText(block, "eyebrow", '03 · Imprint');
+  const title = cmsText(block, "title", 'Imprint.');
+  const lede = cmsText(block, "titleLine2", 'Legal information about the operator of this website, in line with international transparency expectations.');
+  const cmsBody = block?.body?.trim();
+
   return (
     <LegalPageShell
-      eyebrow="03 · Imprint"
-      title="Imprint."
-      lede="Legal information about the operator of this website, in line with international transparency expectations."
+      eyebrow={eyebrow}
+      title={title}
+      lede={lede}
       lastUpdated={LAST_UPDATED}
+      footerCms={content.footer}
     >
+      {cmsBody ? <CmsProseBody body={cmsBody} /> : (
+<>
       <h2>Operator</h2>
       <p>
         <strong>Taban Niroo</strong>
@@ -81,6 +94,8 @@ export default function ImprintPage() {
         with the marketing department of Taban Niroo at the
         headquarters address above.
       </p>
+    </>
+      )}
     </LegalPageShell>
   );
 }

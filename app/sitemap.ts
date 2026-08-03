@@ -1,84 +1,97 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/site-url";
-import { getAllProductSlugs } from "@/lib/products";
+import { SITE_CONTENT_REVISION } from "@/lib/seo";
+import { getAllProductSlugsAsync } from "@/lib/cms-products";
+import { getPublishedPosts } from "@/lib/cms-blog";
 
 /**
  * Dynamic XML sitemap.
  *
  * Static routes are listed explicitly so we can give each one a
- * meaningful `priority` / `changeFrequency`. Product detail pages are
- * generated from `lib/products.ts` so the sitemap stays in lockstep with
- * the catalogue without manual intervention.
+ * meaningful `priority` / `changeFrequency`. Product detail pages and
+ * published blog posts come from the CMS (with code fallbacks).
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
-  const now = new Date();
+  const revised = SITE_CONTENT_REVISION;
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: `${base}/`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "weekly",
       priority: 1,
     },
     {
       url: `${base}/about`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${base}/products`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "weekly",
       priority: 0.95,
     },
     {
       url: `${base}/projects`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
-      url: `${base}/blog`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.6,
-    },
-    {
       url: `${base}/contact`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "yearly",
       priority: 0.7,
     },
     {
       url: `${base}/privacy`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: `${base}/terms`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
       url: `${base}/imprint`,
-      lastModified: now,
+      lastModified: revised,
       changeFrequency: "yearly",
       priority: 0.3,
     },
   ];
 
-  const productRoutes: MetadataRoute.Sitemap = getAllProductSlugs().map(
-    (slug) => ({
-      url: `${base}/products/${slug}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }),
-  );
+  const [slugs, posts] = await Promise.all([
+    getAllProductSlugsAsync(),
+    getPublishedPosts(),
+  ]);
 
-  return [...staticRoutes, ...productRoutes];
+  const productRoutes: MetadataRoute.Sitemap = slugs.map((slug) => ({
+    url: `${base}/products/${slug}`,
+    lastModified: revised,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const blogRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${base}/blog`,
+      lastModified: revised,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    },
+    ...posts.map((post) => ({
+      url: `${base}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: "monthly" as const,
+      priority: 0.55,
+    })),
+  ];
+
+  return [...staticRoutes, ...productRoutes, ...blogRoutes];
 }

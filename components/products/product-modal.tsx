@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight, Download, Mail, Table2, Ruler, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail, Table2, Ruler, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
+import { trapFocusKeydown } from "@/lib/focus-trap";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import {
   techTableBodyCellClass,
@@ -32,8 +34,10 @@ import {
  *   shedDiameter     → "Shed diameter  d1/d2"                    (mm)
  *   shedSpacing      → "Shed Spacing B"                          (mm)
  *   minimumCreepage  → "Minimum Creepage L"                      (mm)
- *   impulseWithstand → "Full-Wave Impulse Withstand Voltage (Peak)" (kV)
- *   wetWithstand     → "1 Min Wet Power Frequency Withstand Voltage" (kV)
+ *   impulseWithstand → "Lightning impulse flashover — Positive"  (kV)
+ *   impulseNegative  → "Lightning impulse flashover — Negative"  (kV)
+ *   dryWithstand     → "Power frequency flashover — Dry"         (kV)
+ *   wetWithstand     → "Power frequency flashover — Wet"         (kV)
  *   weight           → "Weight (for Reference)"                  (kg)
  */
 export type TechnicalRow = {
@@ -48,6 +52,7 @@ export type TechnicalRow = {
   minimumCreepage?: string;
   impulseWithstand?: string;
   impulseNegative?: string;
+  dryWithstand?: string;
   wetWithstand?: string;
   weight?: string;
 };
@@ -99,27 +104,19 @@ type ProductModalProps = {
   onClose: () => void;
 };
 
-/**
- * Body column order — matches the two-row datasheet header (printed
- * catalogue layout). Placeholder slots render "—" (e.g. Negative, Dry).
- */
-type TechBodyColumn =
-  | { key: keyof TechnicalRow }
-  | { placeholder: true };
-
-const TECH_BODY_COLUMNS: readonly TechBodyColumn[] = [
-  { key: "ratedVoltage" },
-  { key: "sml" },
-  { key: "couplingSize" },
-  { key: "sectionLength" },
-  { key: "arcingDistance" },
-  { key: "shedDiameter" },
-  { key: "minimumCreepage" },
-  { key: "impulseWithstand" },
-  { placeholder: true },
-  { placeholder: true },
-  { key: "wetWithstand" },
-];
+/** Body cells under the shared flashover header (same for all products). */
+const TECH_BODY_COLUMNS = [
+  "ratedVoltage",
+  "sml",
+  "sectionLength",
+  "arcingDistance",
+  "shedDiameter",
+  "minimumCreepage",
+  "impulseWithstand",
+  "impulseNegative",
+  "dryWithstand",
+  "wetWithstand",
+] as const satisfies ReadonlyArray<keyof TechnicalRow>;
 
 export function ProductModal({
   open,
@@ -145,11 +142,14 @@ export function ProductModal({
     if (!open) return;
 
     previouslyFocused.current = document.activeElement as HTMLElement | null;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      trapFocusKeydown(e, dialogRef.current);
     };
     document.addEventListener("keydown", onKey);
 
@@ -159,7 +159,7 @@ export function ProductModal({
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = originalOverflow;
+      unlockBodyScroll();
       cancelAnimationFrame(frame);
       previouslyFocused.current?.focus?.();
     };
@@ -181,7 +181,7 @@ export function ProductModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="product-modal-title"
-      className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6 md:px-6 md:py-10"
+      className="fixed inset-0 z-[100] flex items-end justify-center px-3 pb-[max(0.75rem,var(--sab))] pt-[max(0.75rem,var(--sat))] sm:items-center sm:px-4 sm:py-6 md:px-6 md:py-10"
       onMouseDown={handleBackdrop}
     >
       <div
@@ -192,7 +192,7 @@ export function ProductModal({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="relative z-10 flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-elevate outline-none animate-scale-in"
+        className="relative z-10 flex max-h-[min(100dvh,100%)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-elevate outline-none animate-scale-in"
       >
         {/* Header */}
         <header className="flex items-start justify-between gap-4 border-b border-border/60 bg-card/95 px-5 py-4 md:px-7 md:py-5">
@@ -236,8 +236,9 @@ export function ProductModal({
 
         {/* Body */}
         <div
-          className="scroll-pan-bar flex-1 overflow-y-auto overscroll-contain"
+          className="scroll-pan-bar min-h-0 flex-1 overflow-y-auto overscroll-contain"
           data-lenis-prevent
+          data-lenis-prevent-touch
         >
           {view === "picker" && (
             <PickerView
@@ -254,24 +255,24 @@ export function ProductModal({
         </div>
 
         {/* Footer actions */}
-        <footer className="flex flex-col gap-3 border-t border-border/60 bg-muted/30 px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-7">
+        <footer className="flex flex-col gap-3 border-t border-border/60 bg-muted/30 px-5 py-4 pb-[max(1rem,var(--sab))] sm:flex-row sm:items-center sm:justify-between md:px-7 md:pb-4">
           <p className="text-xs text-muted-foreground">
             {product.catalogueRef}
           </p>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             <a
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium uppercase tracking-wider text-foreground transition-colors hover:border-foreground"
+              href={`/contact?ref=${encodeURIComponent(product.id)}`}
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium uppercase tracking-wider text-foreground transition-colors hover:border-foreground sm:flex-initial"
             >
               <Mail size={14} aria-hidden />
               Enquire
             </a>
             <a
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-foreground bg-foreground px-4 py-2 text-xs font-medium uppercase tracking-wider text-background transition-colors hover:bg-foreground/90"
+              href={`/contact?ref=${encodeURIComponent(product.id)}`}
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-brand-navy px-4 py-2 text-xs font-medium uppercase tracking-wider text-white transition-colors hover:bg-brand-burgundy sm:flex-initial"
             >
-              <Download size={14} aria-hidden />
-              Datasheet
+              <Mail size={14} aria-hidden />
+              Request datasheet
             </a>
           </div>
         </footer>
@@ -361,7 +362,7 @@ function PickerCard({
         {label}
       </span>
 
-      <span className="relative flex size-14 items-center justify-center rounded-full border border-border/70 bg-muted/40 text-foreground transition-colors group-hover:border-foreground group-hover:bg-foreground group-hover:text-background">
+      <span className="relative flex size-14 items-center justify-center rounded-full border border-border/70 bg-muted/40 text-foreground transition-colors group-hover:border-brand-navy group-hover:bg-brand-navy group-hover:text-white">
         {icon}
       </span>
 
@@ -415,17 +416,8 @@ function buildTechRows(product: ProductSpec): DatasheetRow[] {
 }
 
 /**
- * Renders the full 12-column datasheet grid used across the catalogue.
- * Row count follows the number of variants defined for the product.
- *
- * Layout choices:
- *   • Two-row navy header — matches the printed catalogue grid (rowspan
- *     labels + grouped flashover columns with Positive/Negative and
- *     Dry/Wet sub-headers).
- *   • Sticky first column — the Type / catalogue reference stays on-screen
- *     while the reader pans horizontally on narrow viewports.
- *   • Uniform dash placeholder — every missing cell renders "—" so the
- *     overall rhythm of the grid survives data-less drafts.
+ * Shared datasheet header for all listed products (same as the first two
+ * MV sheets): Positive/Negative + Dry/Wet sub-headers.
  */
 function TechnicalDataTable({ product }: { product: ProductSpec }) {
   const rows = buildTechRows(product);
@@ -437,7 +429,7 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
       className="rounded-2xl border border-border/70"
       passVerticalScroll
     >
-      <table className={cn(techTableClass, "min-w-[1050px]")}>
+      <table className={cn(techTableClass, "min-w-[980px]")}>
         <thead>
           <tr>
             <th rowSpan={2} scope="col" className={techTableHeadStickyClass}>
@@ -448,9 +440,6 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
             </th>
             <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
               Specified mechanical load (kN)
-            </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-              Coupling Size
             </th>
             <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
               Section length (mm)
@@ -464,10 +453,18 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
             <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
               Creepage distance (mm)
             </th>
-            <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
+            <th
+              colSpan={2}
+              scope="colgroup"
+              className={techTableHeadCellClass}
+            >
               Lightning impulse flashover voltage (kV)
             </th>
-            <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
+            <th
+              colSpan={2}
+              scope="colgroup"
+              className={techTableHeadCellClass}
+            >
               Power frequency flashover voltage (kV)
             </th>
           </tr>
@@ -491,21 +488,25 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
           {rows.map((row, idx) => {
             const isLast = idx === rows.length - 1;
             return (
-              <tr key={`${row.code || "empty"}-${idx}`} className="bg-background">
+              <tr
+                key={`${row.code || "empty"}-${idx}`}
+                className="bg-background"
+              >
                 <td
                   className={cn(
                     techTableBodyStickyClass,
                     !isLast && "border-b border-border/70",
                   )}
                 >
-                  {row.code || <span className="text-muted-foreground/50">—</span>}
+                  {row.code || (
+                    <span className="text-muted-foreground/50">—</span>
+                  )}
                 </td>
-                {TECH_BODY_COLUMNS.map((col, i) => {
-                  const value =
-                    "key" in col ? row.technical?.[col.key] : undefined;
+                {TECH_BODY_COLUMNS.map((key, i) => {
+                  const value = row.technical?.[key];
                   return (
                     <td
-                      key={i}
+                      key={key}
                       className={cn(
                         techTableBodyCellClass,
                         i !== TECH_BODY_COLUMNS.length - 1 &&
@@ -604,21 +605,20 @@ function DrawingView({
               <Ruler size={18} aria-hidden />
             </span>
             <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-              Drawing placeholder
+              Drawing on request
             </p>
             <p className="max-w-md text-sm text-muted-foreground">
-              Insert the sectional drawing and reference dimensions for{" "}
-              <span className="text-foreground">{product.name}</span>. Recommended
-              format: vector SVG or high-resolution PNG.
+              The sectional drawing and reference dimensions for{" "}
+              <span className="text-foreground">{product.name}</span> are
+              available from our engineering team with your enquiry.
             </p>
-            <div className="mt-1 flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              <span className="rounded-full border border-border bg-background px-2.5 py-1">
-                SVG preferred
-              </span>
-              <span className="rounded-full border border-border bg-background px-2.5 py-1">
-                Aspect 4:3
-              </span>
-            </div>
+            <a
+              href={`/contact?ref=${encodeURIComponent(product.id)}`}
+              className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-navy px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand-burgundy"
+            >
+              <Mail size={14} aria-hidden />
+              Request drawing
+            </a>
           </div>
         </div>
 

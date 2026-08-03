@@ -2,23 +2,26 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, LayoutGrid, Search } from "lucide-react";
-import { Header } from "@/components/header";
+import { SiteHeader } from "@/components/site-header";
 import { CodingGuideSection } from "@/components/products/coding-guide-section";
 import { FittingsSection } from "@/components/products/fittings-section";
 import { ProductCatalogSection } from "@/components/products/product-catalog-section";
-import { FooterSection } from "@/components/sections/footer-section";
+import { SiteFooter } from "@/components/site-footer";
+import { getPublicProducts } from "@/lib/cms-products";
+import { getSiteContent } from "@/lib/cms-content";
+import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { SITE_IMAGES } from "@/lib/site-images";
 import { RevealWords } from "@/components/ui/reveal-words";
+import { pageSocial } from "@/lib/seo";
+import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
-  title: "Products",
-  description:
-    "Composite insulators, hybrid insulators, transformer bushings, and cable accessories. IEC 61109, 62217, and related standards. 6-420 kV.",
-  openGraph: {
-    title: "Products | Taban Niroo",
+  ...pageSocial({
+    title: "Products",
     description:
-      "Medium and high-voltage composite and hybrid insulators tested at accredited laboratories.",
-  },
+      "Composite insulators, hybrid insulators, transformer bushings, and cable accessories. IEC 61109, 62217, and related standards. 6-420 kV.",
+    path: "/products",
+  }),
 };
 
 const STANDARDS = [
@@ -30,10 +33,66 @@ const STANDARDS = [
   { code: "IEC 60137", title: "Insulated bushings – AC > 1000 V" },
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const [products, content] = await Promise.all([getPublicProducts(), getSiteContent()]);
+  const hero = content.products?.hero;
+  const standards = content.products?.standards;
+  const eyebrow = cmsText(hero, "eyebrow", "Product range");
+  const title1 = cmsText(hero, "title", "The insulation");
+  const title2 = cmsText(hero, "titleLine2", "portfolio for");
+  const title3 = cmsText(hero, "titleLine3", "power networks.");
+  const body = cmsText(
+    hero,
+    "body",
+    "Six engineered product families — composite insulators, hybrid technology, transformer bushings, cable accessories, overhead feeder protection and retrofit creepage solutions. Built to IEC standards and field-proven worldwide.",
+  );
+  const cta1 = cmsText(hero, "ctaLabel", "Browse all products");
+  const cta1Href = cmsText(hero, "ctaHref", "#product-explorer");
+  const cta2 = cmsText(hero, "ctaLabel2", "Technical enquiry");
+  const cta2Href = cmsText(hero, "ctaHref2", "/contact");
+  const heroImage = cmsImage(hero, SITE_IMAGES.productsHero) ?? SITE_IMAGES.productsHero;
+  const stdEyebrow = cmsText(standards, "eyebrow", "Standards & testing");
+  const stdTitle = cmsText(standards, "title", "Type-tested.\nRoutine-tested.");
+  const stdBody = cmsText(
+    standards,
+    "body",
+    "Products are designed, type-tested and routine-tested at accredited laboratories. Performance is verified under pollution, mechanical strength and electrical withstand conditions for each family.",
+  );
+  const stdCta = cmsText(standards, "ctaLabel", "Request test reports");
+  const stdCtaHref = cmsText(standards, "ctaHref", "/contact");
+  const stdItems =
+    standards?.items?.length && standards.items.some((i) => i.label.trim())
+      ? standards.items.map((i) => ({ code: i.label, title: i.body || i.value || "" }))
+      : STANDARDS;
+
+  const siteUrl = getSiteUrl();
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Taban Niroo product range",
+    description:
+      "Medium and high-voltage composite and hybrid insulators, bushings, and accessories.",
+    url: `${siteUrl}/products`,
+    isPartOf: { "@id": `${siteUrl}#website` },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: products.length,
+      itemListElement: products.slice(0, 48).map((p, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${siteUrl}/products/${p.id}`,
+        name: p.name,
+      })),
+    },
+  };
+
   return (
     <main id="main-content" className="min-h-screen bg-background">
-      <Header />
+      <SiteHeader />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
 
       {/* Hero — single, direct, ends in a clear CTA to the product explorer */}
       <section className="relative overflow-hidden bg-background">
@@ -54,39 +113,36 @@ export default function ProductsPage() {
 
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16 lg:items-end">
             <div>
-              <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                <span className="inline-flex h-px w-10 bg-foreground/40" />
-                <span>Product range</span>
+              <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-burgundy">
+                <span className="inline-flex h-px w-10 bg-brand-burgundy/50" />
+                <span>{eyebrow}</span>
               </div>
-              <h1 className="font-hero-slogan mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] font-bold uppercase leading-[0.92] tracking-[-0.012em] text-foreground">
+              <h1 className="font-hero-slogan text-brand-heading mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] font-bold uppercase leading-[0.92] tracking-[-0.012em]">
                 <RevealWords as="span" className="block">
-                  The insulation
+                  {title1}
                 </RevealWords>
                 <RevealWords
                   as="span"
-                  className="block text-foreground/55"
+                  className="block text-brand-navy/55"
                   delay={150}
                 >
-                  portfolio for
+                  {title2}
                 </RevealWords>
                 <RevealWords as="span" className="block" delay={300}>
-                  power networks.
+                  {title3}
                 </RevealWords>
               </h1>
               <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-                Six engineered product families — composite insulators, hybrid
-                technology, transformer bushings, cable accessories, overhead
-                feeder protection and retrofit creepage solutions. Built to IEC
-                standards and field-proven worldwide.
+                {body}
               </p>
 
               <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
-                  href="#product-explorer"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full border border-foreground bg-foreground px-6 py-3 text-sm font-medium uppercase tracking-wider text-background transition-all hover:bg-foreground/90"
+                  href={cta1Href}
+                  className="group pill-elevate inline-flex items-center justify-center gap-2 rounded-full bg-brand-navy px-6 py-3 text-sm font-medium uppercase tracking-wider text-white transition-all hover:bg-brand-burgundy"
                 >
                   <LayoutGrid size={16} aria-hidden />
-                  Browse all products
+                  {cta1}
                   <ArrowRight
                     size={16}
                     aria-hidden
@@ -94,10 +150,10 @@ export default function ProductsPage() {
                   />
                 </Link>
                 <Link
-                  href="/contact"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-transparent px-6 py-3 text-sm font-medium uppercase tracking-wider text-foreground transition-all hover:border-foreground"
+                  href={cta2Href}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-navy/25 bg-transparent px-6 py-3 text-sm font-medium uppercase tracking-wider text-brand-navy transition-all hover:border-brand-navy/50 hover:bg-brand-navy-soft"
                 >
-                  Technical enquiry
+                  {cta2}
                 </Link>
               </div>
 
@@ -110,16 +166,17 @@ export default function ProductsPage() {
             <div className="relative">
               <div className="cine-grade relative aspect-[4/5] overflow-hidden rounded-2xl border border-border/50 shadow-elevate dark:border-white/[0.08]">
                 <Image
-                  src={SITE_IMAGES.productsHero}
+                  src={heroImage}
                   alt="Composite and hybrid insulators in service"
                   fill
                   className="object-cover grayscale"
                   priority
                   sizes="(min-width: 1024px) 40vw, 100vw"
+                  unoptimized={heroImage.startsWith("http")}
                 />
                 <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-background/60 via-transparent to-transparent" />
                 <div className="absolute left-5 top-5 z-[3] inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-white backdrop-blur-sm">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-sky-400" />
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-orange" />
                   Field-proven
                 </div>
                 <div className="absolute bottom-5 left-5 right-5 z-[3] border-t border-white/20 pt-3 text-white">
@@ -136,7 +193,7 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <ProductCatalogSection />
+      <ProductCatalogSection products={products} />
 
       {/* DPL coding guide — helps procurement read any DPL reference */}
       <CodingGuideSection />
@@ -149,32 +206,32 @@ export default function ProductsPage() {
         <div className="px-6 py-20 md:px-12 md:py-24 lg:px-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:gap-16">
             <div>
-              <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                <span>Standards &amp; testing</span>
-                <span className="inline-flex h-px w-10 bg-foreground/40" />
+              <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-burgundy">
+                <span>{stdEyebrow}</span>
+                <span className="inline-flex h-px w-10 bg-brand-burgundy/50" />
               </div>
-              <h2 className="font-hero-slogan mt-4 text-3xl font-bold uppercase tracking-tight text-foreground md:text-4xl">
-                Type-tested.
-                <br />
-                Routine-tested.
+              <h2 className="font-hero-slogan text-brand-heading mt-4 text-3xl font-bold uppercase tracking-tight md:text-4xl">
+                {stdTitle.split("\n").map((line, i) => (
+                  <span key={i}>
+                    {i > 0 ? <br /> : null}
+                    {line}
+                  </span>
+                ))}
               </h2>
               <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-                Products are designed, type-tested and routine-tested at
-                accredited laboratories. Performance is verified under
-                pollution, mechanical strength and electrical withstand
-                conditions for each family.
+                {stdBody}
               </p>
               <Link
-                href="/contact"
-                className="mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-foreground/70"
+                href={stdCtaHref}
+                className="mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-brand-navy transition-colors hover:text-brand-burgundy"
               >
-                Request test reports
+                {stdCta}
                 <ArrowRight size={16} aria-hidden />
               </Link>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              {STANDARDS.map((s) => (
+              {stdItems.map((s) => (
                 <div
                   key={s.code}
                   className="interactive-lift rounded-2xl border border-border/40 bg-card/90 p-5 shadow-elevate dark:border-white/[0.08] dark:bg-card/50 md:p-6"
@@ -195,7 +252,7 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <FooterSection />
+      <SiteFooter cms={content.footer} />
     </main>
   );
 }

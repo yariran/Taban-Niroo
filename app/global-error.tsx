@@ -9,7 +9,8 @@ import { useEffect } from "react";
  *
  * Kept intentionally minimal and dependency-free — uses inline styles so
  * even a missing `globals.css` still leaves the user with something
- * legible and recoverable.
+ * legible and recoverable. System stack (no CDN) so this page cannot
+ * block on a third-party font host.
  */
 export default function GlobalError({
   error,
@@ -20,6 +21,9 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error("[global-error]", error);
+    void import("@/lib/report-error").then(({ reportError }) =>
+      reportError(error, { boundary: "global", digest: error.digest }),
+    );
   }, [error]);
 
   return (
@@ -33,7 +37,8 @@ export default function GlobalError({
           justifyContent: "center",
           padding: "2rem",
           fontFamily:
-            "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
+          fontFeatureSettings: "'liga' 1, 'calt' 1",
           background: "#0a0a0a",
           color: "#fafafa",
         }}
@@ -45,7 +50,7 @@ export default function GlobalError({
               letterSpacing: "0.28em",
               textTransform: "uppercase",
               color: "rgba(255,255,255,0.6)",
-              fontFamily: "ui-monospace, monospace",
+              fontFamily: "inherit",
             }}
           >
             Critical · application boundary
@@ -57,6 +62,7 @@ export default function GlobalError({
               lineHeight: 1.15,
               letterSpacing: "-0.01em",
               marginTop: "1.25rem",
+              fontFamily: "inherit",
             }}
           >
             We can&apos;t render this page right now.
@@ -67,6 +73,7 @@ export default function GlobalError({
               fontSize: "0.95rem",
               lineHeight: 1.6,
               color: "rgba(255,255,255,0.7)",
+              fontFamily: "inherit",
             }}
           >
             Please retry. If the problem persists, write to{" "}
@@ -86,7 +93,7 @@ export default function GlobalError({
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.45)",
-                fontFamily: "ui-monospace, monospace",
+                fontFamily: "inherit",
               }}
             >
               Reference · {error.digest}
@@ -105,6 +112,7 @@ export default function GlobalError({
               background: "#fafafa",
               color: "#0a0a0a",
               border: "none",
+              fontFamily: "inherit",
             }}
           >
             Retry

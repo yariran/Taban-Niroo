@@ -4,46 +4,35 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 
 /**
- * Smooth-scroll provider — Lenis-driven inertial scroll.
+ * Smooth-scroll provider — Lenis on fine pointers (desktop/trackpad) only.
  *
- * Wires `lenis` into the document scroll so wheel and trackpad input
- * decelerates with a soft easing curve instead of snapping to the OS
- * default. The library sets `html.lenis` while running so we can
- * coordinate any scroll-driven CSS that depends on whether smoothing
- * is active.
- *
- * Notes:
- *  - Native CSS smooth-scroll (`scroll-behavior: smooth`) and Lenis
- *    fight each other. While Lenis is mounted we explicitly set
- *    `html.scroll-behavior: auto` (Lenis owns the easing).
- *  - Honour `prefers-reduced-motion`: skip Lenis entirely. Native
- *    scroll is then used and feels instantaneous.
- *  - The `scroll`, `scrollend`, and `IntersectionObserver` listeners
- *    elsewhere in the app keep working — Lenis dispatches a real
- *    native `scroll` event after every internal frame, so nothing
- *    downstream needs to know it exists.
+ * On phones/tablets (`pointer: coarse` / `hover: none`) we keep native
+ * touch scrolling. That avoids fighting iOS Safari rubber-band, Android
+ * Chrome, Samsung Internet, and nested horizontal pans (gallery, tables).
  */
 export function LenisProvider() {
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mq.matches) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointer = window.matchMedia("(pointer: coarse)");
+    const noHover = window.matchMedia("(hover: none)");
+
+    if (reduceMotion.matches || coarsePointer.matches || noHover.matches) {
+      return;
+    }
 
     const html = document.documentElement;
     const previousScrollBehavior = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto";
 
     const lenis = new Lenis({
-      // Slightly longer glide + lower lerp = silkier deceleration without
-      // feeling floaty. Values stay in the same ballpark as before so the
-      // rest of the scroll-driven UI (section reveals, word colour) still
-      // feels in sync with wheel input.
-      duration: 1.08,
+      // Snappier, even feel — avoid “glue then rush” vs sticky runways.
+      duration: 0.92,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      lerp: 0.078,
-      wheelMultiplier: 0.98,
-      touchMultiplier: 1.12,
-      syncTouch: true,
+      lerp: 0.1,
+      wheelMultiplier: 1,
+      // Touch sync off even if a hybrid device later matches — native wins.
+      syncTouch: false,
     });
 
     let rafId = 0;
@@ -53,11 +42,11 @@ export function LenisProvider() {
     };
     rafId = requestAnimationFrame(raf);
 
-    // Allow same-page anchor links (e.g. "#gallery") to use Lenis to
-    // animate, so jump-links still feel cinematic.
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      const anchor = target?.closest("a[href^='#']") as HTMLAnchorElement | null;
+      const anchor = target?.closest(
+        "a[href^='#']",
+      ) as HTMLAnchorElement | null;
       if (!anchor) return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const href = anchor.getAttribute("href");
@@ -65,13 +54,21 @@ export function LenisProvider() {
       const node = document.querySelector(href);
       if (!node) return;
       e.preventDefault();
-      // Keep anchor targets clear of the fixed header across breakpoints.
       const headerOffset = window.innerWidth >= 768 ? 96 : 80;
       lenis.scrollTo(node as HTMLElement, {
         offset: -headerOffset,
         duration: 1.25,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       });
+      /**
+       * `preventDefault` above stops the browser from writing the hash, so
+       * anchors were unshareable and in-page nav could never mark itself
+       * active. `replaceState` (not `pushState`) keeps Back leaving the page
+       * instead of walking backwards through every anchor visited.
+       */
+      window.history.replaceState(null, "", href);
+      /** `replaceState` is silent — in-page navs listen for this to re-read. */
+      window.dispatchEvent(new Event("hashchange"));
     };
     document.addEventListener("click", onClick);
 

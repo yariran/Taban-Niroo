@@ -8,13 +8,28 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductsMegaMenu } from "@/components/products-mega-menu";
 import { cn } from "@/lib/utils";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
+import { trapFocusKeydown } from "@/lib/focus-trap";
 
 const NAV_ITEMS = [
-  ["About Us", "/about", false] as const,
+  ["Company", "/about", false] as const,
   ["Products", "/products", true] as const,
   ["Projects & Partners", "/projects", false] as const,
   ["Blog – R&D", "/blog", false] as const,
 ] as const;
+
+const navLinkClass = (onDarkHero: boolean, isActive: boolean) =>
+  cn(
+    "relative inline-flex items-center whitespace-nowrap text-[12px] font-medium leading-none tracking-[-0.01em]",
+    "transition-colors duration-300",
+    onDarkHero
+      ? isActive
+        ? "text-white"
+        : "text-white/75 hover:text-white"
+      : isActive
+        ? "text-brand-navy"
+        : "text-foreground/70 hover:text-brand-burgundy",
+  );
 
 export function Header() {
   const pathname = usePathname();
@@ -24,7 +39,9 @@ export function Header() {
   const [isMounted, setIsMounted] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
+  const mobileNavRef = useRef<HTMLDivElement>(null);
 
+  const navItems = NAV_ITEMS;
   /** Home hero is dark: white text. All other routes (or scrolled home) use dark text. */
   const onDarkHero = isHome && !isScrolled;
 
@@ -51,29 +68,21 @@ export function Header() {
   useEffect(() => {
     if (!isMenuOpen) return;
 
-    const scrollY = window.scrollY;
-    document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = "0";
-    document.body.style.right = "0";
-    document.body.style.width = "100%";
+    lockBodyScroll();
 
     const id = requestAnimationFrame(() => {
       firstMobileLinkRef.current?.focus();
     });
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeMobileMenu();
+      if (e.key === "Escape") {
+        closeMobileMenu();
+        return;
+      }
+      trapFocusKeydown(e, mobileNavRef.current);
     };
     document.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      window.scrollTo(0, scrollY);
+      unlockBodyScroll();
       cancelAnimationFrame(id);
       document.removeEventListener("keydown", onKey);
     };
@@ -83,37 +92,46 @@ export function Header() {
     <header
       className={cn(
         "pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center",
+        "pt-[max(1rem,calc(0.75rem+var(--sat)))] px-4 sm:px-6 lg:px-8",
         "transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        isScrolled ? "px-3 pt-2 md:px-6 md:pt-3" : "px-4 pt-4 md:px-8 md:pt-6",
+        isScrolled && "pt-[max(0.65rem,calc(0.45rem+var(--sat)))] px-3 sm:px-5",
       )}
     >
       <div
         className={cn(
-          "glass-header-pill pointer-events-auto flex w-full max-w-5xl items-center justify-between gap-3 rounded-full border px-3 py-1.5 sm:gap-4 sm:px-4 md:px-5 md:py-2",
-          "transition-[border-color,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "glass-header-pill pointer-events-auto",
+          "grid w-full max-w-[64rem] grid-cols-[1fr_auto_1fr] items-center",
+          "rounded-full border px-3.5 sm:px-4 lg:px-5",
+          "transition-[height,max-width,padding,border-color,box-shadow,background-color,backdrop-filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          isScrolled
+            ? "glass-header-pill--compact h-9 max-w-[52rem] px-3 sm:px-3.5 lg:px-4"
+            : "h-10 sm:h-11",
           onDarkHero ? "glass-header-pill--hero" : "glass-header-pill--default",
         )}
       >
+        {/* Brand — left */}
         <Link
           href="/"
           className={cn(
-            "hidden text-[11px] font-semibold uppercase tracking-[0.22em] md:inline-flex",
-            "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            onDarkHero ? "text-white" : "text-foreground",
+            "justify-self-start shrink-0 font-semibold uppercase tracking-[0.2em]",
+            "transition-[font-size,color] duration-500",
+            isScrolled ? "text-[10px]" : "text-[11px]",
+            onDarkHero ? "text-white" : "text-brand-navy",
           )}
         >
           Taban Niroo
         </Link>
 
+        {/* Nav — centered */}
         <nav
           aria-label="Primary"
           className={cn(
-            "hidden md:flex md:items-center md:gap-5",
-            "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            onDarkHero ? "text-white/80" : "text-foreground/75",
+            "hidden items-center justify-center md:flex",
+            "transition-[gap] duration-500",
+            isScrolled ? "gap-4 lg:gap-5" : "gap-5 lg:gap-7",
           )}
         >
-          {NAV_ITEMS.map(([label, href, hasMega]) => {
+          {navItems.map(([label, href, hasMega]) => {
             const isActive =
               pathname === href || pathname.startsWith(`${href}/`);
 
@@ -132,17 +150,7 @@ export function Header() {
                 key={href}
                 href={href}
                 aria-current={isActive ? "page" : undefined}
-                className={[
-                  "relative text-[13px] font-medium",
-                  "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                  onDarkHero
-                    ? isActive
-                      ? "text-white after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:bg-white"
-                      : "hover:text-white"
-                    : isActive
-                      ? "text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:bg-foreground"
-                      : "hover:text-foreground",
-                ].join(" ")}
+                className={navLinkClass(onDarkHero, isActive)}
               >
                 {label}
               </Link>
@@ -150,18 +158,14 @@ export function Header() {
           })}
         </nav>
 
-        <div
-          className={cn(
-            "hidden items-center gap-2 md:flex",
-            "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-            onDarkHero ? "text-white" : "text-foreground",
-          )}
-        >
+        {/* Actions — right (desktop) */}
+        <div className="hidden items-center justify-end gap-1.5 md:flex">
           <ThemeToggle
             variant="ghost"
             compact
             className={cn(
-              "size-7 rounded-full",
+              "rounded-full transition-[width,height] duration-500",
+              isScrolled ? "size-7" : "size-8",
               onDarkHero
                 ? "text-white hover:bg-white/15"
                 : "text-foreground hover:bg-foreground/10",
@@ -170,58 +174,57 @@ export function Header() {
           <Link
             href="/contact"
             className={cn(
-              "group inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium",
-              "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              "group inline-flex items-center gap-1.5 rounded-full font-medium leading-none",
+              "transition-[height,padding,font-size,colors,box-shadow] duration-500",
+              isScrolled
+                ? "h-7 px-2.5 text-[11px]"
+                : "pill-elevate h-7 px-3 text-[12px] sm:h-8 sm:px-3.5",
               onDarkHero
-                ? "bg-white text-zinc-900 hover:bg-white/90"
-                : "bg-foreground text-background hover:bg-foreground/90",
+                ? "bg-white text-brand-navy hover:bg-brand-cream"
+                : "bg-brand-navy text-white hover:bg-brand-burgundy",
             )}
           >
             Contact
-            <ArrowRight size={12} aria-hidden className="transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight
+              size={isScrolled ? 11 : 12}
+              aria-hidden
+              className="transition-transform group-hover:translate-x-0.5"
+            />
           </Link>
         </div>
 
-        {/* Mobile contents (same pill, just different children) */}
-        <div className="flex w-full items-center justify-between md:hidden">
-          <Link
-            href="/"
+        {/* Phone: theme + hamburger on the right */}
+        <div className="col-start-3 flex items-center justify-end gap-1 md:hidden">
+          <ThemeToggle
+            variant="ghost"
+            compact
             className={cn(
-              "text-[11px] font-semibold uppercase tracking-[0.2em]",
-              onDarkHero ? "text-white" : "text-foreground",
+              "touch-target size-10 rounded-full",
+              onDarkHero
+                ? "text-white hover:bg-white/15"
+                : "text-foreground hover:bg-foreground/10",
             )}
+          />
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={cn(
+              "touch-target inline-flex size-10 items-center justify-center rounded-full transition-colors",
+              onDarkHero
+                ? "text-white hover:bg-white/15"
+                : "text-foreground hover:bg-foreground/10",
+            )}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-primary-nav"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
-            Taban Niroo
-          </Link>
-
-          <div className="flex items-center gap-1.5">
-            <ThemeToggle
-              variant="ghost"
-              compact
-              className={cn(
-                "touch-target size-11 rounded-full md:size-7",
-                onDarkHero
-                  ? "text-white hover:bg-white/15"
-                  : "text-foreground hover:bg-foreground/10",
-              )}
-            />
-            <button
-              ref={menuButtonRef}
-              type="button"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={cn(
-                "touch-target inline-flex size-11 items-center justify-center rounded-full transition-colors md:size-7",
-                onDarkHero
-                  ? "text-white hover:bg-white/15"
-                  : "text-foreground hover:bg-foreground/10",
-              )}
-              aria-expanded={isMenuOpen}
-              aria-controls="mobile-primary-nav"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {isMenuOpen ? <X size={16} aria-hidden /> : <Menu size={16} aria-hidden />}
-            </button>
-          </div>
+            {isMenuOpen ? (
+              <X size={18} aria-hidden />
+            ) : (
+              <Menu size={18} aria-hidden />
+            )}
+          </button>
         </div>
       </div>
 
@@ -236,13 +239,15 @@ export function Header() {
               onClick={closeMobileMenu}
             />
             <div
+              ref={mobileNavRef}
               id="mobile-primary-nav"
               className={cn(
                 "glass-mobile-menu pointer-events-auto fixed inset-x-0 bottom-0 z-[49] md:hidden",
-                "top-[calc(3.75rem+env(safe-area-inset-top,0px))]",
+                "top-[calc(4.5rem+var(--sat))]",
                 "flex flex-col overflow-y-auto overscroll-contain rounded-t-[1.35rem] border-t px-4 pt-2",
-                "pb-[max(1rem,env(safe-area-inset-bottom,0px))]",
+                "pb-[max(1rem,var(--sab))]",
                 "[-webkit-overflow-scrolling:touch]",
+                "pl-[max(1rem,var(--sal))] pr-[max(1rem,var(--sar))]",
                 onDarkHero
                   ? "glass-mobile-menu--hero border-white/10 bg-zinc-950 text-white"
                   : "glass-mobile-menu--default border-border bg-background text-foreground",
@@ -254,13 +259,12 @@ export function Header() {
             >
               <nav
                 className={cn(
-                  "flex flex-col",
+                  "flex flex-col divide-y",
                   onDarkHero ? "divide-white/10" : "divide-border/50",
-                  "divide-y",
                 )}
                 aria-label="Mobile primary"
               >
-                {NAV_ITEMS.map(([label, href], index) => {
+                {navItems.map(([label, href], index) => {
                   const isActive =
                     pathname === href || pathname.startsWith(`${href}/`);
 
@@ -277,23 +281,12 @@ export function Header() {
                             ? "text-white"
                             : "text-white/72 active:text-white"
                           : isActive
-                            ? "text-foreground"
-                            : "text-foreground/70 active:text-foreground",
+                            ? "text-brand-navy"
+                            : "text-foreground/70 active:text-brand-burgundy",
                       )}
                       onClick={closeMobileMenu}
                     >
                       <span>{label}</span>
-                      {isActive && (
-                        <span
-                          className={cn(
-                            "font-mono text-[10px] uppercase tracking-[0.2em]",
-                            onDarkHero ? "text-white/55" : "text-muted-foreground",
-                          )}
-                          aria-hidden
-                        >
-                          Now
-                        </span>
-                      )}
                     </Link>
                   );
                 })}
@@ -312,7 +305,7 @@ export function Header() {
                     "touch-target flex min-h-11 items-center justify-center gap-2 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
                     onDarkHero
                       ? "border border-white/20 bg-white/10 text-white hover:bg-white/16"
-                      : "border border-foreground/15 bg-foreground text-background hover:bg-foreground/90",
+                      : "bg-brand-navy text-white hover:bg-brand-burgundy",
                   )}
                 >
                   Contact

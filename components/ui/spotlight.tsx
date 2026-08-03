@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 /**
  * Cursor-tracking spotlight wrapper.
  *
- * Wraps any positioned card. While the cursor is inside, a soft sky-tinted
+ * Wraps any positioned card. While the cursor is inside, a soft orange-tinted
  * radial gradient follows it, anchored via two CSS custom properties
  * (`--mx`, `--my`) that the wrapper writes on each `mousemove`. The
  * gradient itself lives in `app/globals.css` under `.card-spotlight`,
@@ -35,7 +35,7 @@ type SpotlightProps = {
   className?: string;
   /** Spotlight radius in pixels (default 280). */
   size?: number;
-  /** CSS color for the spotlight (default sky-400 @ 12% in light, 18% in dark — handled in CSS). */
+  /** CSS color for the spotlight (default orange volt — handled in CSS). */
   style?: CSSProperties;
 };
 

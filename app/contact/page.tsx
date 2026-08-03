@@ -1,38 +1,81 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/header";
-import { FooterSection } from "@/components/sections/footer-section";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ContactForm } from "@/components/contact-form";
 import { RevealWords, RevealUp } from "@/components/ui/reveal-words";
+import { getSiteContent } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
+import { getProductBySlugAsync } from "@/lib/cms-products";
+import { pageSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageSocial({
   title: "Contact",
   description:
     "Contact Taban Niroo for high-voltage composite insulator enquiries, technical support, and partnerships. Headquarters in Shiraz and office in Tehran.",
-  openGraph: {
-    title: "Contact | Taban Niroo",
-    description:
-      "Project enquiries and technical discussions for composite and hybrid insulators.",
-  },
+  path: "/contact",
+});
+
+type Props = {
+  searchParams: Promise<{ ref?: string }>;
 };
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }: Props) {
+  const { ref: rawRef } = await searchParams;
+  const productRef = rawRef?.trim() || undefined;
+  const linkedProduct = productRef
+    ? await getProductBySlugAsync(productRef)
+    : null;
+
+  const content = await getSiteContent();
+  const hero = content.contact?.hero;
+  const intro = content.contact?.intro;
+  const eyebrow = cmsText(hero, "eyebrow", "Contact");
+  const titleLine1 = cmsText(hero, "title", "Connect with");
+  const titleLine2 = cmsText(hero, "ctaLabel", "Taban Niroo.");
+  const body = cmsText(
+    intro ?? hero,
+    "body",
+    "For project enquiries, technical discussions, and partnership opportunities, please share your details and our team will respond through the appropriate channel.",
+  );
+  const offices = content.contact?.offices?.items;
+  const officeBlocks =
+    offices?.length && offices.some((o) => o.label.trim())
+      ? offices
+      : [
+          {
+            label: "Headquarters",
+            value: "Tel: +98 713 717 5115-7\nFax: +98 21 2629 3990",
+            body: "Taban Niroo Building\nShiraz Special Economic Zone, Iran",
+          },
+          {
+            label: "Tehran office",
+            value: "Tel: +98 21 8821 6952\nFax: +98 21 2629 3990",
+            body: "Office 9, No. 64, Saeedi Ave,\nAfrica St, Tehran, Iran",
+          },
+          {
+            label: "Email",
+            value: "",
+            body: "info@taban-niroo.com",
+          },
+        ];
+
   return (
     <main id="main-content" className="min-h-screen bg-background">
-      <Header />
+      <SiteHeader />
 
       <section className="bg-background">
         <div className="px-6 pt-28 pb-20 md:px-12 md:pt-32 md:pb-24 lg:px-20 lg:pt-36 lg:pb-28">
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                Contact
+              <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
+                {eyebrow}
               </p>
-              <h1 className="mt-4 text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl">
+              <h1 className="mt-4 font-hero-slogan text-brand-heading text-3xl font-bold uppercase tracking-tight md:text-4xl lg:text-5xl">
                 <RevealWords as="span" className="block">
-                  Connect with
+                  {titleLine1}
                 </RevealWords>
                 <RevealWords as="span" className="block" delay={140}>
-                  Taban Niroo.
+                  {titleLine2}
                 </RevealWords>
               </h1>
               <RevealUp
@@ -40,65 +83,48 @@ export default function ContactPage() {
                 delay={360}
                 className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg"
               >
-                For project enquiries, technical discussions, and partnership opportunities, please
-                share your details and our team will respond through the appropriate channel.
+                {body}
               </RevealUp>
 
-              <ContactForm />
+              <ContactForm
+                productRef={linkedProduct?.id ?? productRef}
+                productName={linkedProduct?.name}
+              />
             </div>
 
             <div className="space-y-10 rounded-2xl border border-border/80 bg-background/70 p-6 backdrop-blur md:p-8">
-              <div>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                  Headquarters
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Taban Niroo Building
-                  <br />
-                  Shiraz Special Economic Zone, Iran
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Tel: +98 713 717 5115-7
-                  <br />
-                  Fax: +98 21 2629 3990
-                </p>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                  Tehran office
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Office 9, No. 64, Saeedi Ave,
-                  <br />
-                  Africa St, Tehran, Iran
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Tel: +98 21 8821 6952
-                  <br />
-                  Fax: +98 21 2629 3990
-                </p>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                  Email
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  <a
-                    className="underline underline-offset-2 hover:text-foreground"
-                    href="mailto:info@taban-niroo.com"
-                  >
-                    info@taban-niroo.com
-                  </a>
-                </p>
-              </div>
+              {officeBlocks.map((office) => (
+                <div key={office.label}>
+                  <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
+                    {office.label}
+                  </p>
+                  {office.body ? (
+                    <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                      {office.label.toLowerCase() === "email" ? (
+                        <a
+                          className="underline underline-offset-2 hover:text-foreground"
+                          href={`mailto:${office.body.trim()}`}
+                        >
+                          {office.body.trim()}
+                        </a>
+                      ) : (
+                        office.body
+                      )}
+                    </p>
+                  ) : null}
+                  {office.value ? (
+                    <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                      {office.value}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <FooterSection />
+      <SiteFooter cms={content.footer} />
     </main>
   );
 }

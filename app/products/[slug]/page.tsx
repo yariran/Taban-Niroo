@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Send } from "lucide-react";
-import { Header } from "@/components/header";
-import { FooterSection } from "@/components/sections/footer-section";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { RevealUp, RevealWords } from "@/components/ui/reveal-words";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import {
+  techTableBodyCellClass,
+  techTableBodyStickyClass,
   techTableClass,
   techTableHeadCellClass,
   techTableHeadStickyClass,
@@ -16,23 +18,29 @@ import { cn } from "@/lib/utils";
 import {
   FAMILY_ANCHOR,
   FAMILY_INDEX,
-  FAMILY_THUMBNAIL,
-  getAllProductSlugs,
-  getProductBySlug,
-  getRelatedProducts,
-  PRODUCTS,
+  resolveProductImage,
+  type Product,
 } from "@/lib/products";
+import {
+  getAllProductSlugsAsync,
+  getProductBySlugAsync,
+  getRelatedProductsAsync,
+} from "@/lib/cms-products";
 import { getSiteUrl } from "@/lib/site-url";
+import { absoluteUrl, pageSocial } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
-  return getAllProductSlugs().map((slug) => ({ slug }));
+  const slugs = await getAllProductSlugsAsync();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlugAsync(slug);
   if (!product) {
     return {
       title: "Product not found",
@@ -42,33 +50,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `${product.name}${product.voltageClass ? ` · ${product.voltageClass}` : ""}`;
   const description = product.summary;
+  const thumbnail = resolveProductImage(product);
+  const imageAbs = thumbnail ? absoluteUrl(thumbnail) : undefined;
 
-  return {
+  return pageSocial({
     title,
     description,
-    alternates: { canonical: `/products/${product.id}` },
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      url: `/products/${product.id}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
-  };
+    path: `/products/${product.id}`,
+    imageUrl: imageAbs,
+    imageAlt: product.name,
+  });
 }
 
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlugAsync(slug);
   if (!product) notFound();
 
-  const related = getRelatedProducts(product.id);
+  const related = await getRelatedProductsAsync(product.id);
   const familyIdx = FAMILY_INDEX[product.family];
-  const thumbnail = FAMILY_THUMBNAIL[product.family];
+  const thumbnail = resolveProductImage(product);
   const siteUrl = getSiteUrl();
 
   const productJsonLd = {
@@ -76,8 +77,10 @@ export default async function ProductDetailPage({ params }: Props) {
     "@type": "Product",
     name: product.name,
     description: product.summary,
+    url: `${siteUrl}/products/${product.id}`,
     category: product.family,
     sku: product.id,
+    mpn: product.catalogueRef || product.id,
     brand: {
       "@type": "Brand",
       name: "Taban Niroo · DPL",
@@ -87,7 +90,16 @@ export default async function ProductDetailPage({ params }: Props) {
       name: "Taban Niroo",
       url: siteUrl,
     },
-    image: thumbnail ? `${siteUrl}${thumbnail}` : undefined,
+    ...(thumbnail
+      ? { image: absoluteUrl(thumbnail, siteUrl) }
+      : {}),
+    offers: {
+      "@type": "Offer",
+      url: `${siteUrl}/contact?ref=${encodeURIComponent(product.id)}`,
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition",
+      businessFunction: "https://schema.org/Sell",
+    },
     additionalProperty: [
       product.voltageClass && {
         "@type": "PropertyValue",
@@ -142,7 +154,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <main id="main-content" className="min-h-screen bg-background">
-      <Header />
+      <SiteHeader />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
@@ -190,6 +202,10 @@ export default async function ProductDetailPage({ params }: Props) {
               >
                 {product.family}
               </Link>
+              <ChevronRight size={11} aria-hidden strokeWidth={1.7} />
+              <span className="text-foreground" aria-current="page">
+                {product.name}
+              </span>
             </nav>
 
             <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
@@ -213,7 +229,7 @@ export default async function ProductDetailPage({ params }: Props) {
               <div className="mt-9 flex flex-wrap items-center gap-3">
                 <Link
                   href={`/contact?ref=${encodeURIComponent(product.id)}`}
-                  className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
                 >
                   <Send size={14} aria-hidden strokeWidth={1.75} />
                   Request a quote
@@ -339,7 +355,7 @@ export default async function ProductDetailPage({ params }: Props) {
             <div className="mb-10 flex items-end justify-between gap-4">
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
-                  03 · Variants
+                  03 · Technical data
                 </p>
                 <h2 className="mt-3 font-medium leading-tight tracking-tight text-foreground text-[clamp(1.6rem,3.4vw,2.25rem)]">
                   Available references.
@@ -352,56 +368,60 @@ export default async function ProductDetailPage({ params }: Props) {
 
             <div className="rounded-2xl border border-border/50 bg-card/60 shadow-elevate dark:border-white/[0.08] dark:bg-card/40">
               <ScrollPan
-                ariaLabel={`${product.name} variants table`}
+                ariaLabel={`${product.name} technical data`}
                 fadeFrom="from-card"
                 className="rounded-2xl"
                 passVerticalScroll
               >
-                <table className={cn(techTableClass, "min-w-[640px] tabular")}>
-                  <thead>
-                    <tr>
-                      <th scope="col" className={techTableHeadStickyClass}>
-                        Type
-                      </th>
-                      <th scope="col" className={techTableHeadCellClass}>
-                        Rated System Voltage (kV)
-                      </th>
-                      <th scope="col" className={techTableHeadCellClass}>
-                        Section length (mm)
-                      </th>
-                      <th scope="col" className={techTableHeadCellClass}>
-                        Creepage distance (mm)
-                      </th>
-                      <th scope="col" className={techTableHeadCellClass}>
-                        Notes
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {product.variants.map((v) => (
-                      <tr
-                        key={v.code}
-                        className="border-t border-border/40 transition-colors hover:bg-muted/20 dark:border-white/[0.05] dark:hover:bg-white/[0.025]"
-                      >
-                        <td className="px-5 py-3 font-medium text-foreground">
-                          {v.code}
-                        </td>
-                        <td className="px-5 py-3 text-foreground/85">
-                          {v.voltage}
-                        </td>
-                        <td className="px-5 py-3 text-muted-foreground">
-                          {v.sectionLength ?? "—"}
-                        </td>
-                        <td className="px-5 py-3 text-muted-foreground">
-                          {v.creepage ?? "—"}
-                        </td>
-                        <td className="px-5 py-3 text-muted-foreground">
-                          {v.notes ?? "—"}
-                        </td>
+                {product.variants.some((v) => v.technical) ? (
+                  <ProductTechnicalTable product={product} />
+                ) : (
+                  <table className={cn(techTableClass, "min-w-[640px] tabular")}>
+                    <thead>
+                      <tr>
+                        <th scope="col" className={techTableHeadStickyClass}>
+                          Type
+                        </th>
+                        <th scope="col" className={techTableHeadCellClass}>
+                          Rated System Voltage (kV)
+                        </th>
+                        <th scope="col" className={techTableHeadCellClass}>
+                          Section length (mm)
+                        </th>
+                        <th scope="col" className={techTableHeadCellClass}>
+                          Creepage distance (mm)
+                        </th>
+                        <th scope="col" className={techTableHeadCellClass}>
+                          Notes
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {product.variants.map((v) => (
+                        <tr
+                          key={v.code}
+                          className="border-t border-border/40 transition-colors hover:bg-muted/20 dark:border-white/[0.05] dark:hover:bg-white/[0.025]"
+                        >
+                          <td className="px-5 py-3 font-medium text-foreground">
+                            {v.code}
+                          </td>
+                          <td className="px-5 py-3 text-foreground/85">
+                            {v.voltage}
+                          </td>
+                          <td className="px-5 py-3 text-muted-foreground">
+                            {v.sectionLength ?? "—"}
+                          </td>
+                          <td className="px-5 py-3 text-muted-foreground">
+                            {v.creepage ?? "—"}
+                          </td>
+                          <td className="px-5 py-3 text-muted-foreground">
+                            {v.notes ?? "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </ScrollPan>
             </div>
 
@@ -446,8 +466,8 @@ export default async function ProductDetailPage({ params }: Props) {
                   >
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/40 dark:bg-white/[0.02]">
                       <Image
-                        src={FAMILY_THUMBNAIL[r.family]}
-                        alt=""
+                        src={resolveProductImage(r)}
+                        alt={r.name}
                         fill
                         sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 92vw"
                         className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.04] group-hover:grayscale-0"
@@ -477,8 +497,114 @@ export default async function ProductDetailPage({ params }: Props) {
         </section>
       )}
 
-      <FooterSection />
+      <SiteFooter />
     </main>
+  );
+}
+
+/** Same column order as the first two MV datasheets for every product. */
+const TECH_BODY_COLUMNS = [
+  "ratedVoltage",
+  "sml",
+  "sectionLength",
+  "arcingDistance",
+  "shedDiameter",
+  "minimumCreepage",
+  "impulseWithstand",
+  "impulseNegative",
+  "dryWithstand",
+  "wetWithstand",
+] as const;
+
+function ProductTechnicalTable({ product }: { product: Product }) {
+  const rows = product.variants ?? [];
+
+  return (
+    <table className={cn(techTableClass, "min-w-[980px] tabular")}>
+      <thead>
+        <tr>
+          <th rowSpan={2} scope="col" className={techTableHeadStickyClass}>
+            Type
+          </th>
+          <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            Rated System Voltage (kV)
+          </th>
+          <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            Specified mechanical load (kN)
+          </th>
+          <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            Section length (mm)
+          </th>
+          <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            Arcing distance (mm)
+          </th>
+          <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            Diameter of shed (mm)
+          </th>
+          <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            Creepage distance (mm)
+          </th>
+          <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
+            Lightning impulse flashover voltage (kV)
+          </th>
+          <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
+            Power frequency flashover voltage (kV)
+          </th>
+        </tr>
+        <tr>
+          <th scope="col" className={techTableHeadCellClass}>
+            Positive
+          </th>
+          <th scope="col" className={techTableHeadCellClass}>
+            Negative
+          </th>
+          <th scope="col" className={techTableHeadCellClass}>
+            Dry
+          </th>
+          <th scope="col" className={techTableHeadCellClass}>
+            Wet
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, idx) => {
+          const isLast = idx === rows.length - 1;
+          const tech = row.technical;
+          return (
+            <tr key={row.code} className="bg-background">
+              <td
+                className={cn(
+                  techTableBodyStickyClass,
+                  !isLast && "border-b border-border/70",
+                )}
+              >
+                {row.code}
+              </td>
+              {TECH_BODY_COLUMNS.map((key, i) => {
+                const value = tech?.[key];
+                return (
+                  <td
+                    key={key}
+                    className={cn(
+                      techTableBodyCellClass,
+                      i !== TECH_BODY_COLUMNS.length - 1 &&
+                        "border-r border-border/70",
+                      !isLast && "border-b border-border/70",
+                    )}
+                  >
+                    {value && value.trim().length > 0 ? (
+                      value
+                    ) : (
+                      <span className="text-muted-foreground/50">—</span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 
@@ -516,7 +642,7 @@ function SpecTile({
  * ages quickly), the page synthesises three short value props from the
  * product's family and subFamily. Stable, hand-curated copy per category.
  */
-function deriveBenefits(p: (typeof PRODUCTS)[number]) {
+function deriveBenefits(p: Product) {
   const base = [
     {
       tag: "Hydrophobicity",

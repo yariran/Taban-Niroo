@@ -26,7 +26,7 @@ export default async function Image() {
             "radial-gradient(120% 80% at 70% -10%, rgba(56,189,248,0.18), rgba(0,0,0,0)) , linear-gradient(180deg, #050810 0%, #0a0d18 100%)",
           color: "#fafafa",
           padding: "84px 96px",
-          fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: "Inter, InterVariable, sans-serif",
           position: "relative",
         }}
       >

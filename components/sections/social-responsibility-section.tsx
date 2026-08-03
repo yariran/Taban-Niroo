@@ -1,17 +1,9 @@
 /**
- * Social Responsibilities section.
- *
- * The three commitments below are reproduced from the Taban Niroo
- * Company Profile (2026, section "Social Responsibilities"). Each card
- * keeps the exact pillar name used in the source PDF — do not rename
- * without an updated brand document. The short descriptions paraphrase
- * the supporting sentences in the PDF to fit an editorial layout while
- * staying faithful to the original meaning.
- *
- * Design intent: matches the editorial rhythm of `WhyTabanSection` —
- * eyebrow + display heading + numbered list with hairline dividers. No
- * new colour tokens, fonts or shadows.
+ * Social Responsibilities section — CMS-overridable.
  */
+
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
 
 type Commitment = {
   number: string;
@@ -40,7 +32,30 @@ const COMMITMENTS: readonly Commitment[] = [
   },
 ];
 
-export function SocialResponsibilitySection() {
+export function SocialResponsibilitySection({
+  cms,
+}: { cms?: ContentBlock } = {}) {
+  const eyebrow = cmsText(cms, "eyebrow", "Social responsibilities");
+  const title = cmsText(
+    cms,
+    "title",
+    "Accountable to\nour people and place.",
+  );
+  const body = cmsText(
+    cms,
+    "body",
+    "Taban Niroo pairs its engineering commitments with a small number of social ones — kept deliberately short so we can actually deliver on them. They are the same three principles printed inside the current Company Profile.",
+  );
+  const items =
+    cms?.items?.length && cms.items.some((i) => i.label.trim())
+      ? cms.items.map((item, i) => ({
+          number: String(i + 1).padStart(2, "0"),
+          title: item.label,
+          description: item.body || item.value || "",
+        }))
+      : COMMITMENTS;
+  const titleLines = title.split("\n");
+
   return (
     <section
       id="social-responsibility"
@@ -51,41 +66,41 @@ export function SocialResponsibilitySection() {
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
             <div className="md:col-span-5">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                Social responsibilities
+              <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
+                {eyebrow}
               </p>
               <h2
                 id="social-responsibility-heading"
-                className="mt-4 text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl"
+                className="mt-4 text-3xl font-medium tracking-tight text-brand-navy md:text-4xl lg:text-5xl"
               >
-                Accountable to
-                <br />
-                our people and place.
+                {titleLines.map((line, i) => (
+                  <span key={i}>
+                    {i > 0 ? <br /> : null}
+                    {line}
+                  </span>
+                ))}
               </h2>
             </div>
             <div className="md:col-span-7 md:pt-3">
               <p className="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-                Taban Niroo pairs its engineering commitments with a small
-                number of social ones — kept deliberately short so we can
-                actually deliver on them. They are the same three principles
-                printed inside the current Company Profile.
+                {body}
               </p>
             </div>
           </div>
 
           <ol className="mt-16 border-t border-border md:mt-24">
-            {COMMITMENTS.map((item) => (
+            {items.map((item) => (
               <li
-                key={item.number}
+                key={item.number + item.title}
                 className="group grid grid-cols-1 gap-4 border-b border-border py-10 transition-colors duration-300 hover:bg-muted/25 md:grid-cols-12 md:gap-8 md:px-2 md:py-12 dark:hover:bg-white/[0.03]"
               >
                 <div className="md:col-span-2">
-                  <p className="font-mono text-xs tracking-widest text-muted-foreground">
+                  <p className="font-mono text-xs tracking-widest text-brand-burgundy">
                     {item.number}
                   </p>
                 </div>
                 <div className="md:col-span-4">
-                  <h3 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+                  <h3 className="text-xl font-medium tracking-tight text-brand-navy md:text-2xl">
                     {item.title}
                   </h3>
                 </div>

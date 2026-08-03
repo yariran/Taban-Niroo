@@ -17,7 +17,7 @@ const STORAGE_KEY = "tn:consent:v1";
  * UX choices on purpose:
  *  • Slides up from the bottom 600 ms after first paint so it doesn't
  *    fight the hero entrance.
- *  • Dismisses on click, scroll past 25% of the page, or accept/decline.
+ *  • Requires an explicit Accept or Decline — never auto-accepts on scroll.
  *  • Honours `prefers-reduced-motion` (disables slide).
  *  • Renders nothing during SSR so it never causes layout shift.
  */
@@ -29,6 +29,7 @@ export function CookieConsent() {
   const persist = useCallback((value: "accept" | "decline") => {
     try {
       window.localStorage.setItem(STORAGE_KEY, value);
+      window.dispatchEvent(new Event("tn:consent"));
     } catch {
       // Storage may be disabled — silent fail.
     }
@@ -64,24 +65,13 @@ export function CookieConsent() {
 
     const showTimer = window.setTimeout(() => {
       setVisible(true);
-      // Allow the next frame to apply the entrance transition.
       requestAnimationFrame(() => setAnimating(true));
     }, 600);
 
-    const onScroll = () => {
-      const max =
-        document.documentElement.scrollHeight - window.innerHeight;
-      if (max > 0 && window.scrollY / max > 0.25) {
-        accept();
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-
     return () => {
       window.clearTimeout(showTimer);
-      window.removeEventListener("scroll", onScroll);
     };
-  }, [accept]);
+  }, []);
 
   if (!visible) return null;
 
@@ -90,11 +80,11 @@ export function CookieConsent() {
       role="region"
       aria-label="Cookie & analytics notice"
       data-animate={reduceMotion ? "off" : animating ? "in" : "out"}
-      className="cookie-consent-shell pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center px-4 pb-4 sm:px-6 sm:pb-6"
+      className="cookie-consent-shell pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center px-4 pb-[max(1rem,var(--sab))] sm:px-6 sm:pb-[max(1.5rem,var(--sab))]"
     >
       <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border/80 bg-background/95 px-5 py-4 text-foreground shadow-elevate backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-white/[0.08] dark:supports-[backdrop-filter]:bg-background/70 sm:px-6 sm:py-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <div className="text-[13px] leading-relaxed text-foreground/85">
+          <div className="text-[13px] leading-relaxed text-foreground/85 sm:text-sm">
             <p className="font-medium text-foreground">
               We use cookies for first-party analytics.
             </p>
@@ -113,14 +103,14 @@ export function CookieConsent() {
             <button
               type="button"
               onClick={decline}
-              className="rounded-full border border-border bg-background/50 px-4 py-2 text-xs font-medium text-foreground transition-colors hover:border-foreground/60 dark:border-white/[0.08]"
+              className="touch-target inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-background/50 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/60 dark:border-white/[0.08]"
             >
               Decline
             </button>
             <button
               type="button"
               onClick={accept}
-              className="rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background transition-colors hover:bg-foreground/90"
+              className="touch-target inline-flex min-h-11 items-center justify-center rounded-full bg-brand-navy px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
             >
               Accept
             </button>

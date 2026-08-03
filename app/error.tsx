@@ -22,6 +22,9 @@ export default function RouteError({
 }) {
   useEffect(() => {
     console.error("[route-error]", error);
+    void import("@/lib/report-error").then(({ reportError }) =>
+      reportError(error, { boundary: "route", digest: error.digest }),
+    );
   }, [error]);
 
   return (
@@ -62,7 +65,7 @@ export default function RouteError({
           <button
             type="button"
             onClick={() => reset()}
-            className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
           >
             Retry
           </button>

@@ -28,6 +28,8 @@ export type ProductTechnicalRow = {
   impulseWithstand?: string;
   /** Lightning impulse flashover — negative polarity (kV). */
   impulseNegative?: string;
+  /** Power-frequency flashover — dry (kV). */
+  dryWithstand?: string;
   wetWithstand?: string;
   weight?: string;
 };
@@ -64,6 +66,11 @@ export type Product = {
   image?: string | null;
   /** Sort key inside its family (existing semantics). */
   order: number;
+  /**
+   * When true, product stays in CMS/admin but is omitted from the
+   * public catalogue, mega-menu, sitemap, and related rails.
+   */
+  hidden?: boolean;
   variants?: ProductVariant[];
 };
 
@@ -105,19 +112,514 @@ export const FAMILY_ANCHOR: Record<ProductFamilyId, string> = {
 };
 
 export const FAMILY_THUMBNAIL: Record<ProductFamilyId, string> = {
-  "Silicone Composite Insulators": "/images/LONGROD_INSULATORS.png",
-  "Hybrid Insulators": "/images/HYBRIDINSULATORS.png",
+  "Silicone Composite Insulators": "/images/LONGROD_INSULATORS.jpg",
+  "Hybrid Insulators": "/images/HYBRIDINSULATORS.jpg",
   "Transformer Bushings": "/images/TRANSFORMERBUSHINGS.png",
-  "Cable Accessories": "/images/CABLEACCESSORIES.png",
-  "Overhead Feeder Line Composite": "/images/CABLEACCESSORIES.png",
-  "Creepage Extenders & Covers": "/images/CREEPAGEEXTENDERSANDCOVERS.png",
+  "Cable Accessories": "/images/featured-cable-accessories-home.jpg",
+  "Overhead Feeder Line Composite": "/images/product-gallery-cutout-fuses.png",
+  "Creepage Extenders & Covers": "/images/featured-creepage-extenders.jpg",
 };
+
+/**
+ * Prefer a product-specific image; otherwise map by id/sub-family to an
+ * existing catalogue asset so the grid never shows an empty blueprint cell.
+ */
+export function resolveProductImage(
+  product: Pick<Product, "id" | "subFamily" | "image"> & {
+    family: ProductFamilyId | string;
+  },
+): string {
+  if (product.image) return product.image;
+
+  const id = product.id;
+  const sub = product.subFamily.toLowerCase();
+  const family = product.family as ProductFamilyId;
+
+  if (id.includes("hollow-core")) {
+    return "/images/featured-hollow-core-bushing.jpg";
+  }
+  if (id.includes("interphase") || id.includes("spacer")) {
+    return "/images/product-gallery-phase-spacer.png";
+  }
+  if (id.includes("cutout") || id.includes("surge")) {
+    return "/images/product-gallery-cutout-fuses.png";
+  }
+  if (
+    id.includes("line-post") ||
+    id.includes("station-post") ||
+    id.includes("railway") ||
+    sub.includes("post")
+  ) {
+    return "/images/featured-post-line-station-railway-v3.jpg";
+  }
+  if (id.includes("hybrid")) {
+    return "/images/featured-hybrid-post-insulators-v2.jpg";
+  }
+  if (
+    id.includes("termination") ||
+    id.includes("joint") ||
+    id.includes("cable")
+  ) {
+    return "/images/featured-cable-accessories-home.jpg";
+  }
+  if (
+    id.includes("creepage") ||
+    id.includes("cover") ||
+    id.includes("bird") ||
+    id.includes("wire")
+  ) {
+    return "/images/featured-creepage-extenders.jpg";
+  }
+  if (
+    id.includes("bushing") ||
+    id.includes("polymer") ||
+    id.includes("plug-in")
+  ) {
+    return "/images/TRANSFORMERBUSHINGS.png";
+  }
+  if (id.includes("long-rod") || id.includes("suspension")) {
+    return "/images/LONGROD_INSULATORS.jpg";
+  }
+
+  return (
+    FAMILY_THUMBNAIL[family] ??
+    FAMILY_THUMBNAIL["Silicone Composite Insulators"]
+  );
+}
 
 /**
  * Catalogue. Migrated 1:1 from `product-catalog-section.tsx`.
  */
 export const PRODUCTS: readonly Product[] = [
   // ── 01 · Silicone Composite Insulators ──
+  {
+    id: "suspension-tension-24-36",
+    name: "24 kV & 36 kV Composite Suspension/Tension Insulator",
+    family: "Silicone Composite Insulators",
+    subFamily: "Suspension / Tension",
+    catalogueRef: "DPL11 · DPL15 · DPL24 · DPL36 — TC / BS series",
+    summary:
+      "Composite suspension and tension insulators for 11–36 kV distribution and sub-transmission lines. Tongue-clevis and ball-and-socket end fittings with 70 kN and 80/120 kN mechanical load classes.",
+    applications: "Distribution & sub-transmission · Suspension & tension",
+    voltageClass: "11 · 15 · 24 · 36 kV",
+    standard: "IEC 61109 · IEC 61192",
+    image: null,
+    order: 10,
+    variants: [
+      {
+        code: "DPL11-440-70TC",
+        voltage: "11 kV",
+        sectionLength: "370±15 mm",
+        creepage: "440 mm",
+        technical: {
+          ratedVoltage: "11",
+          sml: "70",
+          sectionLength: "370±15",
+          arcingDistance: "200",
+          shedDiameter: "132/115",
+          minimumCreepage: "440",
+          impulseWithstand: "140",
+          impulseNegative: "155",
+          dryWithstand: "70",
+          wetWithstand: "50",
+        },
+      },
+      {
+        code: "DPL15-660-70TC",
+        voltage: "15 kV",
+        sectionLength: "370±15 mm",
+        creepage: "660 mm",
+        technical: {
+          ratedVoltage: "15",
+          sml: "70",
+          sectionLength: "370±15",
+          arcingDistance: "250",
+          shedDiameter: "132/115",
+          minimumCreepage: "660",
+          impulseWithstand: "170",
+          impulseNegative: "180",
+          dryWithstand: "85",
+          wetWithstand: "70",
+        },
+      },
+      {
+        code: "DPL24-710-70TC",
+        voltage: "24 kV",
+        sectionLength: "480±15 mm",
+        creepage: "710 mm",
+        technical: {
+          ratedVoltage: "24",
+          sml: "70",
+          sectionLength: "480±15",
+          arcingDistance: "325",
+          shedDiameter: "100/80",
+          minimumCreepage: "710",
+          impulseWithstand: "240",
+          impulseNegative: "250",
+          dryWithstand: "145",
+          wetWithstand: "130",
+        },
+      },
+      {
+        code: "DPL24-710-70BS",
+        voltage: "24 kV",
+        sectionLength: "480±15 mm",
+        creepage: "710 mm",
+        technical: {
+          ratedVoltage: "24",
+          sml: "70",
+          sectionLength: "480±15",
+          arcingDistance: "325",
+          shedDiameter: "100/80",
+          minimumCreepage: "710",
+          impulseWithstand: "240",
+          impulseNegative: "250",
+          dryWithstand: "145",
+          wetWithstand: "130",
+        },
+      },
+      {
+        code: "DPL24-770-70TC",
+        voltage: "24 kV",
+        sectionLength: "480±15 mm",
+        creepage: "770 mm",
+        technical: {
+          ratedVoltage: "24",
+          sml: "70",
+          sectionLength: "480±15",
+          arcingDistance: "325",
+          shedDiameter: "105/80",
+          minimumCreepage: "770",
+          impulseWithstand: "240",
+          impulseNegative: "250",
+          dryWithstand: "145",
+          wetWithstand: "130",
+        },
+      },
+      {
+        code: "DPL36-920-70TC",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "920 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "70",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "110/85",
+          minimumCreepage: "920",
+          impulseWithstand: "275",
+          impulseNegative: "290",
+          dryWithstand: "155",
+          wetWithstand: "140",
+        },
+      },
+      {
+        code: "DPL36-1120-70TC",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1120 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "70",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "124/100",
+          minimumCreepage: "1120",
+          impulseWithstand: "290",
+          impulseNegative: "300",
+          dryWithstand: "170",
+          wetWithstand: "155",
+        },
+      },
+      {
+        code: "DPL36-1440-70TC",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1440 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "70",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "132/115",
+          minimumCreepage: "1440",
+          impulseWithstand: "325",
+          impulseNegative: "340",
+          dryWithstand: "190",
+          wetWithstand: "175",
+        },
+      },
+      {
+        code: "DPL36-920-80/120BS",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "920 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "80/120",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "110/85",
+          minimumCreepage: "920",
+          impulseWithstand: "275",
+          impulseNegative: "290",
+          dryWithstand: "155",
+          wetWithstand: "140",
+        },
+      },
+      {
+        code: "DPL36-1120-80/120BS",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1120 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "80/120",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "124/100",
+          minimumCreepage: "1120",
+          impulseWithstand: "290",
+          impulseNegative: "300",
+          dryWithstand: "170",
+          wetWithstand: "155",
+        },
+      },
+      {
+        code: "DPL36-1440-80/120BS",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1440 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "80/120",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "132/115",
+          minimumCreepage: "1440",
+          impulseWithstand: "325",
+          impulseNegative: "340",
+          dryWithstand: "190",
+          wetWithstand: "175",
+        },
+      },
+    ],
+  },
+  {
+    id: "line-post-24-36",
+    name: "24 kV & 36 kV Line Post Insulator",
+    family: "Silicone Composite Insulators",
+    subFamily: "Composite Post",
+    catalogueRef: "DPL11 · DPL15 · DPL24 · DPL36 — 6L / TC / BS series",
+    summary:
+      "Composite line post insulators for 11–36 kV distribution and sub-transmission networks. Line-post, tongue-clevis and ball-and-socket fittings covering 6 kN and 70–120 kN mechanical load classes.",
+    applications: "Distribution & sub-transmission · Line post",
+    voltageClass: "11 · 15 · 24 · 36 kV",
+    standard: "IEC 61109 · IEC 62217",
+    image: null,
+    order: 11,
+    variants: [
+      {
+        code: "DPL11-420-6L",
+        voltage: "11 kV",
+        sectionLength: "370±15 mm",
+        creepage: "440 mm",
+        technical: {
+          ratedVoltage: "11",
+          sml: "6",
+          sectionLength: "370±15",
+          arcingDistance: "200",
+          shedDiameter: "132/115",
+          minimumCreepage: "440",
+          impulseWithstand: "140",
+          impulseNegative: "155",
+          dryWithstand: "70",
+          wetWithstand: "50",
+        },
+      },
+      {
+        code: "DPL15-550-6L",
+        voltage: "15 kV",
+        sectionLength: "370±15 mm",
+        creepage: "660 mm",
+        technical: {
+          ratedVoltage: "15",
+          sml: "6",
+          sectionLength: "370±15",
+          arcingDistance: "250",
+          shedDiameter: "132/115",
+          minimumCreepage: "660",
+          impulseWithstand: "170",
+          impulseNegative: "180",
+          dryWithstand: "85",
+          wetWithstand: "70",
+        },
+      },
+      {
+        code: "DPL24-620-6L",
+        voltage: "24 kV",
+        sectionLength: "480±15 mm",
+        creepage: "710 mm",
+        technical: {
+          ratedVoltage: "24",
+          sml: "70",
+          sectionLength: "480±15",
+          arcingDistance: "325",
+          shedDiameter: "100/80",
+          minimumCreepage: "710",
+          impulseWithstand: "240",
+          impulseNegative: "250",
+          dryWithstand: "110",
+          wetWithstand: "90",
+        },
+      },
+      {
+        code: "DPL24-700-6L",
+        voltage: "24 kV",
+        sectionLength: "480±15 mm",
+        creepage: "710 mm",
+        technical: {
+          ratedVoltage: "24",
+          sml: "70",
+          sectionLength: "480±15",
+          arcingDistance: "325",
+          shedDiameter: "100/80",
+          minimumCreepage: "710",
+          impulseWithstand: "240",
+          impulseNegative: "250",
+          dryWithstand: "110",
+          wetWithstand: "90",
+        },
+      },
+      {
+        code: "DPL24-800-6L",
+        voltage: "24 kV",
+        sectionLength: "480±15 mm",
+        creepage: "770 mm",
+        technical: {
+          ratedVoltage: "24",
+          sml: "70",
+          sectionLength: "480±15",
+          arcingDistance: "325",
+          shedDiameter: "105/80",
+          minimumCreepage: "770",
+          impulseWithstand: "240",
+          impulseNegative: "250",
+          dryWithstand: "110",
+          wetWithstand: "90",
+        },
+      },
+      {
+        code: "DPL36-700-6L",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "920 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "70",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "110/85",
+          minimumCreepage: "920",
+          impulseWithstand: "275",
+          impulseNegative: "290",
+          dryWithstand: "130",
+          wetWithstand: "110",
+        },
+      },
+      {
+        code: "DPL36-1120-70TC",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1120 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "70",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "124/100",
+          minimumCreepage: "1120",
+          impulseWithstand: "290",
+          impulseNegative: "300",
+          dryWithstand: "130",
+          wetWithstand: "110",
+        },
+      },
+      {
+        code: "DPL36-1440-70TC",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1440 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "70",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "132/115",
+          minimumCreepage: "1440",
+          impulseWithstand: "325",
+          impulseNegative: "340",
+          dryWithstand: "130",
+          wetWithstand: "110",
+        },
+      },
+      {
+        code: "DPL36-920-80/120BS",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "920 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "80/120",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "110/85",
+          minimumCreepage: "920",
+          impulseWithstand: "275",
+          impulseNegative: "290",
+          dryWithstand: "130",
+          wetWithstand: "110",
+        },
+      },
+      {
+        code: "DPL36-1120-80/120BS",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1120 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "80/120",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "124/100",
+          minimumCreepage: "1120",
+          impulseWithstand: "290",
+          impulseNegative: "300",
+          dryWithstand: "130",
+          wetWithstand: "110",
+        },
+      },
+      {
+        code: "DPL36-1440-80/120BS",
+        voltage: "36 kV",
+        sectionLength: "580±15 mm",
+        creepage: "1440 mm",
+        technical: {
+          ratedVoltage: "36",
+          sml: "80/120",
+          sectionLength: "580±15",
+          arcingDistance: "420",
+          shedDiameter: "132/115",
+          minimumCreepage: "1440",
+          impulseWithstand: "325",
+          impulseNegative: "340",
+          dryWithstand: "130",
+          wetWithstand: "110",
+        },
+      },
+    ],
+  },
   {
     id: "long-rod-distribution",
     name: "Distribution Network Insulator",
@@ -130,7 +632,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "20 – 33 kV",
     standard: "IEC 61109 · IEC 61466 · IEC 60120 / 60471",
     image: null,
-    order: 11,
+    order: 12,
   },
   {
     id: "long-rod-transmission",
@@ -158,7 +660,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "63 · 110 kV",
     standard: "IEC 61109 · IEC 61192",
     image: null,
-    order: 13,
+    order: 12,
     variants: [
       {
         code: "DPL63-1950-80/120BS",
@@ -354,7 +856,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "132 · 161 kV",
     standard: "IEC 61109 · IEC 61192",
     image: null,
-    order: 14,
+    order: 13,
     variants: [
       {
         code: "DPL132-5160-80/120BS",
@@ -658,7 +1160,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "220 · 230 kV",
     standard: "IEC 61109 · IEC 61192",
     image: null,
-    order: 15,
+    order: 14,
     variants: [
       {
         code: "DPL220-7785-120BS",
@@ -1134,7 +1636,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "330 kV",
     standard: "IEC 61109 · IEC 61192",
     image: null,
-    order: 16,
+    order: 15,
     variants: [
       {
         code: "DPL330-11450-120BS",
@@ -1456,7 +1958,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "400 kV",
     standard: "IEC 61109 · IEC 61192",
     image: null,
-    order: 17,
+    order: 16,
     variants: [
       {
         code: "DPL400-13800-120BS",
@@ -1903,6 +2405,383 @@ export const PRODUCTS: readonly Product[] = [
     ],
   },
   {
+    id: "suspension-tension-500",
+    name: "500 kV Composite Suspension/Tension Insulator",
+    family: "Silicone Composite Insulators",
+    subFamily: "Suspension / Tension",
+    catalogueRef: "DPL400 — 160/210 · 300 BS series (500 kV)",
+    summary:
+      "Composite suspension and tension insulators for 500 kV transmission lines. Ball-and-socket fittings with 160/210 kN and 300 kN mechanical load classes, IEC type-tested creepage and impulse performance.",
+    applications: "Transmission lines · Suspension & tension",
+    voltageClass: "500 kV",
+    standard: "IEC 61109 · IEC 61192",
+    image: null,
+    order: 17,
+    hidden: false,
+    variants: [
+      {
+        code: "DPL400-17700-160/210",
+        voltage: "500 kV",
+        sectionLength: "4410 mm",
+        creepage: "17700 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "4410",
+          arcingDistance: "4150",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "17700",
+          impulseNegative: "2550",
+          dryWithstand: "800",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-17700-300BS",
+        voltage: "500 kV",
+        sectionLength: "4470 mm",
+        creepage: "17700 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "4470",
+          arcingDistance: "4150",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "17700",
+          impulseNegative: "2550",
+          dryWithstand: "800",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-18250-160/210",
+        voltage: "500 kV",
+        sectionLength: "4530 mm",
+        creepage: "18250 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "4530",
+          arcingDistance: "4270",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "18250",
+          impulseNegative: "2550",
+          dryWithstand: "800",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-18250-300BS",
+        voltage: "500 kV",
+        sectionLength: "4590 mm",
+        creepage: "18250 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "4590",
+          arcingDistance: "4270",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "18250",
+          impulseNegative: "2550",
+          dryWithstand: "800",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-18800-160/210",
+        voltage: "500 kV",
+        sectionLength: "4650 mm",
+        creepage: "18800 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "4650",
+          arcingDistance: "4390",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "18800",
+          impulseNegative: "2700",
+          dryWithstand: "850",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-18800-300BS",
+        voltage: "500 kV",
+        sectionLength: "4710 mm",
+        creepage: "18800 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "4710",
+          arcingDistance: "4390",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "18800",
+          impulseNegative: "2700",
+          dryWithstand: "850",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-19300-160/210",
+        voltage: "500 kV",
+        sectionLength: "4770 mm",
+        creepage: "19300 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "4770",
+          arcingDistance: "4510",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "19300",
+          impulseNegative: "2700",
+          dryWithstand: "850",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-19300-300BS",
+        voltage: "500 kV",
+        sectionLength: "4830 mm",
+        creepage: "19300 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "4830",
+          arcingDistance: "4510",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "19300",
+          impulseNegative: "2700",
+          dryWithstand: "850",
+          wetWithstand: "1550",
+        },
+      },
+      {
+        code: "DPL400-19900-160/210",
+        voltage: "500 kV",
+        sectionLength: "4890 mm",
+        creepage: "19900 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "4890",
+          arcingDistance: "4630",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "19900",
+          impulseNegative: "2800",
+          dryWithstand: "950",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-19900-300BS",
+        voltage: "500 kV",
+        sectionLength: "4950 mm",
+        creepage: "19900 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "4950",
+          arcingDistance: "4630",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "19900",
+          impulseNegative: "2800",
+          dryWithstand: "950",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-20500-160/210",
+        voltage: "500 kV",
+        sectionLength: "5010 mm",
+        creepage: "20500 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "5010",
+          arcingDistance: "4750",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "20500",
+          impulseNegative: "2850",
+          dryWithstand: "950",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-20500-300BS",
+        voltage: "500 kV",
+        sectionLength: "5070 mm",
+        creepage: "20500 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "5070",
+          arcingDistance: "4750",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "20500",
+          impulseNegative: "2850",
+          dryWithstand: "950",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-21100-160/210",
+        voltage: "500 kV",
+        sectionLength: "5130 mm",
+        creepage: "21100 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "5130",
+          arcingDistance: "4870",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "21100",
+          impulseNegative: "2850",
+          dryWithstand: "950",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-21100-300BS",
+        voltage: "500 kV",
+        sectionLength: "5190 mm",
+        creepage: "21100 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "5190",
+          arcingDistance: "4870",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "21100",
+          impulseNegative: "2850",
+          dryWithstand: "950",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-21600-160/210",
+        voltage: "500 kV",
+        sectionLength: "5190 mm",
+        creepage: "21600 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "5190",
+          arcingDistance: "4990",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "21600",
+          impulseNegative: "2950",
+          dryWithstand: "1050",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-21600-300BS",
+        voltage: "500 kV",
+        sectionLength: "5250 mm",
+        creepage: "21600 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "5250",
+          arcingDistance: "4990",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "21600",
+          impulseNegative: "2950",
+          dryWithstand: "1050",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-22160-160/210",
+        voltage: "500 kV",
+        sectionLength: "5310 mm",
+        creepage: "22160 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "160/210",
+          couplingSize: "20",
+          sectionLength: "5310",
+          arcingDistance: "5110",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "22160",
+          impulseNegative: "2950",
+          dryWithstand: "1050",
+          wetWithstand: "1650",
+        },
+      },
+      {
+        code: "DPL400-22160-300BS",
+        voltage: "500 kV",
+        sectionLength: "5370 mm",
+        creepage: "22160 mm",
+        technical: {
+          ratedVoltage: "500",
+          sml: "300",
+          couplingSize: "24",
+          sectionLength: "5370",
+          arcingDistance: "5110",
+          shedDiameter: "160/125",
+          shedSpacing: "60",
+          minimumCreepage: "60",
+          impulseWithstand: "22160",
+          impulseNegative: "2950",
+          dryWithstand: "1050",
+          wetWithstand: "1650",
+        },
+      },
+    ],
+  },
+  {
     id: "interphase-spacer-mv",
     name: "Interphase Spacer — Medium Voltage",
     family: "Silicone Composite Insulators",
@@ -2188,7 +3067,7 @@ export const PRODUCTS: readonly Product[] = [
   },
   {
     id: "hollow-core-insulator",
-    name: "",
+    name: "Hollow Core Insulator",
     family: "Transformer Bushings",
     subFamily: "Hollow Core",
     catalogueRef: "Hollow core insulator",
@@ -2367,19 +3246,49 @@ export const PRODUCTS: readonly Product[] = [
   },
 ];
 
+/** True when the product has at least one filled datasheet row. */
+export function hasTechnicalTable(product: Product): boolean {
+  return Boolean(
+    product.variants?.some(
+      (v) => v.technical && Object.keys(v.technical).length > 0,
+    ),
+  );
+}
+
+/**
+ * Public catalogue visibility.
+ * Explicit `hidden: true` always hides. Explicit `hidden: false` always
+ * shows. Otherwise only products with a filled technical table are listed
+ * (temporary rule while the rest of the catalogue is being completed).
+ */
+export function isProductListed(product: Product): boolean {
+  if (product.hidden === true) return false;
+  if (product.hidden === false) return true;
+  return hasTechnicalTable(product);
+}
+
+export function listProducts(products: readonly Product[]): Product[] {
+  return products
+    .filter(isProductListed)
+    .slice()
+    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+}
+
 /** Lookup helpers used across pages, sitemap, dynamic OG. */
 export function getProductBySlug(slug: string): Product | undefined {
-  return PRODUCTS.find((p) => p.id === slug);
+  const product = PRODUCTS.find((p) => p.id === slug);
+  if (!product || !isProductListed(product)) return undefined;
+  return product;
 }
 
 export function getAllProductSlugs(): string[] {
-  return PRODUCTS.map((p) => p.id);
+  return listProducts(PRODUCTS).map((p) => p.id);
 }
 
 export function getProductsByFamily(): Record<ProductFamilyId, Product[]> {
   const grouped = {} as Record<ProductFamilyId, Product[]>;
   for (const f of FAMILY_ORDER) grouped[f] = [];
-  for (const p of PRODUCTS) {
+  for (const p of listProducts(PRODUCTS)) {
     grouped[p.family].push(p);
   }
   for (const f of FAMILY_ORDER) {
@@ -2389,9 +3298,9 @@ export function getProductsByFamily(): Record<ProductFamilyId, Product[]> {
 }
 
 export function getRelatedProducts(slug: string, limit = 3): Product[] {
-  const target = getProductBySlug(slug);
+  const target = PRODUCTS.find((p) => p.id === slug);
   if (!target) return [];
-  return PRODUCTS.filter(
-    (p) => p.id !== slug && p.family === target.family,
-  ).slice(0, limit);
+  return listProducts(PRODUCTS)
+    .filter((p) => p.id !== slug && p.family === target.family)
+    .slice(0, limit);
 }

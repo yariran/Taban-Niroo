@@ -1,23 +1,36 @@
 import type { Metadata } from "next";
-import { LegalPageShell } from "@/components/legal-page-shell";
+import { CmsProseBody, LegalPageShell } from "@/components/legal-page-shell";
+import { getSiteContent } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
+import { pageSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageSocial({
   title: "Privacy notice",
   description:
     "How Taban Niroo handles personal data collected through this website — analytics, contact submissions, retention and your rights.",
-  alternates: { canonical: "/privacy" },
-};
+  path: "/privacy",
+});
 
 const LAST_UPDATED = "31 March 2026";
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const content = await getSiteContent();
+  const block = content.legal?.privacy;
+  const eyebrow = cmsText(block, "eyebrow", '01 · Privacy');
+  const title = cmsText(block, "title", 'Privacy notice.');
+  const lede = cmsText(block, "titleLine2", 'We keep things minimal: first-party analytics for traffic, encrypted enquiry forms, and zero ad tracking — full stop.');
+  const cmsBody = block?.body?.trim();
+
   return (
     <LegalPageShell
-      eyebrow="01 · Privacy"
-      title="Privacy notice."
-      lede="We keep things minimal: first-party analytics for traffic, encrypted enquiry forms, and zero ad tracking — full stop."
+      eyebrow={eyebrow}
+      title={title}
+      lede={lede}
       lastUpdated={LAST_UPDATED}
+      footerCms={content.footer}
     >
+      {cmsBody ? <CmsProseBody body={cmsBody} /> : (
+<>
       <h2>Who we are</h2>
       <p>
         This site is operated by Taban Niroo (Dena Power Line Insulators), a
@@ -82,6 +95,8 @@ export default function PrivacyPage() {
         of the page reflects the latest revision. Material changes are
         announced on the homepage for at least 14 days.
       </p>
+    </>
+      )}
     </LegalPageShell>
   );
 }

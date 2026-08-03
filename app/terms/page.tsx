@@ -1,23 +1,36 @@
 import type { Metadata } from "next";
-import { LegalPageShell } from "@/components/legal-page-shell";
+import { CmsProseBody, LegalPageShell } from "@/components/legal-page-shell";
+import { getSiteContent } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
+import { pageSocial } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageSocial({
   title: "Terms of use",
   description:
     "Terms governing your use of the Taban Niroo website — content accuracy, intellectual property and acceptable use.",
-  alternates: { canonical: "/terms" },
-};
+  path: "/terms",
+});
 
 const LAST_UPDATED = "31 March 2026";
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const content = await getSiteContent();
+  const block = content.legal?.terms;
+  const eyebrow = cmsText(block, "eyebrow", '02 · Terms');
+  const title = cmsText(block, "title", 'Terms of use.');
+  const lede = cmsText(block, "titleLine2", 'Plain-English rules of the road for browsing this website. By using the site you agree to the terms below.');
+  const cmsBody = block?.body?.trim();
+
   return (
     <LegalPageShell
-      eyebrow="02 · Terms"
-      title="Terms of use."
-      lede="Plain-English rules of the road for browsing this website. By using the site you agree to the terms below."
+      eyebrow={eyebrow}
+      title={title}
+      lede={lede}
       lastUpdated={LAST_UPDATED}
+      footerCms={content.footer}
     >
+      {cmsBody ? <CmsProseBody body={cmsBody} /> : (
+<>
       <h2>1. Information accuracy</h2>
       <p>
         Product references, voltage classes and standards listed on this
@@ -73,6 +86,8 @@ export default function TermsPage() {
         Questions about these terms can be addressed to{" "}
         <a href="mailto:info@taban-niroo.com">info@taban-niroo.com</a>.
       </p>
+    </>
+      )}
     </LegalPageShell>
   );
 }

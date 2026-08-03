@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsImage, cmsText } from "@/lib/cms-resolve";
 
-const TIMELINE_IMAGE = "/images/home/history-timeline-v3.jpg";
+const TIMELINE_IMAGE = "/images/home/history-timeline-v4.jpg";
 
 /**
  * Company history timeline.
@@ -16,57 +18,76 @@ const TIMELINE_IMAGE = "/images/home/history-timeline-v3.jpg";
  */
 const MILESTONES = [
   {
-    year: "1997",
-    title: "MV Insulators",
-    description: "Design and production of medium-voltage composite insulators begins.",
+    year: "1998",
+    title: "Journey begins",
+    description:
+      "Our journey started as one of the industry's manufacturing leaders.",
   },
   {
     year: "2002",
-    title: "Hybrid Insulators",
-    description: "First patented hybrid silicone–ceramic insulator programme launches.",
+    title: "DPL Insulator",
+    description: "DPL Insulator brand established.",
   },
   {
     year: "2003",
-    title: "HV Insulators",
-    description: "Product range extends into high-voltage long rod insulators.",
+    title: "MV Insulators",
+    description: "Design and production of medium-voltage insulators.",
+  },
+  {
+    year: "2008",
+    title: "Hybrid Insulators",
+    description: "Design and production of hybrid insulators.",
   },
   {
     year: "2009",
-    title: "DPL Insulator brand",
-    description: "Dena Power Line Insulators unit formalised as the group's manufacturing arm.",
+    title: "HV Insulators",
+    description: "Design and production of high-voltage insulators.",
   },
   {
     year: "2017",
-    title: "MV Transformer Bushings",
-    description: "Design and production of medium-voltage transformer bushings.",
+    title: "Cable Accessories",
+    description: "Design and production of cable accessories.",
   },
   {
-    year: "2018",
+    year: "2019",
     title: "Post Insulators",
-    description: "Line post, station post and railway insulator families added.",
+    description: "Design and production of post insulators.",
   },
   {
     year: "2020",
-    title: "Hybrid Post Insulators",
-    description: "Second-generation hybrid platform extended to post applications.",
+    title: "MV Transformer Bushings",
+    description:
+      "Design and production of medium-voltage transformer bushings.",
   },
   {
     year: "2022",
-    title: "Cable Accessories",
-    description: "Silicone outdoor terminations and joints complete the product line.",
+    title: "Hybrid Post Insulators",
+    description: "Design and production of hybrid post insulators.",
   },
 ] as const;
 
 function TimelineIllustration({
   sizes,
+  src,
   priority = false,
 }: {
   sizes: string;
+  src: string;
   priority?: boolean;
 }) {
+  if (src.startsWith("http")) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt="Taban Niroo history timeline"
+        className="absolute inset-0 h-full w-full object-contain"
+      />
+    );
+  }
   return (
     <Image
-      src={TIMELINE_IMAGE}
+      src={src}
       alt="Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators."
       fill
       sizes={sizes}
@@ -78,23 +99,44 @@ function TimelineIllustration({
   );
 }
 
-export function TimelineSection() {
+export function TimelineSection({ cms }: { cms?: ContentBlock } = {}) {
+  const eyebrow = cmsText(cms, "eyebrow", "History timeline");
+  const title = cmsText(
+    cms,
+    "title",
+    "Twenty-five years of | incremental engineering.",
+  );
+  const body = cmsText(
+    cms,
+    "body",
+    "From medium-voltage beginnings in Shiraz to a full high-voltage catalogue shipped across three continents.",
+  );
+  const image = cmsImage(cms, TIMELINE_IMAGE) ?? TIMELINE_IMAGE;
+  const milestones =
+    cms?.items?.length && cms.items.some((i) => i.label.trim())
+      ? cms.items.map((i) => ({
+          year: i.label,
+          title: i.value || i.label,
+          description: i.body || "",
+        }))
+      : MILESTONES;
+
   return (
     <section
       id="timeline"
-      className="bg-background py-20 md:py-28 lg:py-32"
+      className="bg-brand-navy-soft py-20 md:py-28 lg:py-32 dark:bg-brand-navy-soft"
       aria-labelledby="timeline-heading"
     >
       {/* Header — stays inside the normal editorial column. */}
       <div className="px-6 md:px-12 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <RevealBlock delayMs={40} durationMs={650} distance={12}>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              History timeline
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
+              {eyebrow}
             </p>
           </RevealBlock>
           <span id="timeline-heading" className="sr-only">
-            Twenty-five years of incremental engineering.
+            {title.replace(/\s*\|\s*/g, " ")}
           </span>
           <RevealText
             as="h2"
@@ -102,9 +144,9 @@ export function TimelineSection() {
             delayMs={120}
             stepMs={65}
             durationMs={1050}
-            className="mt-4 max-w-3xl text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl"
+            className="font-hero-slogan text-brand-heading mt-4 max-w-3xl text-3xl font-semibold uppercase tracking-tight md:text-4xl lg:text-5xl"
           >
-            {"Twenty-five years of | incremental engineering."}
+            {title}
           </RevealText>
           <RevealBlock
             delayMs={380}
@@ -113,27 +155,25 @@ export function TimelineSection() {
             className="mt-6 max-w-2xl"
           >
             <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
-              Every milestone below added a new product family to Taban
-              Niroo — from medium-voltage insulators in 1997 to a complete
-              cable-accessories range in 2022.
+              {body}
             </p>
           </RevealBlock>
         </div>
       </div>
 
-      {/* Desktop illustration — full viewport width. */}
+      {/* Wide desktop illustration — only when milestones stay legible. */}
       <figure
-        className="mt-14 hidden w-full bg-white px-4 md:mt-20 md:block md:px-8 lg:px-12 dark:bg-white"
+        className="mt-14 hidden w-full bg-white px-4 lg:mt-20 lg:block lg:px-12 dark:bg-white"
         aria-describedby="timeline-heading"
       >
         <div className="relative mx-auto aspect-[1024/345] w-full max-w-[1400px]">
-          <TimelineIllustration sizes="(min-width: 1024px) 1400px, 100vw" />
+          <TimelineIllustration src={image} sizes="(min-width: 1024px) 1400px, 100vw" />
         </div>
       </figure>
 
-      {/* Mobile — same illustration, horizontal pan for legibility. */}
+      {/* Tablet & mobile — same illustration, horizontal pan for legibility. */}
       <figure
-        className="mt-12 bg-white md:hidden dark:bg-white"
+        className="mt-12 bg-white lg:hidden dark:bg-white"
         aria-describedby="timeline-heading"
       >
         <ScrollPan
@@ -145,7 +185,7 @@ export function TimelineSection() {
           passVerticalScroll
         >
           <div className="relative aspect-[1024/345] w-[1024px] max-w-none shrink-0">
-            <TimelineIllustration sizes="1024px" />
+            <TimelineIllustration src={image} sizes="1024px" />
           </div>
         </ScrollPan>
         <figcaption className="mt-4 flex items-center justify-center gap-2 px-6 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
@@ -163,7 +203,7 @@ export function TimelineSection() {
 
       {/* Screen-reader milestone list — indexable content alongside the art. */}
       <ol className="sr-only">
-        {MILESTONES.map((m) => (
+        {milestones.map((m) => (
           <li key={`sr-${m.year}`}>
             <span>{m.year}</span>
             <span> — </span>

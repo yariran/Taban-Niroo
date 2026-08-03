@@ -16,6 +16,8 @@ import {
   FAMILY_ORDER,
   FAMILY_THUMBNAIL,
   PRODUCTS,
+  listProducts,
+  type Product,
   type ProductFamilyId,
 } from "@/lib/products";
 
@@ -44,9 +46,26 @@ type Props = {
 
 export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
   const [open, setOpen] = useState(false);
+  const [catalogue, setCatalogue] = useState<Product[]>(() =>
+    listProducts(PRODUCTS),
+  );
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/cms/products", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { products?: Product[] } | null) => {
+        if (cancelled || !data?.products?.length) return;
+        setCatalogue(listProducts(data.products));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /** Cancel any pending close when the cursor returns. */
   const cancelClose = () => {
@@ -112,7 +131,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
     string[]
   >;
   for (const f of FAMILY_ORDER) grouped[f] = [];
-  for (const p of PRODUCTS) grouped[p.family].push(p.name);
+  for (const p of catalogue) grouped[p.family].push(p.name);
 
   return (
     <div
@@ -126,42 +145,55 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
       <button
         ref={triggerRef}
         type="button"
-        aria-haspopup="true"
+        id="products-mega-trigger"
+        aria-haspopup="dialog"
         aria-expanded={open}
+        aria-controls="products-mega-panel"
         onClick={() => setOpen((v) => !v)}
         onKeyDown={onTriggerKey}
         className={cn(
-          "flex items-center gap-1.5 border-b border-transparent pb-0.5 text-sm font-medium",
-          "transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "inline-flex items-center gap-1 whitespace-nowrap text-[13px] font-medium leading-none tracking-[-0.01em]",
+          "transition-colors duration-300",
           onDarkHero
             ? isActive
-              ? "border-white text-white"
-              : "hover:text-white"
+              ? "text-white"
+              : "text-white/75 hover:text-white"
             : isActive
-              ? "border-foreground text-foreground"
-              : "hover:text-foreground"
+              ? "text-foreground"
+              : "text-foreground/70 hover:text-foreground",
         )}
       >
         Products
         <ChevronDown
-          size={13}
+          size={12}
           aria-hidden
-          strokeWidth={1.8}
+          strokeWidth={2}
           className={cn(
-            "transition-transform duration-300",
-            open ? "rotate-180" : "rotate-0"
+            "opacity-70 transition-transform duration-300",
+            open ? "rotate-180" : "rotate-0",
           )}
         />
       </button>
 
+      {/*
+        Disclosure / navigation panel — not role="menu". Application menus
+        require menuitem children only; a marketing mega-menu is a list of
+        links under a disclosure button (WAI-ARIA APG disclosure pattern).
+      */}
       <div
         ref={panelRef}
-        role="menu"
+        id="products-mega-panel"
+        role="region"
         aria-label="Product range"
+        aria-labelledby="products-mega-trigger"
+        aria-hidden={!open}
+        // When closed, inert removes the panel from keyboard focus and a11y tree
+        // (aria-hidden alone is not enough while links remain in the DOM).
+        {...(!open ? { inert: true } : {})}
         onMouseEnter={cancelClose}
         onMouseLeave={() => scheduleClose()}
         className={cn(
-          "fixed left-1/2 top-[68px] z-[55] w-[min(1080px,calc(100vw-32px))] -translate-x-1/2 rounded-2xl border border-border/70 bg-background/95 shadow-elevate backdrop-blur-xl",
+          "fixed left-1/2 top-[calc(0.75rem+3rem+0.5rem)] z-[55] w-[min(1080px,calc(100vw-32px))] -translate-x-1/2 rounded-2xl border border-border/70 bg-background/95 shadow-elevate backdrop-blur-xl",
           "supports-[backdrop-filter]:bg-background/85",
           "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "dark:border-white/[0.08]",
@@ -189,9 +221,8 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
             {FAMILY_ORDER.map((family, idx) => {
               const count = grouped[family].length;
               return (
-                <li key={family} role="none">
+                <li key={family}>
                   <Link
-                    role="menuitem"
                     data-mm-firstlink={idx === 0 ? "true" : undefined}
                     href={`/products#${FAMILY_ANCHOR[family]}`}
                     onClick={() => setOpen(false)}
@@ -200,7 +231,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
                     <div className="relative aspect-[4/5] w-16 shrink-0 overflow-hidden rounded-md bg-muted dark:bg-white/[0.03]">
                       <Image
                         src={FAMILY_THUMBNAIL[family]}
-                        alt=""
+                        alt={`${family} — Taban Niroo product family`}
                         fill
                         sizes="64px"
                         className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.06] group-hover:grayscale-0"

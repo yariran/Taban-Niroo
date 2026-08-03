@@ -26,9 +26,9 @@ import { cn } from "@/lib/utils";
  *      slide-left, tilt-top, focus-pull, dolly, fade-up). Adjacent
  *      sections never share the same voice, so scroll feels composed
  *      rather than repetitive.
- *   4. Responsive translate budgets. Mobile viewports use roughly
- *      two-thirds of the desktop translate distance so the entrance
- *      never feels thrashy on a small screen.
+ *   4. Uniform motion budget. Translate / opacity floors are identical
+ *      on every viewport so resizing the browser never swaps “mobile”
+ *      vs “desktop” entrance feel.
  *   5. Scroll-linked parallax on eligible sections. When `parallax`
  *      is enabled (and the section has no sticky descendants), the
  *      inner wrapper drifts by up to ±10px as the viewport moves
@@ -108,100 +108,92 @@ type VariantSpec = {
   outerIn: CSSProperties;
   duration: number;
   ease: string;
-  /** Multiplier applied to `translate` distances on narrow viewports. */
-  mobileScale?: number;
 };
 
 /**
- * Variants are deliberately single-stage now: one `transform + opacity`
- * transition on the outer envelope. Earlier revisions paired that with a
- * second inner-wrapper animation (offset by ~200 ms) to produce a staged
- * cadence, but in practice readers perceived that as the section
- * "arriving twice" — especially in combination with per-element reveals
- * inside each section. One clean move per section reads as more refined.
+ * Variants — one clean envelope move per section.
+ * Distances are identical on every viewport.
  */
 const VARIANTS: Record<SectionVariant, VariantSpec> = {
   rise: {
-    outerPre: { transform: "translate3d(0, 34px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 16px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 760,
+    duration: 880,
     ease: EASE_EXPO,
   },
   veil: {
-    outerPre: { transform: "translate3d(0, 24px, 0) scale(1.01)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 12px, 0) scale(1.01)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 740,
+    duration: 900,
     ease: EASE_EXPO,
   },
   curtain: {
     outerPre: {
-      transform: "translate3d(0, 30px, 0) scale(0.985)",
+      transform: "translate3d(0, 14px, 0) scale(0.99)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 820,
+    duration: 920,
     ease: EASE_EXPO,
   },
   zoom: {
     outerPre: {
-      transform: "translate3d(0, 16px, 0) scale(1.03)",
+      transform: "translate3d(0, 10px, 0) scale(1.02)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 780,
+    duration: 900,
     ease: EASE_EXPO,
   },
   iris: {
-    outerPre: { transform: "translate3d(0, 0, 0) scale(0.97)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 8px, 0) scale(0.98)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 820,
+    duration: 940,
     ease: EASE_EXPO,
   },
   "slide-right": {
-    outerPre: { transform: "translate3d(-34px, 14px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(-16px, 8px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 760,
+    duration: 880,
     ease: EASE_QUART,
-    mobileScale: 0.72,
   },
   "slide-left": {
-    outerPre: { transform: "translate3d(34px, 14px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(16px, 8px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 760,
+    duration: 880,
     ease: EASE_QUART,
-    mobileScale: 0.72,
   },
   "tilt-top": {
     outerPre: {
-      transform: "translate3d(0, 30px, 0) scale(0.99)",
+      transform: "translate3d(0, 14px, 0) scale(0.99)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 820,
+    duration: 900,
     ease: EASE_EXPO,
   },
   "focus-pull": {
     outerPre: {
-      transform: "translate3d(0, 18px, 0) scale(0.97)",
+      transform: "translate3d(0, 10px, 0) scale(0.985)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 840,
+    duration: 960,
     ease: EASE_EXPO,
   },
   dolly: {
     outerPre: {
-      transform: "translate3d(0, 24px, 0) scale(0.98)",
+      transform: "translate3d(0, 12px, 0) scale(0.99)",
       opacity: 0,
     },
     outerIn: { transform: "translate3d(0, 0, 0) scale(1)", opacity: 1 },
-    duration: 860,
+    duration: 980,
     ease: EASE_SINE,
   },
   "fade-up": {
-    outerPre: { transform: "translate3d(0, 14px, 0)", opacity: 0 },
+    outerPre: { transform: "translate3d(0, 12px, 0)", opacity: 0 },
     outerIn: { transform: "translate3d(0, 0, 0)", opacity: 1 },
-    duration: 780,
+    duration: 860,
     ease: EASE_EXPO,
   },
 };
@@ -212,7 +204,7 @@ const VARIANTS: Record<SectionVariant, VariantSpec> = {
  * past fallback` handles the catastrophic case).
  */
 /** Maximum parallax drift in pixels (applied symmetrically around center). */
-const PARALLAX_RANGE_PX = 6;
+const PARALLAX_RANGE_PX = 10;
 
 export function HomeSectionSnap({
   children,
@@ -235,19 +227,10 @@ export function HomeSectionSnap({
   const [motionArmed] = useState(true);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [settled, setSettled] = useState(!!isFirst);
-  const [isNarrow, setIsNarrow] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sync = () => setPrefersReducedMotion(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const sync = () => setIsNarrow(mq.matches);
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
@@ -271,7 +254,7 @@ export function HomeSectionSnap({
       if (swappedIn) return;
       const r = node.getBoundingClientRect();
       const vh = window.innerHeight || 1;
-      if (r.top < vh * 0.9) {
+      if (r.top < vh * 0.92) {
         setSwappedIn(true);
       }
     };
@@ -287,7 +270,11 @@ export function HomeSectionSnap({
       ([entry]) => {
         if (entry.isIntersecting) scheduleReveal();
       },
-      { threshold: [0, compact ? 0.03 : 0.05], rootMargin: "0px 0px -4% 0px" }
+      {
+        threshold: [0, compact ? 0.02 : 0.04],
+        // Same trigger band on every viewport — resize must not change feel.
+        rootMargin: "0px 0px -6% 0px",
+      },
     );
     observer.observe(node);
     scheduleReveal();
@@ -330,7 +317,6 @@ export function HomeSectionSnap({
       raf = null;
       const rect = root.getBoundingClientRect();
       const vh = window.innerHeight || 1;
-      // Center of the section relative to viewport center, normalized.
       const sectionCenter = rect.top + rect.height / 2;
       const viewportCenter = vh / 2;
       const distance = sectionCenter - viewportCenter;
@@ -339,9 +325,7 @@ export function HomeSectionSnap({
         -1,
         Math.min(1, distance / Math.max(1, maxDistance))
       );
-      const offset = isNarrow
-        ? -normalized * (PARALLAX_RANGE_PX * 0.55)
-        : -normalized * PARALLAX_RANGE_PX;
+      const offset = -normalized * PARALLAX_RANGE_PX;
       node.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
     };
 
@@ -360,7 +344,7 @@ export function HomeSectionSnap({
       if (raf != null) cancelAnimationFrame(raf);
       if (node) node.style.transform = "";
     };
-  }, [parallaxEnabled, prefersReducedMotion, settled, isNarrow]);
+  }, [parallaxEnabled, prefersReducedMotion, settled]);
 
   const useMotion = !prefersReducedMotion && !isFirst && motionArmed;
 
@@ -368,35 +352,23 @@ export function HomeSectionSnap({
     ? `transform ${durationMs}ms ${ease}, opacity ${durationMs}ms ${ease}`
     : "none";
 
-  const mobileScale = spec.mobileScale ?? 0.72;
-  const narrowAdjust = (css: CSSProperties | undefined): CSSProperties | undefined => {
-    if (!css || !isNarrow) return css;
-    const t = css.transform;
-    if (typeof t !== "string") return css;
-    // Scale down horizontal and vertical translate distances on mobile
-    // so the reveal feels tight on narrow screens.
-    const scaled = t.replace(
-      /translate3d\(\s*(-?\d*\.?\d+)px,\s*(-?\d*\.?\d+)px,\s*0\s*\)/g,
-      (_, x: string, y: string) => {
-        const nx = (parseFloat(x) * mobileScale).toFixed(2);
-        const ny = (parseFloat(y) * mobileScale).toFixed(2);
-        return `translate3d(${nx}px, ${ny}px, 0)`;
-      }
-    );
-    return { ...css, transform: scaled };
-  };
-
   // Sticky-safe mode: only opacity animates. Transforms on any
   // ancestor would break the sticky child, so we strip them entirely.
-  const stickyOuterPre: CSSProperties = { opacity: 0.96 };
+  const stickyOuterPre: CSSProperties = { opacity: 0.9 };
   const stickyOuterIn: CSSProperties = { opacity: 1 };
 
+  /**
+   * Faint pre-opacity floor avoids white flash on fast scroll, but stays
+   * low enough that the dissolve still reads as cinematic.
+   * Same floor on every viewport so resize does not change the dissolve.
+   */
   const safePreState = (style: CSSProperties | undefined): CSSProperties => {
     const pre = { ...(style ?? {}) };
+    const floor = 0.12;
     const preOpacity =
       typeof pre.opacity === "number"
-        ? Math.max(0.94, pre.opacity)
-        : 0.96;
+        ? Math.max(floor, pre.opacity)
+        : floor;
     return { ...pre, opacity: preOpacity };
   };
 
@@ -410,7 +382,7 @@ export function HomeSectionSnap({
       : stickyOuterPre
     : swappedIn
       ? spec.outerIn
-      : safePreState(narrowAdjust(spec.outerPre));
+      : safePreState(spec.outerPre);
 
   const outerStyle: CSSProperties = settled
     ? {}
@@ -428,14 +400,12 @@ export function HomeSectionSnap({
           willChange: "transform, opacity",
         };
 
-  // Home separators/labels disabled for a cleaner, premium composition.
+  // Soft brand voltage divider between chapters.
   const showBoundary =
-    false &&
     !isFirst &&
     !hideBoundary &&
     typeof index === "number" &&
-    typeof total === "number" &&
-    Boolean(chapter);
+    typeof total === "number";
 
   return (
     <div
@@ -449,14 +419,11 @@ export function HomeSectionSnap({
          * `overflow-x: clip` contains the horizontal `translate3d` used by
          * slide-left / slide-right variants. Without it, the off-screen
          * pre-state pushes the <body> past the viewport edge on initial
-         * paint, which shows up as a black gutter to the right of the
-         * hero until every variant settles. Vertical overflow is still
-         * visible so the subtle rise / tilt transforms are not clipped.
+         * paint. Skip it when hosting sticky children — paired overflow
+         * axes can create a scrollport and break `position: sticky`.
+         * Root/body already clip gutters for those sections.
          */
-        "overflow-x-clip",
-        // Soft vertical breathing between scenes after removing
-        // hard separators. Keeps flow premium without visible dividers.
-        !isFirst && !compact && "pt-4 md:pt-6 lg:pt-8",
+        !stickyChild && "overflow-x-clip overflow-y-clip",
         // Hero keeps viewport height so the first fold feels cinematic.
         // All other sections flow at their own natural content height —
         // no more forced 100dvh gaps that create huge empty voids.
@@ -467,51 +434,14 @@ export function HomeSectionSnap({
       {showBoundary && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-0"
+          className="pointer-events-none absolute inset-x-6 top-0 z-[1] md:inset-x-12 lg:inset-x-20"
         >
-          {/* Minimal blueprint divider for a cleaner, more ordered rhythm. */}
           <span
             className={cn(
-              "absolute left-1/2 top-0 block h-px -translate-x-1/2",
-              "bg-gradient-to-r from-transparent via-foreground/25 to-transparent",
-              "transition-[width,opacity] duration-[700ms]",
-              "dark:via-white/25"
+              "voltage-flow mx-auto block max-w-5xl transition-opacity duration-700",
+              swappedIn ? "opacity-80" : "opacity-0",
             )}
-            style={{
-              width: swappedIn ? "56%" : "0%",
-              opacity: swappedIn ? 0.72 : 0,
-              transitionTimingFunction: ease,
-              transitionDelay: "120ms",
-            }}
           />
-          {/* Chapter slug — the blueprint corner caption. Rendered on
-              every breakpoint so each section reads as a numbered scene
-              ("04 / 12 — Technology") on phones too. The slug fades and
-              lifts in slightly after the boundary marker settles. */}
-          {typeof index === "number" && typeof total === "number" && chapter && (
-            <span
-              className={cn(
-                "absolute right-3 top-3 block md:right-4 md:top-6",
-                "font-mono text-[9px] uppercase tracking-[0.22em] text-foreground/55 md:text-[10px]",
-                "transition-[opacity,transform] duration-[700ms]",
-                "dark:text-white/55"
-              )}
-              style={{
-                opacity: swappedIn ? 1 : 0,
-                transform: swappedIn
-                  ? "translate3d(0, 0, 0)"
-                  : "translate3d(0, -2px, 0)",
-                transitionTimingFunction: ease,
-                transitionDelay: "220ms",
-              }}
-            >
-              <span className="tabular">
-                {String(index).padStart(2, "0")} / {String(total).padStart(2, "0")}
-              </span>
-              <span className="mx-2 text-foreground/30 dark:text-white/30">—</span>
-              <span>{chapter}</span>
-            </span>
-          )}
         </div>
       )}
 

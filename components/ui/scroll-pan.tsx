@@ -228,20 +228,20 @@ export function ScrollPan({
         ref={ref}
         role="region"
         aria-label={ariaLabel}
+        tabIndex={0}
         className={cn(
-          "scroll-pan-bar cursor-grab",
+          "scroll-pan-bar cursor-grab touch-pan-x outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2",
           passVerticalScroll
             ? "overflow-x-auto overflow-y-visible overscroll-x-contain overscroll-y-auto"
             : "overflow-auto overscroll-contain",
           innerClassName,
         )}
-        {...(!passVerticalScroll && { "data-lenis-prevent": true })}
+        data-lenis-prevent
+        data-lenis-prevent-touch
         style={
           {
-            // iOS momentum scroll — newer browsers ignore this prefix
-            // gracefully so it's safe to keep for the older WebKit cases
-            // that still rely on it.
             WebkitOverflowScrolling: "touch",
+            touchAction: passVerticalScroll ? "pan-x pan-y" : "pan-x pan-y",
           } as CSSProperties
         }
       >

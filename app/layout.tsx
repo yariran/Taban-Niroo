@@ -1,14 +1,39 @@
 import React from "react";
 import type { Metadata, Viewport } from "next";
-import { Oswald } from "next/font/google";
-import "@fontsource-variable/inter/index.css";
-import "@fontsource-variable/syne/index.css";
-import { Analytics } from "@vercel/analytics/next";
+import { Inter, Oswald } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/lenis-provider";
 import { CookieConsent } from "@/components/cookie-consent";
+import { ConsentAnalytics } from "@/components/consent-analytics";
 import { getSiteUrl } from "@/lib/site-url";
+import { ORGANIZATION_SAME_AS } from "@/lib/seo";
 import "./globals.css";
+
+/**
+ * Self-hosted Inter (same typeface as rsms.me) via next/font — downloaded
+ * at build time, served from `/_next/static`, no third-party font CDN on
+ * the critical path.
+ */
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  adjustFontFallback: true,
+  preload: true,
+});
+
+/**
+ * Display face for headlines only — tall, condensed, industrial-signage
+ * character. Body copy and UI stay on Inter; Oswald is scoped to
+ * `--font-hero-slogan` / `--font-hero` / `--font-headline` in globals.css.
+ */
+const oswald = Oswald({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-oswald",
+  weight: ["500", "600", "700"],
+  preload: true,
+});
 
 const siteDescription =
   "High-voltage composite insulators and power transmission. IEC-tested. 6-1000 kV. Shiraz, Iran.";
@@ -72,25 +97,27 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   alternates: {
-    canonical: siteUrl,
+    canonical: "/",
   },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
 };
-
-const fontHeroSlogan = Oswald({
-  weight: ["600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-hero-slogan",
-});
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  /** Lets Android Chrome resize layout when the keyboard opens (contact form). */
+  interactiveWidget: "resizes-content",
   colorScheme: "dark light",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#F3EEE6" },
+    { media: "(prefers-color-scheme: dark)", color: "#061428" },
   ],
 };
 
@@ -103,7 +130,8 @@ const structuredData = {
       name: "Taban Niroo",
       legalName: "Taban Niroo · Dena Power Line Insulators",
       url: siteUrl,
-      logo: `${siteUrl}/icon.svg`,
+      logo: `${siteUrl}/apple-icon.png`,
+      image: `${siteUrl}/icon.svg`,
       foundingDate: "1997",
       description: siteDescription,
       areaServed: ["IR", "IQ", "AF", "TR", "GH", "LR", "MA", "SO", "GR", "PE", "CO"],
@@ -142,7 +170,7 @@ const structuredData = {
           availableLanguage: ["en"],
         },
       ],
-      sameAs: ["https://www.taban-niroo.com"],
+      sameAs: [...ORGANIZATION_SAME_AS],
     },
     {
       "@type": "WebSite",
@@ -163,7 +191,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={fontHeroSlogan.variable}
+      className={`${inter.variable} ${oswald.variable} ${inter.className}`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">
@@ -188,7 +216,7 @@ export default function RootLayout({
           <LenisProvider />
           {children}
           <CookieConsent />
-          <Analytics />
+          <ConsentAnalytics />
         </ThemeProvider>
       </body>
     </html>

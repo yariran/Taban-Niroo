@@ -1,42 +1,31 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { Header } from "@/components/header";
-import { FooterSection } from "@/components/sections/footer-section";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { RevealUp, RevealWords } from "@/components/ui/reveal-words";
+import type { ContentBlock } from "@/lib/cms-content";
 
 type LegalPageShellProps = {
-  /** Short uppercase index tag (e.g. "01 · POLICY"). */
   eyebrow: string;
-  /** Main page title — animated word-by-word on entrance. */
   title: string;
-  /** Optional one-line lede under the title. */
   lede?: string;
-  /** Last updated date (free-form string, e.g. "31 March 2026"). */
   lastUpdated: string;
-  /** Body content. Markup-driven — pass the prose markup directly. */
   children: ReactNode;
+  footerCms?: ContentBlock;
 };
 
-/**
- * Editorial shell shared by /privacy, /terms, /imprint.
- *
- * Visual language matches inner-route hero pages on the rest of the
- * site: dark accent dot · mono caps eyebrow · oversize title with
- * RevealWords · breadcrumb · final voltage waveform footer accent.
- * Prose styling stays intentionally simple (no markdown plugin) since
- * legal text is hand-edited and short.
- */
 export function LegalPageShell({
   eyebrow,
   title,
   lede,
   lastUpdated,
   children,
+  footerCms,
 }: LegalPageShellProps) {
   return (
     <main id="main-content" className="min-h-screen bg-background">
-      <Header />
+      <SiteHeader />
 
       <section className="relative overflow-hidden bg-background pb-12 pt-32 md:pt-40">
         <div className="grain-layer opacity-30" aria-hidden />
@@ -54,10 +43,7 @@ export function LegalPageShell({
             aria-label="Breadcrumb"
             className="mb-8 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
           >
-            <Link
-              href="/"
-              className="transition-colors hover:text-foreground"
-            >
+            <Link href="/" className="transition-colors hover:text-foreground">
               Home
             </Link>
             <ChevronRight size={11} aria-hidden strokeWidth={1.7} />
@@ -101,7 +87,22 @@ export function LegalPageShell({
         </div>
       </section>
 
-      <FooterSection />
+      <SiteFooter cms={footerCms} />
     </main>
+  );
+}
+
+export function CmsProseBody({ body }: { body: string }) {
+  const blocks = body.split(/\n\n+/).filter(Boolean);
+  return (
+    <>
+      {blocks.map((block, i) => {
+        const trimmed = block.trim();
+        if (trimmed.startsWith("## ")) {
+          return <h2 key={i}>{trimmed.slice(3)}</h2>;
+        }
+        return <p key={i}>{trimmed}</p>;
+      })}
+    </>
   );
 }

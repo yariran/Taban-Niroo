@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
 
 const footerLinks = [
   { label: "About", href: "/about" },
   { label: "Products", href: "/products" },
   { label: "Projects", href: "/projects" },
-  { label: "Blog", href: "/blog" },
+  { label: "Blog – R&D", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -88,14 +90,14 @@ function NewsletterSignup() {
           value={email}
           onChange={(e) => setEmail(e.currentTarget.value)}
           disabled={isSending}
-          className="min-w-0 flex-1 bg-transparent text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+          className="min-h-11 min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none md:min-h-0 md:text-xs"
           {...(state === "err" ? { "aria-invalid": true } : {})}
         />
         <input type="text" name="_hp" tabIndex={-1} autoComplete="off" aria-hidden className="sr-only" />
         <button
           type="submit"
           disabled={isSending}
-          className="shrink-0 text-[10px] uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+          className="min-h-11 shrink-0 px-1 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50 md:min-h-0 md:text-[10px]"
         >
           {isSending ? "…" : state === "ok" ? "Done" : "Join"}
         </button>
@@ -122,21 +124,21 @@ function OfficeCol({
 }) {
   return (
     <div>
-      <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+      <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-brand-orange/90">
         {label}
       </p>
-      <address className="mt-2 space-y-0.5 text-xs not-italic leading-snug text-muted-foreground">
+      <address className="mt-2 space-y-0.5 text-xs not-italic leading-snug text-white/65">
         {lines.map((line) => (
           <span key={line} className="block">
             {line}
           </span>
         ))}
-        <a href={phone.href} className="block tabular-nums hover:text-foreground">
+        <a href={phone.href} className="block tabular-nums text-white/80 transition-colors hover:text-brand-orange">
           {phone.display}
         </a>
         <span className="block tabular-nums">Fax {fax}</span>
         {email && (
-          <a href={email.href} className="block hover:text-foreground">
+          <a href={email.href} className="block text-white/80 transition-colors hover:text-brand-orange">
             {email.display}
           </a>
         )}
@@ -145,11 +147,19 @@ function OfficeCol({
   );
 }
 
-export function FooterSection() {
+export function FooterSection({
+  cms,
+}: { cms?: ContentBlock } = {}) {
   const year = new Date().getFullYear();
-
+  const brandBlurb = cmsText(
+    cms,
+    "body",
+    "Composite insulators · IEC-tested · Since 1997",
+  );
+  const brandName = cmsText(cms, "title", "Taban Niroo");
+  const links = footerLinks;
   return (
-    <footer className="border-t border-border/80 bg-background" role="contentinfo">
+    <footer className="border-t border-white/10 bg-brand-navy-deep text-white" role="contentinfo">
       <div className="mx-auto max-w-6xl px-6 py-10 md:px-12 md:py-11 lg:px-20">
         {/* Compact 4-column grid — one band, no stacked sections */}
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-10">
@@ -157,27 +167,31 @@ export function FooterSection() {
           <div className="col-span-2 sm:col-span-1">
             <Link
               href="/"
-              className="text-sm font-medium text-foreground hover:opacity-80"
+              className="text-sm font-medium text-white hover:text-brand-orange"
             >
-              Taban Niroo
+              {brandName}
             </Link>
-            <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
-              Composite insulators · IEC-tested · Since 1997
+            <p className="mt-1.5 text-xs leading-snug text-white/60">
+              {brandBlurb}
             </p>
-            <NewsletterSignup />
+            {/* Shown only when Resend Audience is configured in production.
+                Set NEXT_PUBLIC_NEWSLETTER_ENABLED=true after RESEND_AUDIENCE_ID. */}
+            {process.env.NEXT_PUBLIC_NEWSLETTER_ENABLED === "true" ? (
+              <NewsletterSignup />
+            ) : null}
           </div>
 
           {/* Nav */}
           <nav aria-label="Footer navigation">
-            <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-brand-orange/90">
               Site
             </p>
             <ul className="mt-2 space-y-1">
-              {footerLinks.map((link) => (
+              {links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-xs text-white/65 transition-colors hover:text-brand-orange"
                   >
                     {link.label}
                   </Link>
@@ -203,17 +217,17 @@ export function FooterSection() {
         </div>
 
         {/* Bottom bar — standards + legal in one tight row */}
-        <div className="mt-8 flex flex-col gap-3 border-t border-border/60 pt-5 md:flex-row md:items-center md:justify-between md:gap-6">
-          <p className="text-[10px] leading-relaxed text-muted-foreground/80">
+        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-5 md:flex-row md:items-center md:justify-between md:gap-6">
+          <p className="text-[10px] leading-relaxed text-white/45">
             <span className="font-mono tracking-wide">
               IEC 61109 · 62217 · 60137 · 61466 · 60120 · 60471
             </span>
           </p>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-white/55">
             <span>© {year} Taban Niroo</span>
             {policyLinks.map((p) => (
-              <Link key={p.href} href={p.href} className="hover:text-foreground">
+              <Link key={p.href} href={p.href} className="hover:text-brand-orange">
                 {p.label}
               </Link>
             ))}
@@ -221,11 +235,11 @@ export function FooterSection() {
               href="https://www.linkedin.com/company/taban-niroo"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-foreground"
+              className="hover:text-brand-orange"
             >
               LinkedIn
             </a>
-            <a href="mailto:info@taban-niroo.com" className="hover:text-foreground">
+            <a href="mailto:info@taban-niroo.com" className="hover:text-brand-orange">
               Email
             </a>
           </div>

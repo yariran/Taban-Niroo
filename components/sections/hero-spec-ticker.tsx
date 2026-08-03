@@ -75,7 +75,7 @@ export function HeroSpecTicker() {
         </span>
         <span
           aria-hidden
-          className="hidden h-1.5 w-1.5 animate-pulse rounded-full bg-sky-400 md:inline-block"
+          className="hidden h-1.5 w-1.5 animate-pulse rounded-full bg-brand-orange md:inline-block"
         />
         <div className="relative flex-1 overflow-hidden">
           <SpecRow current={current} next={next} index={i} />

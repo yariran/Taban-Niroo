@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, DraftingCompass } from "lucide-react";
+import { FileText, DraftingCompass, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRODUCTS } from "@/lib/products";
 import { SITE_IMAGES } from "@/lib/site-images";
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsImage, cmsText } from "@/lib/cms-resolve";
 
 const NEW_PRODUCT_ID = "line-post-pivot-type";
 const NEW_RELEASE_ALT = "New Product: 63 & 132 kV Line Post Insulator";
@@ -14,83 +16,221 @@ const NEW_RELEASE_ALT = "New Product: 63 & 132 kV Line Post Insulator";
 const IMG_W = 1024;
 const IMG_H = 650;
 
-const product =
-  PRODUCTS.find((item) => item.id === NEW_PRODUCT_ID) ?? PRODUCTS[0];
+/**
+ * Split catalogue titles like "63 & 132 kV Line Post Insulator" into
+ * a display name + a quiet voltage spec — keeps SI units out of the
+ * headline so they read as engineering data, not display copy.
+ */
+function splitVoltageTitle(raw: string): { name: string; voltages: string[] } {
+  const match = raw.match(
+    /^((?:\d+\s*(?:&\s*|–\s*|-\s*)?)+)\s*kV\s+(.+)$/i,
+  );
+  if (!match) {
+    return { name: raw, voltages: [] };
+  }
+  const voltages = match[1]!
+    .split(/\s*(?:&|–|-)\s*/)
+    .map((v) => v.trim())
+    .filter(Boolean);
+  return { name: match[2]!.trim(), voltages };
+}
 
-const productHref = `/products/${product.id}`;
-
-function ActionPill({ className }: { className?: string }) {
-  const linkClass =
-    "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-transparent px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.2em] text-black/70 transition-colors hover:border-black/12 hover:bg-black/5 hover:text-black md:min-h-0 md:px-4 md:py-2";
+function ReleaseHeading({
+  eyebrow,
+  title,
+  embedded = false,
+}: {
+  eyebrow: string;
+  title: string;
+  embedded?: boolean;
+}) {
+  const { name, voltages } = splitVoltageTitle(title);
+  const fullLabel =
+    voltages.length > 0 ? `${voltages.join(" & ")} kV ${name}` : title;
 
   return (
-    <div
-      className={cn(
-        "glass-header-pill glass-header-pill--default mx-auto w-full max-w-md rounded-full border p-1.5",
-        className,
-      )}
-    >
-      <div className="flex items-stretch justify-center gap-1 sm:gap-1.5">
-        <Link href={productHref} className={cn(linkClass, "flex-1 sm:flex-none")}>
-          <FileText size={14} aria-hidden />
-          Table
-        </Link>
-        <span className="my-2 w-px shrink-0 bg-black/15" aria-hidden />
-        <Link href={productHref} className={cn(linkClass, "flex-1 sm:flex-none")}>
-          <DraftingCompass size={14} aria-hidden />
-          Drawing
-        </Link>
-      </div>
+    <header className="flex flex-col items-center text-center">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-brand-burgundy sm:text-[11px]">
+        {eyebrow}
+      </p>
+      <h2
+        id="new-release-heading"
+        className={cn(
+          "mt-3 max-w-[18ch] text-balance font-hero-slogan font-semibold uppercase leading-[1.08] tracking-tight text-brand-navy",
+          embedded
+            ? "text-[clamp(1.5rem,3.8vw,2.15rem)]"
+            : "text-[clamp(1.65rem,4vw,2.5rem)]",
+        )}
+      >
+        {name}
+        <span className="sr-only">
+          {voltages.length > 0 ? `, ${voltages.join(" & ")} kV` : ""}
+        </span>
+      </h2>
+
+      {voltages.length > 0 ? (
+        <p
+          className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] tabular-nums tracking-[0.14em] text-muted-foreground sm:text-xs"
+          aria-hidden
+        >
+          {voltages.map((v, i) => (
+            <span key={v} className="inline-flex items-center gap-2">
+              {i > 0 ? (
+                <span className="text-brand-navy/25" aria-hidden>
+                  ·
+                </span>
+              ) : null}
+              <span>
+                <span className="text-brand-navy/80">{v}</span>
+                <span className="ml-1 text-[0.85em] normal-case tracking-normal text-muted-foreground">
+                  kV
+                </span>
+              </span>
+            </span>
+          ))}
+        </p>
+      ) : null}
+
+      <span className="sr-only">{fullLabel}</span>
+    </header>
+  );
+}
+
+function SpecActions({
+  productHref,
+  compact = false,
+}: {
+  productHref: string;
+  compact?: boolean;
+}) {
+  const itemClass = cn(
+    "inline-flex items-center justify-center gap-2 font-medium uppercase tracking-[0.18em] text-brand-navy/70 transition-colors",
+    "hover:text-brand-navy",
+    compact
+      ? "min-h-9 px-3 text-[10px]"
+      : "min-h-10 px-4 text-[11px]",
+  );
+
+  return (
+    <div className="flex items-center justify-center gap-0">
+      <Link href={productHref} className={itemClass}>
+        <FileText size={compact ? 13 : 14} aria-hidden />
+        Table
+      </Link>
+      <span
+        className="mx-1 h-3.5 w-px shrink-0 bg-brand-navy/15"
+        aria-hidden
+      />
+      <Link href={productHref} className={itemClass}>
+        <DraftingCompass size={compact ? 13 : 14} aria-hidden />
+        Drawing
+      </Link>
+      <span
+        className="mx-1 h-3.5 w-px shrink-0 bg-brand-navy/15"
+        aria-hidden
+      />
+      <Link
+        href={productHref}
+        className={cn(itemClass, "text-brand-burgundy hover:text-brand-burgundy-strong")}
+      >
+        Details
+        <ArrowRight size={compact ? 12 : 13} aria-hidden />
+      </Link>
     </div>
   );
 }
 
-export function NewReleaseShowcaseSection() {
+export function NewReleaseShowcaseSection({
+  cms,
+  productId,
+  /** Compact panel for sticky hero scene C (no outer page padding). */
+  embedded = false,
+}: {
+  cms?: ContentBlock;
+  productId?: string;
+  embedded?: boolean;
+} = {}) {
+  const id = productId || NEW_PRODUCT_ID;
+  const product = PRODUCTS.find((item) => item.id === id) ?? PRODUCTS[0]!;
+  const productHref = cmsText(cms, "ctaHref", `/products/${product.id}`);
+  const eyebrow = cmsText(cms, "eyebrow", "New Product");
+  const title = cmsText(cms, "title", "63 & 132 kV Line Post Insulator");
+  const image =
+    cmsImage(cms, SITE_IMAGES.newRelease) ?? SITE_IMAGES.newRelease;
+
+  const media = image.startsWith("http") ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={image}
+      alt={NEW_RELEASE_ALT}
+      className={cn(
+        "mx-auto h-auto w-full object-contain object-center",
+        embedded
+          ? "max-h-[min(48vh,380px)]"
+          : "max-h-[min(56vh,520px)]",
+      )}
+    />
+  ) : (
+    <Image
+      src={image}
+      alt={NEW_RELEASE_ALT}
+      width={IMG_W}
+      height={IMG_H}
+      priority={embedded}
+      quality={92}
+      className={cn(
+        "mx-auto h-auto w-full object-contain object-center",
+        embedded
+          ? "max-h-[min(48vh,380px)]"
+          : "max-h-[min(56vh,520px)]",
+      )}
+      sizes="(min-width: 1280px) 900px, 92vw"
+    />
+  );
+
+  if (embedded) {
+    return (
+      <div
+        id="new-release"
+        className="flex h-full w-full flex-col items-center justify-center bg-background px-5 py-10 sm:px-8 md:px-12"
+        aria-labelledby="new-release-heading"
+      >
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
+          <ReleaseHeading eyebrow={eyebrow} title={title} embedded />
+          <div
+            className="mt-5 h-px w-10 bg-gradient-to-r from-transparent via-brand-navy/25 to-transparent"
+            aria-hidden
+          />
+
+          <div className="mt-6 w-full sm:mt-8">{media}</div>
+
+          <div className="mt-6 border-t border-brand-navy/10 pt-5 sm:mt-8 sm:pt-6">
+            <SpecActions productHref={productHref} compact />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <section
       id="new-release"
       className="relative bg-background"
       aria-labelledby="new-release-heading"
     >
-      <div className="relative mx-auto w-full max-w-[1400px] px-4 pt-10 pb-12 max-[380px]:px-3 md:px-8 md:py-20 lg:px-10 lg:py-24 pb-[max(3rem,env(safe-area-inset-bottom))]">
-        <div className="group overflow-hidden rounded-2xl border border-border/40 bg-white shadow-elevate dark:border-white/[0.08]">
-          {/* Single catalogue frame — title sits in the white band above the product */}
-          <div className="relative bg-white">
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[34%] flex-col items-center justify-center px-6 text-center md:px-12">
-              <h2
-                id="new-release-heading"
-                className="max-w-[24ch] text-balance"
-              >
-                <span className="block text-[11px] font-medium uppercase tracking-[0.24em] text-black/45">
-                  New Product
-                </span>
-                <span className="mt-3 block text-[clamp(1.2rem,2.6vw,1.875rem)] font-medium leading-[1.08] tracking-[-0.02em] text-black md:mt-3.5">
-                  63 & 132 kV Line Post Insulator
-                </span>
-              </h2>
+      <div className="mx-auto w-full max-w-4xl px-5 py-16 sm:px-8 md:px-10 md:py-24 pb-[max(3rem,env(safe-area-inset-bottom))]">
+        <div className="flex flex-col items-center text-center">
+          <ReleaseHeading eyebrow={eyebrow} title={title} />
+          <div
+            className="mt-5 h-px w-12 bg-gradient-to-r from-transparent via-brand-navy/25 to-transparent"
+            aria-hidden
+          />
+
+          <div className="mt-10 w-full overflow-hidden rounded-2xl border border-brand-navy/10 bg-white shadow-elevate dark:border-white/[0.08]">
+            <div className="px-4 pt-6 sm:px-8 sm:pt-8">{media}</div>
+            <div className="mt-2 border-t border-brand-navy/10 px-4 py-5 sm:px-8 sm:py-6">
+              <SpecActions productHref={productHref} />
             </div>
-
-            <Image
-              src={SITE_IMAGES.newRelease}
-              alt={NEW_RELEASE_ALT}
-              width={IMG_W}
-              height={IMG_H}
-              priority
-              quality={92}
-              className="mx-auto h-auto w-full max-w-none object-contain"
-              sizes="(min-width: 1280px) 1320px, 96vw"
-            />
-          </div>
-
-          <div className="border-t border-border/20 bg-white px-4 pb-6 pt-4 md:px-8 md:pb-7 md:pt-5">
-            <ActionPill
-              className={cn(
-                "opacity-100",
-                "md:opacity-0 md:transition-opacity md:duration-500",
-                "md:group-hover:opacity-100",
-                "[@media(hover:none)]:opacity-100",
-              )}
-            />
           </div>
         </div>
       </div>

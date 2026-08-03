@@ -2,6 +2,8 @@
 
 import { CountUp } from "@/components/ui/count-up";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsText } from "@/lib/cms-resolve";
 
 /**
  * "Why Taban Niroo?" section.
@@ -15,7 +17,7 @@ import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
  *
  * Design intent: quiet, tabular, editorial — matches the existing
  * homepage vocabulary (eyebrow + display heading + numbered list with
- * hairline dividers). No new colour tokens or shadows are introduced.
+ * hairline dividers), with navy/burgundy brand accents on proof points.
  *
  * KPI row reproduces the four headline metrics from the 2025-2026
  * Company Profile (Projects, Years active, Rated voltage, Served
@@ -40,7 +42,7 @@ type Kpi = {
 const KPIS: readonly Kpi[] = [
   { label: "Projects", to: 80, prefix: "+" },
   { label: "Years active", to: 29, prefix: "+" },
-  { label: "RATED VOLTAGE", to: 1000, value: "6-1000 kV" },
+  { label: "Rated voltage", to: 1000, value: "6-1000 kV" },
   { label: "Served countries", to: 10 },
 ];
 
@@ -77,7 +79,45 @@ const PILLARS: readonly Pillar[] = [
   },
 ];
 
-export function WhyTabanSection() {
+export function WhyTabanSection({ cms }: { cms?: ContentBlock } = {}) {
+  const eyebrow = cmsText(cms, "eyebrow", "Why Taban Niroo?");
+  const title = cmsText(
+    cms,
+    "title",
+    "Five reasons utilities keep coming back.",
+  );
+  const body = cmsText(
+    cms,
+    "body",
+    "The values below are not a marketing framework. They are the operating principles that have guided the company through twenty-five years of power-sector work across Africa, South America and the Middle East.",
+  );
+
+  const cmsItems = cms?.items?.filter((i) => i.label.trim()) ?? [];
+  const kpiFromCms: Kpi[] = cmsItems
+    .filter((i) => Boolean(i.value?.trim()))
+    .map((i) => {
+      const raw = i.value!.trim();
+      const numeric = raw.replace(/^[+\s]+/, "");
+      if (/^\d+$/.test(numeric) && !raw.includes("-")) {
+        return {
+          label: i.label,
+          to: Number(numeric),
+          prefix: raw.startsWith("+") ? "+" : undefined,
+        };
+      }
+      return { label: i.label, to: 0, value: raw };
+    });
+  const pillarsFromCms: Pillar[] = cmsItems
+    .filter((i) => Boolean(i.body?.trim()))
+    .map((i, idx) => ({
+      number: String(idx + 1).padStart(2, "0"),
+      title: i.label,
+      description: i.body!.trim(),
+    }));
+
+  const kpis = kpiFromCms.length > 0 ? kpiFromCms : KPIS;
+  const pillars = pillarsFromCms.length > 0 ? pillarsFromCms : PILLARS;
+
   return (
     <section
       id="why-taban"
@@ -90,55 +130,55 @@ export function WhyTabanSection() {
           <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
             <div className="md:col-span-5">
               <RevealBlock delayMs={40} durationMs={700} distance={14}>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                  Why Taban Niroo?
+                <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
+                  {eyebrow}
                 </p>
               </RevealBlock>
               <span id="why-taban-heading" className="sr-only">
-                Five reasons utilities keep coming back.
+                {title}
               </span>
               <RevealText
                 as="h2"
-                className="mt-4 text-balance text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-6xl"
+                className="font-hero-slogan text-brand-heading mt-4 text-balance text-4xl font-semibold uppercase tracking-tight md:text-5xl lg:text-6xl"
               >
-                Five reasons utilities keep coming back.
+                {title}
               </RevealText>
             </div>
             <div className="md:col-span-7 md:pt-3">
               <p className="max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-                The values below are not a marketing framework. They are the operating principles that have guided the company through twenty-five years of power-sector work across Africa, South America and the Middle East.
+                {body}
               </p>
             </div>
           </div>
 
-          {/* KPI row — merged from the standalone Editorial section.
-              Same four numbers from the Company Profile, but now sit
-              underneath the "Why Taban Niroo?" header so the proof
-              points and the narrative share one chapter. Uses
-              `divide-*` so hairlines resolve correctly on both the
-              2x2 (mobile) and 1x4 (md+) layouts without per-cell
-              math. */}
-          <RevealBlock className="mt-12 grid grid-cols-2 divide-x divide-y divide-border border-y border-border md:mt-16 md:grid-cols-4 md:divide-y-0">
-            {KPIS.map((kpi) => (
-              <div
-                key={kpi.label}
-                className="px-6 py-8 text-center transition-colors duration-300 hover:bg-muted/35 md:px-8 md:py-10 dark:hover:bg-white/[0.04]"
-              >
-                <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">
-                  {kpi.label}
-                </p>
-                <p className="text-4xl font-medium tracking-tight text-foreground md:text-5xl">
-                  {kpi.value ?? (
-                    <CountUp
-                      to={kpi.to}
-                      prefix={kpi.prefix}
-                      suffix={kpi.suffix}
-                      duration={1500}
-                    />
-                  )}
-                </p>
-              </div>
-            ))}
+          {/* KPI row — white elevated band (matches Safari / desktop reference).
+              Four centered metrics in one panel so Chromium and WebKit share
+              the same composition. */}
+          <RevealBlock className="mt-12 md:mt-16">
+            <div className="rounded-2xl bg-white px-5 py-8 shadow-elevate ring-1 ring-brand-navy/8 dark:bg-card dark:ring-white/[0.08] sm:px-8 sm:py-10 md:px-10">
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 md:gap-x-6 md:gap-y-0">
+                {kpis.map((kpi) => (
+                  <div
+                    key={kpi.label}
+                    className="flex flex-col items-center text-center"
+                  >
+                    <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-burgundy">
+                      {kpi.label}
+                    </dt>
+                    <dd className="mt-2.5 whitespace-nowrap text-[clamp(1.6rem,3.6vw,2.5rem)] font-medium leading-none tracking-tight text-brand-navy tabular-nums">
+                      {kpi.value ?? (
+                        <CountUp
+                          to={kpi.to}
+                          prefix={kpi.prefix}
+                          suffix={kpi.suffix}
+                          duration={1500}
+                        />
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </RevealBlock>
 
           {/* Pillar list */}
@@ -150,18 +190,18 @@ export function WhyTabanSection() {
             distance={26}
             className="mt-16 border-t border-border md:mt-24"
           >
-              {PILLARS.map((pillar) => (
+              {pillars.map((pillar) => (
               <li
                 key={pillar.number}
                 className="group grid grid-cols-1 gap-4 border-b border-border py-10 transition-colors duration-300 hover:bg-muted/25 md:grid-cols-12 md:gap-8 md:px-2 md:py-12 dark:hover:bg-white/[0.03]"
               >
                 <div className="md:col-span-2">
-                  <p className="font-mono text-xs tracking-widest text-muted-foreground">
+                  <p className="font-mono text-xs tracking-widest text-brand-orange">
                     {pillar.number}
                   </p>
                 </div>
                 <div className="md:col-span-4">
-                  <h3 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+                  <h3 className="text-xl font-medium tracking-tight text-brand-navy md:text-2xl">
                     {pillar.title}
                   </h3>
                 </div>

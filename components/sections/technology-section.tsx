@@ -5,6 +5,8 @@ import { SITE_IMAGES } from "@/lib/site-images";
 import { cn } from "@/lib/utils";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { ScrollRevealText } from "@/components/ui/scroll-reveal-text";
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsImage, cmsText } from "@/lib/cms-resolve";
 
 /**
  * Technology section — two-act composition.
@@ -33,7 +35,12 @@ const TITLE_WORDS = ["IEC.", "Standard.", "Industrial."] as const;
 const STATEMENT =
   "IEC 61109, 62217, 61466, 60120, 60471. ECR core. HTV silicone. Galvanized fittings. Accredited laboratories. 6-1000 kV.";
 
-export function TechnologySection() {
+export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
+  const image = cmsImage(cms, SITE_IMAGES.technology) ?? SITE_IMAGES.technology;
+  const eyebrow = cmsText(cms, "eyebrow", "Standards · 2025 — 2026");
+  const title = cmsText(cms, "title", "Type-tested. Field-proven.");
+  const statement = cmsText(cms, "body", STATEMENT);
+
   return (
     <section
       id="technology"
@@ -41,9 +48,9 @@ export function TechnologySection() {
       aria-label="IEC standards and industrial insulator technology"
     >
       {/* Act I — full-bleed cinematic image with overlay statement */}
-      <div className="relative min-h-screen w-full bg-foreground">
+      <div className="relative min-h-[100dvh] w-full bg-foreground">
         <Image
-          src={SITE_IMAGES.technology}
+          src={image}
           alt="Taban Niroo composite insulators and power transmission"
           fill
           className="object-cover"
@@ -76,12 +83,12 @@ export function TechnologySection() {
       </div>
 
       {/* Act II — editorial statement block, theme-consistent */}
-      <div className="relative border-t border-border/60 bg-background dark:border-white/[0.07]">
+      <div className="relative border-t border-white/10 bg-brand-navy-deep">
         <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
           <div className="mx-auto max-w-5xl">
             <RevealBlock delayMs={40} durationMs={700} distance={14}>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                Standards · 2025 — 2026
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-300/90">
+                {eyebrow}
               </p>
             </RevealBlock>
 
@@ -90,16 +97,16 @@ export function TechnologySection() {
               delayMs={120}
               stepMs={60}
               durationMs={1000}
-              className="mt-4 text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl"
+              className="font-hero-slogan mt-4 text-3xl font-semibold uppercase tracking-tight text-white md:text-4xl lg:text-5xl"
             >
-              Type-tested. Field-proven.
+              {title}
             </RevealText>
 
             <ScrollRevealText
               as="p"
-              className="mt-10 text-2xl font-medium leading-snug tracking-tight text-foreground md:mt-12 md:text-3xl lg:text-4xl"
+              className="mt-10 text-2xl font-medium leading-snug tracking-tight text-slate-100 md:mt-12 md:text-3xl lg:text-4xl"
             >
-              {STATEMENT}
+              {statement}
             </ScrollRevealText>
           </div>
         </div>

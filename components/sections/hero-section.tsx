@@ -1,188 +1,200 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
 } from "react";
 import { SITE_IMAGES } from "@/lib/site-images";
 import { cn } from "@/lib/utils";
+import type { ContentBlock } from "@/lib/cms-content";
+import { cmsImage, cmsText } from "@/lib/cms-resolve";
+import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+import { NewReleaseShowcaseSection } from "@/components/sections/new-release-showcase-section";
 
-const HERO_WORDS = ["INSPIRE", "INNOVATE", "INTEGRATE"] as const;
+const DEFAULT_HERO_WORDS = ["INSPIRE", "INNOVATE", "INTEGRATE"] as const;
+const WORD_STAGGER_S = 0.18;
+const DEFAULT_TAGLINE = "Shaping Tomorrow's Solution Today";
+const DEFAULT_BODY =
+  "IEC-tested composite insulation for high-voltage networks.";
 
-const HERO_PUNCT = [",", ",", ";"] as const;
-
-const WORD_STAGGER_S = 0.22;
-
-/**
- * Main slogan — one word per line (“page” after hero).
- *
- * Copy is pulled verbatim from the official 2025-2026 catalogue and company
- * profile ("Shaping Tomorrow's Solution Today"). Note the singular "Solution"
- * and title-case — both intentional per brand guidelines, do not change.
- */
-const TAGLINE_WORDS = [
-  "Shaping",
-  "Tomorrow's",
-  "Solution",
-  "Today",
-] as const;
-
-/** Smoothstep for scroll-driven easing */
 function smoothstep01(t: number): number {
   const x = Math.max(0, Math.min(1, t));
   return x * x * (3 - 2 * x);
 }
 
-export function HeroSection() {
-  const taglineRef = useRef<HTMLDivElement>(null);
+/**
+ * Three-scene hero — one full viewport slide at a time:
+ *   A → brand / slogan   ·   B → catalogue tagline   ·   C → new release
+ * Short hard cuts between equal holds so previous/next slides never sit
+ * inside the active frame. Sticky runway (~300vh) locks the stage.
+ * Only `prefers-reduced-motion` falls back to a stacked static layout.
+ */
+
+/** Full-viewport scene layer: opaque, no bleed from neighbors. */
+function sceneLayerStyle(
+  opacity: number,
+  zIndex: number,
+): CSSProperties {
+  const shown = opacity > 0.02;
+  return {
+    opacity,
+    zIndex,
+    visibility: shown ? "visible" : "hidden",
+    pointerEvents: opacity > 0.85 ? "auto" : "none",
+  };
+}
+export function HeroSection({
+  cms,
+  newRelease,
+}: {
+  cms?: ContentBlock;
+  newRelease?: ContentBlock;
+} = {}) {
+  const trackRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
-  /** 0 = hero-only feel, 1 = tagline fully settled */
-  const [taglineEntrance, setTaglineEntrance] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const reduceMotion = usePrefersReducedMotion();
+  const staticLayout = reduceMotion;
 
-  const updateTaglineProgress = useCallback(() => {
-    const el = taglineRef.current;
-    if (!el) return;
+  const heroImage = cmsImage(cms, SITE_IMAGES.hero) ?? SITE_IMAGES.hero;
+  const heroWords = [
+    cmsText(cms, "title", DEFAULT_HERO_WORDS[0]),
+    cmsText(cms, "titleLine2", DEFAULT_HERO_WORDS[1]),
+    cmsText(cms, "titleLine3", DEFAULT_HERO_WORDS[2]),
+  ];
+  const heroBody = cmsText(cms, "body", DEFAULT_BODY);
+  const tagline = cms?.ctaLabel?.trim() || DEFAULT_TAGLINE;
 
-    const vh = window.innerHeight || 1;
-    const top = el.getBoundingClientRect().top;
-
-    // Wider band = longer scroll “scrub” between hero and tagline
-    const rangeStart = vh * 0.98;
-    const rangeEnd = vh * 0.12;
-    const raw =
-      (rangeStart - top) / Math.max(1, rangeStart - rangeEnd);
-    setTaglineEntrance(smoothstep01(raw));
-  }, []);
+  const updateProgress = useCallback(() => {
+    if (staticLayout) {
+      setProgress(0);
+      return;
+    }
+    const track = trackRef.current;
+    if (!track) return;
+    const rect = track.getBoundingClientRect();
+    const scrollable = Math.max(track.offsetHeight - window.innerHeight, 1);
+    const scrolled = Math.max(0, Math.min(scrollable, -rect.top));
+    // Linear track progress — easing lives only in per-scene bands so
+    // the sticky runway doesn't feel slow at the ends and fast mid-way.
+    setProgress(scrolled / scrollable);
+  }, [staticLayout]);
 
   useEffect(() => {
+    if (staticLayout) return;
     const tick = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(updateTaglineProgress);
+      rafRef.current = requestAnimationFrame(updateProgress);
     };
-
     window.addEventListener("scroll", tick, { passive: true });
     window.addEventListener("resize", tick);
     tick();
-
     return () => {
       window.removeEventListener("scroll", tick);
       window.removeEventListener("resize", tick);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [updateTaglineProgress]);
+  }, [updateProgress, staticLayout]);
 
-  const p = taglineEntrance;
-  const panelLift = 42 * (1 - p);
-  const panelScale = 0.965 + 0.035 * p;
-  const panelBlur = 14 * (1 - p);
+  const p = progress;
 
-  return (
-    <section className="relative bg-background">
-      <h1 className="sr-only">
-        Taban Niroo · High-Voltage Composite Insulators · Inspire, Innovate,
-        Integrate
-      </h1>
-      <div className="relative min-h-screen w-full">
-        <Image
-          src={SITE_IMAGES.hero}
-          alt="Taban Niroo high-voltage composite insulators and power transmission equipment"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-          quality={85}
-          decoding="async"
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/45 via-black/[0.22] to-black/[0.62]"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_100%,rgb(0,0,0,0.55),transparent_58%)]"
-          aria-hidden
-        />
-        <div className="absolute inset-0 flex flex-col justify-end overflow-hidden pb-14 md:pb-20 lg:pb-24">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-start px-5 sm:px-6 md:px-8 lg:px-10">
-            <div className="-space-y-[0.16em] max-w-[11.5ch]">
-              {HERO_WORDS.map((word, index) => {
-                const isMiddle = index === 1;
-                return (
-                  <span
-                    key={word}
-                    className={cn(
-                      "font-hero-slogan relative isolate block text-start uppercase will-change-[opacity,transform,filter] opacity-0",
-                      "text-[clamp(3rem,8.8vw,6.85rem)] font-bold leading-[0.86] tracking-[-0.005em]",
-                      isMiddle
-                        ? "text-transparent [text-shadow:0_0_24px_rgba(191,219,254,0.18)] [-webkit-text-stroke:1.45px_rgba(186,230,253,0.95)]"
-                        : "text-sky-100/90",
-                      "drop-shadow-[0_3px_22px_rgba(0,0,0,0.45)]"
-                    )}
-                    style={{
-                      animation: `hero-word-fade 1s cubic-bezier(0.22, 0.98, 0.22, 1) ${index * WORD_STAGGER_S}s both`,
-                    }}
-                  >
-                    <span className="relative z-[1] inline-flex items-baseline whitespace-nowrap">
-                      <span>{word}</span>
-                      <span
-                        className={cn(
-                          "ms-[0.045em] translate-y-[-0.04em] font-sans text-[0.38em] font-semibold leading-none tracking-normal",
-                          isMiddle ? "text-sky-100/90" : "text-sky-100/70"
-                        )}
-                      >
-                        {HERO_PUNCT[index]}
-                      </span>
-                    </span>
-                  </span>
-                );
-              })}
-            </div>
-            <p
-              className="mt-5 max-w-lg text-xs leading-relaxed text-white/76 drop-shadow-[0_1px_14px_rgba(0,0,0,0.48)] opacity-0 md:mt-6 md:text-sm"
-              style={{
-                animation: `hero-word-fade 1s cubic-bezier(0.22, 0.98, 0.22, 1) ${(HERO_WORDS.length + 1) * WORD_STAGGER_S}s both`,
-              }}
-            >
-              Advanced high-voltage composite insulators engineered for resilient power transmission.
-            </p>
-          </div>
-        </div>
-      </div>
+  /** Map scroll progress to a 0–1 band (start/end as fractions of total track). */
+  const band = (start: number, end: number) =>
+    smoothstep01(Math.max(0, Math.min(1, (p - start) / (end - start))));
 
-      {/* Tagline “page” — transform driven by scroll between hero and this block */}
+  /**
+   * Equal thirds with sequential cuts — outgoing slide finishes before
+   * the next enters, so previous/next never sit inside the active frame.
+   */
+  const exitA = band(0.28, 0.34);
+  const enterB = band(0.34, 0.4);
+  const exitB = band(0.6, 0.66);
+  const enterC = band(0.66, 0.72);
+  const opacityA = 1 - exitA;
+  const opacityB = enterB * (1 - exitB);
+  const opacityC = enterC;
+  const copyB = band(0.38, 0.48);
+
+  const sceneA = (
+    <div
+      className={cn(
+        "overflow-hidden bg-brand-navy-deep",
+        staticLayout
+          ? "relative min-h-[100dvh]"
+          : "absolute inset-0",
+      )}
+      style={
+        staticLayout ? undefined : sceneLayerStyle(opacityA, 1)
+      }
+    >
       <div
-        ref={taglineRef}
-        className={cn(
-          "relative flex min-h-screen flex-col justify-center border-t border-border/40 bg-gradient-to-b from-muted/25 via-background to-background px-6 py-24 dark:border-white/[0.06] dark:from-white/[0.03] dark:via-background dark:to-background md:px-12 md:py-32 lg:px-20",
-          "will-change-[transform,opacity,filter]"
-        )}
-        style={{
-          opacity: p,
-          transform: `translate3d(0, ${panelLift}px, 0) scale(${panelScale})`,
-          filter: `blur(${panelBlur}px)`,
-        }}
+        className="absolute inset-0 will-change-transform"
+        style={
+          staticLayout
+            ? undefined
+            : { transform: `scale(${1 + exitA * 0.04})` }
+        }
       >
-        <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
-          <div className="w-full space-y-1 md:space-y-2">
-            {TAGLINE_WORDS.map((word, index) => {
-              const stagger = index * 0.1;
-              const w = Math.max(
-                0,
-                Math.min(1, (p - stagger) / (0.52 - stagger * 0.35))
-              );
-              const wo = smoothstep01(w);
+        {heroImage.startsWith("http") ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroImage}
+            alt="Taban Niroo high-voltage composite insulators and power transmission equipment"
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover",
+              !staticLayout && "hero-ken-burns",
+            )}
+          />
+        ) : (
+          <Image
+            src={heroImage}
+            alt="Taban Niroo high-voltage composite insulators and power transmission equipment"
+            fill
+            className={cn("object-cover", !staticLayout && "hero-ken-burns")}
+            priority
+            sizes="100vw"
+            quality={85}
+            decoding="async"
+          />
+        )}
+      </div>
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/70"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_100%,rgb(0,0,0,0.5),transparent_62%)]"
+        aria-hidden
+      />
+
+      <div
+        className={cn(
+          "absolute inset-0 flex flex-col justify-end",
+          "pb-[max(3.5rem,env(safe-area-inset-bottom))] pt-28",
+          "sm:pb-16 md:pb-20 lg:pb-24",
+        )}
+      >
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-start px-5 sm:px-6 md:px-8 lg:px-10">
+          <div className="flex flex-col gap-1 md:gap-1.5">
+            {heroWords.map((word, index) => {
               return (
                 <span
                   key={`${word}-${index}`}
                   className={cn(
-                    "block font-medium leading-[1.15] tracking-tight text-muted-foreground will-change-[transform,opacity]",
-                    "text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] lg:leading-[1.1]"
+                    "font-hero-slogan relative isolate block text-start uppercase",
+                    "text-[clamp(2.4rem,7vw,5.5rem)] font-bold leading-[0.95] tracking-[-0.02em]",
+                    "text-[#F3EEE6] drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)]",
+                    !staticLayout && "opacity-0",
                   )}
                   style={{
-                    opacity: wo,
-                    transform: `translate3d(0, ${22 * (1 - wo)}px, 0)`,
+                    animation: staticLayout
+                      ? undefined
+                      : `hero-word-fade 0.9s cubic-bezier(0.22, 0.98, 0.22, 1) ${index * WORD_STAGGER_S}s both`,
                   }}
                 >
                   {word}
@@ -192,30 +204,128 @@ export function HeroSection() {
           </div>
 
           <p
-            className="mx-auto mt-10 max-w-2xl text-base leading-relaxed text-muted-foreground/90 will-change-[transform,opacity] md:text-lg"
-            style={(() => {
-              const u = smoothstep01(Math.max(0, Math.min(1, (p - 0.42) / 0.38)));
-              return {
-                opacity: u,
-                transform: `translate3d(0, ${18 * (1 - u)}px, 0)`,
-              };
-            })()}
+            className={cn(
+              "mt-8 max-w-sm text-[14px] leading-[1.65] text-white/70 drop-shadow-[0_1px_12px_rgba(0,0,0,0.45)] md:mt-10 md:max-w-md md:text-[15px]",
+              !staticLayout && "opacity-0",
+            )}
+            style={{
+              animation: staticLayout
+                ? undefined
+                : `hero-word-fade 0.9s cubic-bezier(0.22, 0.98, 0.22, 1) ${(heroWords.length + 1) * WORD_STAGGER_S}s both`,
+            }}
           >
-            High-voltage composite insulators. Power transmission. 6-1000 kV.
-            IEC.
+            {heroBody}
           </p>
-          <p
-            className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground/85 will-change-[transform,opacity] md:text-lg"
-            style={(() => {
-              const u = smoothstep01(Math.max(0, Math.min(1, (p - 0.52) / 0.32)));
-              return {
-                opacity: u,
-                transform: `translate3d(0, ${14 * (1 - u)}px, 0)`,
-              };
-            })()}
+
+          <div
+            className={cn(
+              "mt-10 flex flex-wrap items-center gap-3 md:mt-12",
+              !staticLayout && "opacity-0",
+            )}
+            style={{
+              animation: staticLayout
+                ? undefined
+                : `hero-word-fade 0.9s cubic-bezier(0.22, 0.98, 0.22, 1) ${(heroWords.length + 2) * WORD_STAGGER_S}s both`,
+            }}
           >
-            Shiraz, Iran.
-          </p>
+            <Link
+              href="/products"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[11px] font-medium uppercase tracking-[0.18em] text-black transition-colors hover:bg-white/90"
+            >
+              View products
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/35 bg-transparent px-6 text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-colors hover:border-white/65 hover:bg-white/10"
+            >
+              Request enquiry
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const sceneB = (
+    <div
+      className={cn(
+        "flex h-full w-full flex-col items-center justify-center overflow-hidden bg-background px-6",
+        staticLayout
+          ? "relative min-h-[min(70dvh,32rem)] py-20 md:py-24"
+          : "absolute inset-0",
+      )}
+      style={
+        staticLayout ? undefined : sceneLayerStyle(opacityB, 2)
+      }
+    >
+      <div
+        className="mb-8 h-px w-14 md:mb-10"
+        style={{
+          opacity: staticLayout ? 0.4 : 0.65,
+          background:
+            "linear-gradient(90deg, transparent, rgb(var(--accent-volt) / 0.75), transparent)",
+        }}
+        aria-hidden
+      />
+      <p className="max-w-3xl text-center font-hero-slogan text-brand-heading text-[clamp(1.65rem,4.5vw,3.25rem)] font-semibold uppercase leading-[1.12] tracking-tight">
+        {tagline}
+      </p>
+      <p
+        className="mx-auto mt-6 max-w-xl text-center text-sm leading-relaxed text-muted-foreground md:mt-8 md:text-base"
+        style={
+          staticLayout
+            ? undefined
+            : { opacity: copyB }
+        }
+      >
+        High-voltage composite insulators for power transmission.
+      </p>
+    </div>
+  );
+
+  const sceneC = (
+    <div
+      className={cn(
+        "h-full w-full overflow-hidden bg-background",
+        staticLayout ? "relative" : "absolute inset-0",
+      )}
+      style={
+        staticLayout ? undefined : sceneLayerStyle(opacityC, 3)
+      }
+    >
+      <NewReleaseShowcaseSection cms={newRelease} embedded={!staticLayout} />
+    </div>
+  );
+
+  if (staticLayout) {
+    return (
+      <section className="relative bg-background">
+        <h1 className="sr-only">
+          Taban Niroo · High-Voltage Composite Insulators · Inspire, Innovate,
+          Integrate
+        </h1>
+        {sceneA}
+        <div className="border-t border-border/40 dark:border-white/[0.06]">
+          {sceneB}
+        </div>
+        <NewReleaseShowcaseSection cms={newRelease} />
+      </section>
+    );
+  }
+
+  return (
+    <section className="relative bg-background">
+      <h1 className="sr-only">
+        Taban Niroo · High-Voltage Composite Insulators · Inspire, Innovate,
+        Integrate
+      </h1>
+
+      {/* Tall track → sticky stage: one full slide owns the viewport at a time */}
+      <div ref={trackRef} className="relative h-[300vh] min-h-[300dvh]">
+        <div className="sticky top-0 h-screen min-h-[100dvh] isolate overflow-hidden bg-background">
+          {sceneA}
+          {sceneB}
+          {sceneC}
         </div>
       </div>
     </section>

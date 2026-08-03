@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,12 @@ type SubmitState =
   | { status: "success"; delivered: boolean }
   | { status: "error"; message: string };
 
+type ContactFormProps = {
+  /** Product id from `/contact?ref=` — prefills message + emailed to sales. */
+  productRef?: string;
+  productName?: string;
+};
+
 /**
  * Contact form — client-side controller.
  *
@@ -19,13 +25,23 @@ type SubmitState =
  *  • Visually-hidden honeypot (`_hp`) — must remain empty.
  *  • Submit-time stamp (`_t`) — read on the server to reject sub-second
  *    bot submissions.
+ *  • Optional `productRef` from PDP / catalogue quote CTAs.
  *  • Optimistic state machine (idle → loading → success | error).
  *  • Privacy-policy linkage so the form is GDPR-friendly without a
  *    pop-up consent block above it.
  */
-export function ContactForm() {
+export function ContactForm({
+  productRef,
+  productName,
+}: ContactFormProps = {}) {
   const [state, setState] = useState<SubmitState>({ status: "idle" });
   const formMounted = useRef<number>(0);
+
+  const defaultMessage = useMemo(() => {
+    if (!productRef && !productName) return "";
+    const label = productName?.trim() || productRef;
+    return `I would like a quotation / technical datasheet for: ${label}.\n\nProject / voltage class:\nQuantity (approx.):\nNotes:\n`;
+  }, [productRef, productName]);
 
   useEffect(() => {
     formMounted.current = Date.now();
@@ -40,6 +56,7 @@ export function ContactForm() {
       email: String(fd.get("email") ?? "").trim(),
       company: String(fd.get("company") ?? "").trim(),
       message: String(fd.get("message") ?? "").trim(),
+      productRef: String(fd.get("productRef") ?? "").trim(),
       _hp: String(fd.get("_hp") ?? ""),
       _t: formMounted.current,
     };
@@ -78,6 +95,7 @@ export function ContactForm() {
   }
 
   const loading = state.status === "loading";
+  const refLabel = productName?.trim() || productRef;
 
   return (
     <form className="mt-10 max-w-xl space-y-6" onSubmit={onSubmit} noValidate>
@@ -109,11 +127,13 @@ export function ContactForm() {
         )}
       </div>
 
-      {/*
-        Honeypot field. Hidden from sighted users (off-screen + aria-hidden +
-        tabindex -1) but easy for naive bots to fill in. The server rejects
-        submissions where this is non-empty.
-      */}
+      {refLabel ? (
+        <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm text-foreground">
+          Enquiry linked to{" "}
+          <span className="font-medium">{refLabel}</span>
+        </p>
+      ) : null}
+
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden"
@@ -128,6 +148,10 @@ export function ContactForm() {
           defaultValue=""
         />
       </div>
+
+      {productRef ? (
+        <input type="hidden" name="productRef" value={productRef} />
+      ) : null}
 
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground" htmlFor="name">
@@ -186,12 +210,14 @@ export function ContactForm() {
           placeholder="Briefly describe your project, application, or enquiry."
           rows={5}
           disabled={loading}
+          defaultValue={defaultMessage}
+          key={defaultMessage || "blank"}
         />
       </div>
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
         <Button
           type="submit"
-          className="rounded-full px-6"
+          className="min-h-11 w-full rounded-full px-6 sm:w-auto"
           disabled={loading}
         >
           {loading ? "Sending…" : "Send message"}

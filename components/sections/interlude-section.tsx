@@ -106,7 +106,7 @@ export function InterludeSection({
       )}
       aria-label="Interlude"
     >
-      <div className="mx-auto flex min-h-[80vh] max-w-4xl items-center px-6 py-24 md:px-12 md:py-32 lg:px-20">
+      <div className="mx-auto flex min-h-[min(80dvh,80vh)] max-w-4xl items-center px-6 py-24 md:px-12 md:py-32 lg:px-20">
         <div className="w-full">
           {eyebrow && (
             <p
