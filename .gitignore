@@ -16,12 +16,35 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*
+# env files (keep .env.example tracked)
+.env
+.env.*
+!.env.example
 
 # vercel
 .vercel
 
+# local gallery CMS (dev filesystem fallback)
+/data/gallery-manifest.json
+/public/uploads/
+
+# large source assets (not shipped; re-encode before replacing public/videos)
+/assets-raw/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# lighthouse lab reports
+/.lighthouse/
+# macOS
+.DS_Store
+
+# local debug screenshots
+.tmp-*.png
