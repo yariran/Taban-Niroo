@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,8 +10,7 @@ const __dirname = path.dirname(__filename);
  *
  * `'unsafe-inline'` on `script-src` is intentional: Next.js inlines a
  * very small bootstrap script, and we render `<script type="application/ld+json">`
- * blocks for SEO. The rest of the policy is strict (no `unsafe-eval`,
- * no remote `script-src` beyond Vercel's analytics).
+ * blocks for SEO. Fonts are self-hosted via next/font (no rsms.me).
  *
  * `data:` for `img-src` covers the inline noise SVG used by `.grain-layer`.
  * `frame-ancestors 'none'` + `X-Frame-Options: DENY` is the canonical
@@ -23,7 +23,7 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
   "font-src 'self' data:",
-  "connect-src 'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+  "connect-src 'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -46,11 +46,18 @@ const nextConfig = {
    */
   images: {
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600, 1920, 2400],
+    /** Cap at 1920 — hero rarely needs 2400px variants on the wire. */
+    deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600, 1920],
     imageSizes: [64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30,
-    /** Smaller default output on Vercel — faster complete decode on slow links. */
-    qualities: [75, 80, 85],
+    /** Allowed quality values for next/image `quality` prop. */
+    qualities: [70, 75, 80, 85, 92],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+    ],
   },
   async headers() {
     const baseHeaders = [
@@ -115,4 +122,22 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Sourcemap upload only when SENTRY_AUTH_TOKEN (+ org/project) are set.
+ * Without them the SDK still reports via DSN; builds stay zero-config.
+ */
+const sentryWebpackPluginOptions = {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  disableLogger: true,
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN,
+  },
+};
+
+export default process.env.SENTRY_AUTH_TOKEN
+  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+  : nextConfig;

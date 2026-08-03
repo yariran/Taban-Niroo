@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint · Test · Build · E2E · Perf
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: taban-niroo-website
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: taban-niroo-website/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+        env:
+          CMS_ADMIN_PASSWORD: ci-build-password-not-for-prod
+          CMS_SESSION_SECRET: ci-build-session-secret-32chars
+          NEXT_PUBLIC_SITE_URL: https://www.taban-niroo.com
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('taban-niroo-website/package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E + a11y + web-vitals budgets
+        run: npm run test:e2e
+        env:
+          CI: "true"
+          CMS_ADMIN_PASSWORD: ci-build-password-not-for-prod
+          CMS_SESSION_SECRET: ci-build-session-secret-32chars
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:4173
+
+      - name: Start production server for Lighthouse
+        run: |
+          npm run start -- -p 4173 &
+          echo $! > /tmp/next-server.pid
+          for i in $(seq 1 60); do
+            if curl -sf -o /dev/null http://127.0.0.1:4173/; then
+              echo "server ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "server failed to start"
+          exit 1
+        env:
+          CMS_ADMIN_PASSWORD: ci-build-password-not-for-prod
+          CMS_SESSION_SECRET: ci-build-session-secret-32chars
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:4173
+
+      - name: Lighthouse performance budgets
+        run: npm run test:perf
+        env:
+          E2E_BASE_URL: http://127.0.0.1:4173
+
+      - name: Stop production server
+        if: always()
+        run: |
+          if [ -f /tmp/next-server.pid ]; then
+            kill "$(cat /tmp/next-server.pid)" || true
+          fi

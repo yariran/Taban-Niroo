@@ -49,16 +49,65 @@ npm run dev
 
 ## Environment variables
 
-See [`.env.example`](./.env.example). All variables are optional **for local development**; production behaviour depends on what is set.
+See [`.env.example`](./.env.example).
 
-| Variable               | Required for          | Description                                                                                       |
-| ---------------------- | --------------------- | ------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | Production            | Canonical origin (no trailing slash). Drives sitemap, robots, OG URLs, JSON-LD canonical entries. |
-| `RESEND_API_KEY`       | Contact form delivery | Resend transactional API key.                                                                     |
-| `RESEND_FROM_EMAIL`    | Contact form delivery | Verified `from` address on Resend.                                                                |
-| `CONTACT_TO_EMAIL`     | Optional              | Override destination inbox for contact form. Defaults to `info@taban-niroo.com`.                  |
+| Variable | Required for | Description |
+| -------- | ------------ | ----------- |
+| `NEXT_PUBLIC_SITE_URL` | Production SEO | Canonical origin (no trailing slash). |
+| `RESEND_API_KEY` | Contact form | Resend API key. **Required in production** or contact returns 503. |
+| `RESEND_FROM_EMAIL` | Contact form | Verified `from` address on Resend. |
+| `CONTACT_TO_EMAIL` | Optional | Destination inbox (default `info@taban-niroo.com`). |
+| `RESEND_AUDIENCE_ID` | Newsletter | Resend Audience id for real subscriber storage. |
+| `NEXT_PUBLIC_NEWSLETTER_ENABLED` | Newsletter UI | Set `true` only after Audience is configured (footer form stays hidden otherwise). |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Rate limits | **Required in production.** Without these, a strict in-memory fallback is used (not durable across Vercel instances). |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional | Search Console HTML-tag token. |
+| `CMS_ADMIN_USERNAME` | Admin CMS | Login username (default `admin`). |
+| `CMS_ADMIN_PASSWORD` | Admin CMS | Password for `/admin` (Persian dashboard). **Never commit.** |
+| `CMS_SESSION_SECRET` | Admin CMS | HMAC secret for signed session cookies (≥16 chars). **Required for production.** |
+| `CMS_SESSION_VERSION` | Admin CMS | Bump to revoke all CMS sessions. |
+| `CMS_INTERNAL_KEY` | Admin CMS | Optional key for server-to-server calls (`x-cms-internal` header). |
+| `BLOB_READ_WRITE_TOKEN` | Admin CMS on Vercel | Vercel Blob store token. **Required in production** so uploads and manifests persist. |
+| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | Optional | Error reporting to Sentry (API + client boundaries). |
 
-When `RESEND_API_KEY` and `RESEND_FROM_EMAIL` are missing, the contact API still returns `{ ok: true, delivered: false }` and prints the enquiry to the server log — useful for previews and staging.
+Validate before deploy:
+
+```bash
+npm run check-env          # lists missing vars
+npm run check-env:strict   # exits 1 if anything required is missing
+```
+
+`GET /api/health` returns `503` in production when any required env is missing.
+
+CI runs `lint` + `test` + `build` on every push/PR (see `.github/workflows/ci.yml`).
+
+### Persian admin CMS (for the client)
+
+Full-site content management at `/admin` (Persian RTL panel; public site stays English):
+
+1. On Vercel: **Storage → Create Blob Store** → copy `BLOB_READ_WRITE_TOKEN` into env.
+2. Set a strong `CMS_ADMIN_PASSWORD` + `CMS_SESSION_SECRET` (≥16 random chars).
+3. Set Resend + Upstash (see checklist below).
+4. Redeploy.
+5. Open `https://www.taban-niroo.com/admin/login`, sign in.
+6. **Products** → «بارگذاری از کاتالوگ فعلی» to seed the catalogue, then edit / add / delete products (including variants and technical tables).
+7. **Gallery** — homepage product gallery photos.
+8. **Content** — home sections, About / Projects / Contact / Footer copy and images.
+9. **Blog** — draft / publish articles (`/blog` and `/blog/[slug]`).
+
+If CMS data is empty or Blob is offline, the live site falls back to the code defaults (`lib/products.ts`, `lib/site-images.ts`, hardcoded section copy).
+
+Locally (without Blob): manifests save under `data/` and uploads under `public/uploads/cms`.
+
+### Production deploy checklist (critical)
+
+1. Set `NEXT_PUBLIC_SITE_URL=https://www.taban-niroo.com`
+2. Set `RESEND_API_KEY` + `RESEND_FROM_EMAIL` (verify domain in Resend)
+3. Set Upstash Redis REST credentials for rate limiting
+4. Set `CMS_ADMIN_PASSWORD` + `CMS_SESSION_SECRET` + `BLOB_READ_WRITE_TOKEN`
+5. Run `npm run check-env:strict` (or confirm `/api/health` returns `"status":"ok"`)
+6. Optionally enable newsletter: create Resend Audience → `RESEND_AUDIENCE_ID` + `NEXT_PUBLIC_NEWSLETTER_ENABLED=true`
+7. Redeploy after env changes
+8. Sign in once at `/admin/login` (old cookies are invalid after session-secret changes)
 
 ---
 
@@ -66,8 +115,11 @@ When `RESEND_API_KEY` and `RESEND_FROM_EMAIL` are missing, the contact API still
 
 ```
 app/                      # Next.js App Router routes
+  admin/                  # Persian RTL CMS (products, gallery, content, blog)
   api/contact/            # Hardened contact endpoint
-  products/[slug]/        # Per-product detail pages (SSG)
+  api/cms/                # CMS auth, products, content, blog, gallery, upload
+  products/[slug]/        # Per-product detail pages
+  blog/[slug]/            # Published blog articles
   privacy/ terms/ imprint/  # Legal pages
   error.tsx               # Route-level error boundary
   global-error.tsx        # Shell-level error boundary
