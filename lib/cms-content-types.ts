@@ -24,6 +24,13 @@ export type SiteContent = {
   home: {
     hero?: ContentBlock;
     newRelease?: ContentBlock;
+    /**
+     * Headline proof metrics under the hero. Split out of `whyTaban`,
+     * which used to feed both the KPI band and the five pillars from a
+     * single `items[]`. `resolveKpis` still falls back to `whyTaban` so
+     * existing saved payloads keep rendering — see `lib/home-kpis.ts`.
+     */
+    proof?: ContentBlock;
     philosophy?: ContentBlock;
     featured?: ContentBlock;
     technology?: ContentBlock;

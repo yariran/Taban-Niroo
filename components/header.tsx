@@ -93,7 +93,7 @@ export function Header() {
       className={cn(
         "pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center",
         "pt-[max(1rem,calc(0.75rem+var(--sat)))] px-4 sm:px-6 lg:px-8",
-        "transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "transition-[padding] duration-500 ease-[var(--ease-standard)]",
         isScrolled && "pt-[max(0.65rem,calc(0.45rem+var(--sat)))] px-3 sm:px-5",
       )}
     >
@@ -102,7 +102,7 @@ export function Header() {
           "glass-header-pill pointer-events-auto",
           "grid w-full max-w-[64rem] grid-cols-[1fr_auto_1fr] items-center",
           "rounded-full border px-3.5 sm:px-4 lg:px-5",
-          "transition-[height,max-width,padding,border-color,box-shadow,background-color,backdrop-filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-[height,max-width,padding,border-color,box-shadow,background-color,backdrop-filter] duration-500 ease-[var(--ease-standard)]",
           isScrolled
             ? "glass-header-pill--compact h-9 max-w-[52rem] px-3 sm:px-3.5 lg:px-4"
             : "h-10 sm:h-11",
@@ -181,7 +181,7 @@ export function Header() {
                 : "pill-elevate h-7 px-3 text-[12px] sm:h-8 sm:px-3.5",
               onDarkHero
                 ? "bg-white text-brand-navy hover:bg-brand-cream"
-                : "bg-brand-navy text-white hover:bg-brand-burgundy",
+                : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
             )}
           >
             Contact
@@ -305,7 +305,7 @@ export function Header() {
                     "touch-target flex min-h-11 items-center justify-center gap-2 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
                     onDarkHero
                       ? "border border-white/20 bg-white/10 text-white hover:bg-white/16"
-                      : "bg-brand-navy text-white hover:bg-brand-burgundy",
+                      : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
                   )}
                 >
                   Contact

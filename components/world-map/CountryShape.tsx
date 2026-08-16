@@ -128,7 +128,7 @@ function CountryShapeComponent({
             <>
               <m.path
                 d={shape.d}
-                fill="#e07a2f"
+                fill="#e3b34e"
                 className={`${styles.activeHeat} ${styles.pulseLayer}`}
                 initial={{ opacity: 0, scale: 0.94 }}
                 animate={

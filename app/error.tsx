@@ -65,7 +65,7 @@ export default function RouteError({
           <button
             type="button"
             onClick={() => reset()}
-            className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
           >
             Retry
           </button>

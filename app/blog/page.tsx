@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { RnDCinemaOpening } from "@/components/sections/rnd-cinema-opening";
 import { RnDOverviewSection } from "@/components/sections/rnd-overview-section";
-import { PollutionPerformanceSection } from "@/components/sections/pollution-performance-section";
+import { RnDCinemaCriteria } from "@/components/sections/rnd-cinema-criteria";
 import { HybridDevelopmentSection } from "@/components/sections/hybrid-development-section";
 import { PatentsSection } from "@/components/sections/patents-section";
-import { RevealWords, RevealUp } from "@/components/ui/reveal-words";
 import { getPublishedPosts } from "@/lib/cms-blog";
 import { getSiteContent } from "@/lib/cms-content";
-import { cmsText } from "@/lib/cms-resolve";
 import { pageSocial } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,42 +25,9 @@ export default async function BlogPage() {
     getPublishedPosts(),
     getSiteContent(),
   ]);
-  const hero = content.blog?.hero;
-  const eyebrow = cmsText(hero, "eyebrow", "Blog – R&D");
-  const title1 = cmsText(hero, "title", "Research, testing,");
-  const title2 = cmsText(hero, "titleLine2", "and field experience.");
-  const body = cmsText(
-    hero,
-    "body",
-    "Taban Niroo’s Research & Development team focuses on the design and development of products that deliver additional value under demanding electrical and environmental conditions. Our work is guided by IEC standards and continuous feedback from the field.",
-  );
-
   return (
     <main id="main-content" className="min-h-screen bg-background">
       <SiteHeader />
-
-      <section className="bg-background">
-        <div className="px-6 pt-28 pb-20 md:px-12 md:pt-32 md:pb-24 lg:px-20 lg:pt-36 lg:pb-28">
-          <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-            {eyebrow}
-          </p>
-          <h1 className="mt-4 font-hero-slogan text-brand-heading text-3xl font-bold uppercase tracking-tight md:text-4xl lg:text-5xl">
-            <RevealWords as="span" className="block">
-              {title1}
-            </RevealWords>
-            <RevealWords as="span" className="block" delay={140}>
-              {title2}
-            </RevealWords>
-          </h1>
-          <RevealUp
-            as="p"
-            delay={420}
-            className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg"
-          >
-            {body}
-          </RevealUp>
-        </div>
-      </section>
 
       {/* R&D story — the engineering the article list reports on. Sits
           above the articles so the page reads as a capability page first
@@ -70,9 +36,13 @@ export default async function BlogPage() {
           Order is an argument: the overview claims the work starts as a
           calculation, the next two sections evidence the two efforts it
           names, and Patents closes with what those efforts got registered
-          as — outcome last, so the claim is paid off before the feed. */}
+          as — outcome last, so the claim is paid off before the feed.
+
+          Acts I and II carry that argument cinematically; both collapse to
+          their original static rendering under reduced motion. */}
+      <RnDCinemaOpening cms={content.blog?.hero} />
       <RnDOverviewSection cms={content.blog?.rndOverview} />
-      <PollutionPerformanceSection cms={content.blog?.pollution} />
+      <RnDCinemaCriteria cms={content.blog?.pollution} />
       <HybridDevelopmentSection cms={content.blog?.hybrid} />
       <PatentsSection cms={content.blog?.patents} />
 
@@ -137,7 +107,7 @@ export default async function BlogPage() {
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   href="/products"
-                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-navy px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
                 >
                   View products
                 </Link>

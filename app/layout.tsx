@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/lenis-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { ConsentAnalytics } from "@/components/consent-analytics";
+import { SiteIntro } from "@/components/site-intro";
 import { getSiteUrl } from "@/lib/site-url";
 import { ORGANIZATION_SAME_AS } from "@/lib/seo";
 import "./globals.css";
@@ -207,6 +208,12 @@ export default function RootLayout({
               __html: JSON.stringify(structuredData),
             }}
           />
+          {/* Skip intro flash on return visits within the same tab session. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{if(sessionStorage.getItem("tn-intro-seen")==="1")document.documentElement.dataset.tnIntro="done"}catch(e){}})();`,
+            }}
+          />
           <a
             href="#main-content"
             className="fixed left-4 top-4 z-[100] -translate-y-[150%] rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background outline-offset-4 transition-transform duration-200 focus-visible:translate-y-0"
@@ -214,6 +221,7 @@ export default function RootLayout({
             Skip to content
           </a>
           <LenisProvider />
+          <SiteIntro />
           {children}
           <CookieConsent />
           <ConsentAnalytics />

@@ -16,9 +16,7 @@ import { ImageReveal } from "@/components/ui/image-reveal";
  */
 export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const enterRef = useRef<HTMLDivElement>(null);
   const reduceMotion = usePrefersReducedMotion();
-  const [sectionEntered, setSectionEntered] = useState(false);
   const [alpineTranslateX, setAlpineTranslateX] = useState(-100);
   const [forestTranslateX, setForestTranslateX] = useState(100);
   const [titleOpacity, setTitleOpacity] = useState(1);
@@ -26,7 +24,6 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
   const title = cmsText(cms, "title", "Composite & Hybrid.");
 
   const staticLayout = reduceMotion;
-  const effectiveEntered = staticLayout || sectionEntered;
   const alpineX = staticLayout ? 0 : alpineTranslateX;
   const forestX = staticLayout ? 0 : forestTranslateX;
   const titleOp = staticLayout ? 0 : titleOpacity;
@@ -71,50 +68,30 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
     };
   }, [updateTransforms, staticLayout]);
 
-  useEffect(() => {
-    if (staticLayout) return;
-    const el = enterRef.current;
-    if (!el) return;
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setSectionEntered(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0, rootMargin: "0px 0px 12% 0px" },
-    );
-
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [staticLayout]);
-
+  /* `.product-plate` replaces the old `bg-white dark:bg-zinc-900/80` pair.
+     The dark variant was the bug: these are white-ground studio renders, so
+     a dark card face put a hard white rectangle inside a dark panel. The
+     plate is light in both themes and blends the render's own ground into
+     it — see the utility's note in globals.css. */
   const cardClass =
-    "relative aspect-[4/3] max-h-[min(38dvh,20rem)] w-full overflow-hidden rounded-2xl bg-white shadow-elevate ring-1 ring-inset ring-brand-navy/10 dark:bg-zinc-900/80 dark:ring-white/10 sm:max-h-[min(42dvh,22rem)] xl:max-h-[min(48dvh,28rem)]";
+    "product-plate relative aspect-[4/3] max-h-[min(38dvh,20rem)] w-full overflow-hidden rounded-2xl shadow-elevate ring-1 ring-inset ring-brand-navy/10 dark:ring-white/10 sm:max-h-[min(42dvh,22rem)] xl:max-h-[min(48dvh,28rem)]";
 
   return (
     <section id="philosophy" className="bg-background">
+      {/*
+        No entrance wrapper here by design. This element used to carry
+        `animate-[next-section-in]` — a translateY(3rem) scale(.985)
+        keyframe — while being an ANCESTOR of the sticky stage below,
+        which dragged the sticky subtree for the duration of the
+        entrance. Motion for this section attaches to the title, the
+        cards, and the closing copy instead: all descendants or
+        siblings of the sticky node, never ancestors of it.
+      */}
       <div
-        ref={enterRef}
-        className={
-          staticLayout
-            ? undefined
-            : effectiveEntered
-              ? "animate-[next-section-in_0.65s_cubic-bezier(0.22,0.98,0.22,1)_forwards]"
-              : "translate-y-8 scale-[0.985] opacity-100"
-        }
-        style={
-          !staticLayout && effectiveEntered
-            ? { animationFillMode: "forwards" as const }
-            : undefined
-        }
+        ref={sectionRef}
+        className="relative"
+        style={{ height: staticLayout ? "auto" : "160vh" }}
       >
-        <div
-          ref={sectionRef}
-          className="relative"
-          style={{ height: staticLayout ? "auto" : "160vh" }}
-        >
           <div
             className={
               staticLayout
@@ -128,7 +105,16 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                   as="h2"
                   delayMs={80}
                   stepMs={70}
-                  className="mb-6 px-6 text-center text-[clamp(2rem,8vw,4.5rem)] font-medium leading-[0.95] tracking-tighter text-brand-navy md:mb-8"
+                  /* `.type-cinema`, not a hand-tuned Inter stack.
+
+                     This heading is correct to be sentence case — it lives
+                     inside the held full-bleed scene, where globals.css
+                     reserves Inter Light as the narrator's voice against
+                     Oswald's catalogue voice. It just was not using the
+                     token: `font-medium tracking-tighter` is a near-miss of
+                     `.type-cinema` (300 / -0.035em), so the page had two
+                     almost-identical cinematic voices instead of one. */
+                  className="type-cinema mb-6 px-6 text-center text-[clamp(2rem,8vw,4.5rem)] text-brand-navy md:mb-8"
                 >
                   {title}
                 </RevealText>
@@ -138,7 +124,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                   className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
                   style={{ opacity: titleOp }}
                 >
-                  <h2 className="px-6 text-center text-[clamp(2rem,7vw,6rem)] font-medium leading-[0.95] tracking-tighter text-brand-navy">
+                  <h2 className="type-cinema px-6 text-center text-[clamp(2rem,7vw,6rem)] text-brand-navy">
                     {title}
                   </h2>
                 </div>
@@ -175,7 +161,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                     />
                   )}
                   <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6">
-                    <span className="rounded-full bg-brand-navy/90 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-md sm:px-3 sm:py-1.5 sm:text-xs md:px-4 md:py-2 md:text-sm">
+                    <span className="rounded-full bg-brand-navy-deep/90 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-md sm:px-3 sm:py-1.5 sm:text-xs md:px-4 md:py-2 md:text-sm">
                       Long Rod Insulators
                     </span>
                   </div>
@@ -210,7 +196,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                     />
                   )}
                   <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6">
-                    <span className="rounded-full bg-brand-navy/90 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-md sm:px-3 sm:py-1.5 sm:text-xs md:px-4 md:py-2 md:text-sm">
+                    <span className="rounded-full bg-brand-navy-deep/90 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-md sm:px-3 sm:py-1.5 sm:text-xs md:px-4 md:py-2 md:text-sm">
                       Post Insulators
                     </span>
                   </div>
@@ -220,23 +206,22 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
           </div>
         </div>
 
-        <div className="px-6 py-16 md:px-12 md:py-24 lg:px-20 lg:py-28">
-          <RevealBlock
-            className="mx-auto max-w-3xl text-center"
-            delayMs={100}
-            distance={20}
-            stagger={90}
-          >
-            <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-              Product range
-            </p>
-            <p className="mt-6 text-balance text-lg leading-relaxed text-muted-foreground md:mt-8 md:text-xl lg:text-2xl">
-              High-voltage composite accessories. Long rod, post, hybrid
-              insulators. Transformer bushings. Cable accessories. IEC-tested.
-              6-1000 kV.
-            </p>
-          </RevealBlock>
-        </div>
+      <div className="px-6 py-16 md:px-12 md:py-24 lg:px-20 lg:py-28">
+        <RevealBlock
+          className="mx-auto max-w-3xl text-center"
+          delayMs={100}
+          distance={20}
+          stagger={90}
+        >
+          <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
+            Product range
+          </p>
+          <p className="mt-6 text-balance text-lg leading-relaxed text-muted-foreground md:mt-8 md:text-xl lg:text-2xl">
+            High-voltage composite accessories. Long rod, post, hybrid
+            insulators. Transformer bushings. Cable accessories. IEC-tested.
+            6-1000 kV.
+          </p>
+        </RevealBlock>
       </div>
     </section>
   );

@@ -7,6 +7,13 @@ type Chapter = {
   /** Sentinel id to look for in the DOM (a `[data-chapter-id]` element). */
   id: string;
   title: string;
+  /**
+   * Optional act number. When present, the rail inserts extra space at
+   * each act boundary, so it communicates a three-part structure instead
+   * of listing N equally-weighted things. Omit it (as `/about` does) and
+   * the rail renders as an even comb.
+   */
+  act?: number;
 };
 
 /**
@@ -15,10 +22,15 @@ type Chapter = {
  * Renders a vertical column of hairlines on desktop. The hairline whose
  * sentinel `data-chapter-id` element is currently closest to the
  * viewport centre grows wider and lights up; the others stay quiet.
- * Hovering a hairline reveals a small uppercase chapter label without
- * shifting layout (the label sits absolute to the right of the rail).
+ * Hovering or focusing a hairline reveals a small uppercase chapter label
+ * without shifting layout (the label sits absolute to the left of the
+ * rail, on its own scrim — see the note at the call site for why it is
+ * never shown unprompted).
  * Clicking a hairline scrolls the corresponding section to the top of
- * the viewport — through Lenis if it is active, native otherwise.
+ * the viewport via native `scrollIntoView`. (It does not route through
+ * Lenis — unlike the delegated anchor handler in `lenis-provider.tsx` —
+ * so a rail jump is native-smooth while ordinary scrolling is
+ * Lenis-smooth. Minor inconsistency, pre-existing, worth unifying later.)
  *
  * Why hairlines instead of dots: the rest of the site speaks in
  * blueprint hairlines (section boundary, scroll rail at the top,
@@ -94,20 +106,50 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
       <ul className="flex flex-col gap-3">
         {chapters.map((c, i) => {
           const isActive = i === active;
+          // Extra breath at each act boundary — the rail then reads as
+          // three movements rather than an undifferentiated list.
+          const startsAct =
+            i > 0 && c.act !== undefined && c.act !== chapters[i - 1]?.act;
           return (
-            <li key={c.id} className="relative flex items-center justify-end">
+            <li
+              key={c.id}
+              className={cn(
+                "group relative flex items-center justify-end",
+                startsAct && "mt-5",
+              )}
+            >
+              {/*
+                Names appear on demand, not permanently.
+
+                A chapter label runs ~175px to the left of the rail. Every
+                content container on the home feed reaches further right
+                than that — the `px-20` sections by 143px — so an always-on
+                active label was landing on top of cards and body copy at
+                every desktop width. The hairlines themselves clear all of
+                it, so the rail keeps its job as a progress indicator and
+                the naming is revealed by hover or keyboard focus, where a
+                brief overlap is the reader's own doing and reads as chrome.
+
+                (`group` also had to move here from the button: it sat on a
+                sibling that follows this span, so the hover reveal the
+                original was reaching for never fired at all.)
+
+                The scrim is what makes an overlap legible wherever it
+                lands — over a photograph, a white product plate, or the
+                page ground.
+              */}
               <span
                 aria-hidden
                 className={cn(
                   "pointer-events-none absolute right-7 top-1/2 -translate-y-1/2 whitespace-nowrap",
-                  "font-mono text-[10px] uppercase tracking-[0.22em]",
-                  "transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                  isActive
-                    ? "translate-x-0 text-foreground/80 opacity-100"
-                    : "translate-x-1 text-foreground/55 opacity-0 group-hover:opacity-100"
+                  "rounded-full border border-border/40 bg-background/85 px-2.5 py-1 backdrop-blur-md dark:border-white/10",
+                  "font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/85",
+                  "opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-standard)]",
+                  "translate-x-1 group-hover:translate-x-0 group-hover:opacity-100",
+                  "group-focus-within:translate-x-0 group-focus-within:opacity-100",
                 )}
               >
-                <span className="tabular text-foreground/40">
+                <span className="tabular text-brand-burgundy">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className="ml-2">{c.title}</span>
@@ -118,8 +160,9 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
                 aria-label={`Jump to ${c.title}`}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "group pointer-events-auto block h-[1.5px] rounded-full",
-                  "transition-[width,background-color,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                  "pointer-events-auto block h-[1.5px] rounded-full",
+                  "transition-[width,background-color,opacity] duration-500 ease-[var(--ease-standard)]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   isActive
                     ? "w-7 bg-foreground/90 dark:bg-white/95"
                     : "w-3 bg-foreground/30 hover:w-5 hover:bg-foreground/65 dark:bg-white/30 dark:hover:bg-white/70"

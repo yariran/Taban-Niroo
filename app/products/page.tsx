@@ -139,7 +139,7 @@ export default async function ProductsPage() {
               <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
                   href={cta1Href}
-                  className="group pill-elevate inline-flex items-center justify-center gap-2 rounded-full bg-brand-navy px-6 py-3 text-sm font-medium uppercase tracking-wider text-white transition-all hover:bg-brand-burgundy"
+                  className="group pill-elevate inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-all hover:bg-brand-burgundy"
                 >
                   <LayoutGrid size={16} aria-hidden />
                   {cta1}

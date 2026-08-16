@@ -195,7 +195,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
         className={cn(
           "fixed left-1/2 top-[calc(0.75rem+3rem+0.5rem)] z-[55] w-[min(1080px,calc(100vw-32px))] -translate-x-1/2 rounded-2xl border border-border/70 bg-background/95 shadow-elevate backdrop-blur-xl",
           "supports-[backdrop-filter]:bg-background/85",
-          "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-[opacity,transform] duration-300 ease-[var(--ease-standard)]",
           "dark:border-white/[0.08]",
           open
             ? "pointer-events-auto -translate-x-1/2 translate-y-0 opacity-100"

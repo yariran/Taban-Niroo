@@ -4,43 +4,59 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Brand palette — cream ground, navy authority, orange energy, gold labels.
-     `--brand-burgundy` now carries the gold accent. The token name is kept
-     because 67 call sites use `text-brand-burgundy` / `brand-burgundy-strong`;
-     renaming them is a separate sweep. `--destructive` deliberately keeps the
-     old burgundy hex — it is the error colour, not a brand accent. */
-  --brand-cream: #F3EEE6;
-  --brand-navy: #0B1F3A;
-  --brand-navy-deep: #061428;
-  --brand-navy-soft: #FFFFFF;
-  --brand-orange: #E07A2F;
-  --brand-burgundy: #EFB042;
-  --brand-burgundy-strong: #D9942F;
+  /* Brand palette — graphite ground, neutral type, ONE muted-gold accent.
 
-  --background: #F3EEE6;
-  --foreground: #0B1F3A;
+     Replaces the earlier cream/navy/orange/gold set. Two changes carry the
+     "luxury / high-tech" read: the ground is a near-neutral graphite rather
+     than a mid navy (blue-tinted mid-darks read as corporate dashboard), and
+     there is now a single accent hue instead of an orange and a gold that
+     sat close enough together to look accidental.
+
+     Token NAMES are deliberately unchanged — `--brand-navy*`,
+     `--brand-orange` and `--brand-burgundy` have ~90 call sites between them.
+     Only the values moved. Read them by role, not by name:
+       --brand-navy       → primary type / heading colour
+       --brand-navy-deep  → cinematic scene ground (dark in BOTH themes)
+       --brand-orange     → gold used ON dark surfaces (footer, map, scenes)
+       --brand-burgundy   → gold used for labels, theme-aware for contrast
+     `--destructive` keeps the old burgundy — it is the error colour. */
+  --brand-cream: #F4F5F6;
+  --brand-navy: #15171A;
+  --brand-navy-deep: #0A0B0D;
+  --brand-navy-soft: #FFFFFF;
+  /* Bright gold: only ever painted on dark grounds, so it stays bright here. */
+  --brand-orange: #E3B34E;
+  /* Label gold: darkened for light backgrounds — the bright #E3B34E is ~1.9:1
+     on white. #7D5C17 measures 5.63:1 on the page ground and 6.15:1 on cards,
+     which leaves headroom over the 4.5 minimum — these labels are 10-11px
+     uppercase with wide tracking, so bare-minimum contrast reads poorly. */
+  --brand-burgundy: #7D5C17;
+  --brand-burgundy-strong: #5E450F;
+
+  --background: #F4F5F6;
+  --foreground: #15171A;
   --card: #FFFFFF;
-  --card-foreground: #0B1F3A;
+  --card-foreground: #15171A;
   --popover: #FFFFFF;
-  --popover-foreground: #0B1F3A;
-  --primary: #0B1F3A;
+  --popover-foreground: #15171A;
+  --primary: #15171A;
   --primary-foreground: #FFFFFF;
   --secondary: #FFFFFF;
-  --secondary-foreground: #0B1F3A;
-  --muted: #E8E2D8;
-  --muted-foreground: #4A5568;
-  --accent: #0B1F3A;
+  --secondary-foreground: #15171A;
+  --muted: #EAECEE;
+  --muted-foreground: #5A6068;
+  --accent: #15171A;
   --accent-foreground: #FFFFFF;
   --destructive: #7A1F2B;
   --destructive-foreground: #FFFFFF;
-  --border: #D9D2C6;
-  --input: #E8E2D8;
-  --ring: #0B1F3A;
-  --chart-1: #0B1F3A;
-  --chart-2: #7A1F2B;
-  --chart-3: #E07A2F;
-  --chart-4: #4A5568;
-  --chart-5: #D9D2C6;
+  --border: #DDE0E3;
+  --input: #EAECEE;
+  --ring: #15171A;
+  --chart-1: #15171A;
+  --chart-2: #7D5C17;
+  --chart-3: #E3B34E;
+  --chart-4: #5A6068;
+  --chart-5: #DDE0E3;
   /**
    * Soft industrial radius — cards/panels opt into dedicated tokens.
    */
@@ -48,79 +64,94 @@
   --radius-pill: 9999px;
   --radius-card: 1rem;
   --radius-panel: 1.25rem;
-  --sidebar: #061428;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #FFFFFF;
-  --sidebar-primary-foreground: #061428;
-  --sidebar-accent: #0B1F3A;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #1A2F4A;
-  --sidebar-ring: #E07A2F;
+  --sidebar: #0A0B0D;
+  --sidebar-foreground: #F4F5F6;
+  --sidebar-primary: #F4F5F6;
+  --sidebar-primary-foreground: #0A0B0D;
+  --sidebar-accent: #141619;
+  --sidebar-accent-foreground: #F4F5F6;
+  --sidebar-border: #24272C;
+  --sidebar-ring: #E3B34E;
   /**
-   * Voltage accent — orange energy + gold pulse for cinematic surfaces.
+   * Voltage accent — the single gold, as RGB channels for `/ alpha` use.
    */
-  --accent-volt: 224 122 47;
-  --accent-volt-strong: 239 176 66;
+  --accent-volt: 227 179 78;
+  --accent-volt-strong: 201 154 52;
   --surface-glow: rgb(var(--accent-volt) / 0.08);
+  /* Shadows are neutral graphite — a navy tint here is what made elevated
+     surfaces read blue instead of simply lifted. */
   --shadow-elevate:
-    0 1px 1px 0 rgb(11 31 58 / 0.04),
-    0 8px 18px -10px rgb(11 31 58 / 0.14),
-    0 28px 56px -24px rgb(11 31 58 / 0.22),
-    0 0 0 1px rgb(11 31 58 / 0.06);
+    0 1px 1px 0 rgb(10 11 13 / 0.04),
+    0 8px 18px -10px rgb(10 11 13 / 0.12),
+    0 28px 56px -24px rgb(10 11 13 / 0.18),
+    0 0 0 1px rgb(10 11 13 / 0.06);
   --shadow-card-rest:
-    0 1px 1px 0 rgb(11 31 58 / 0.03),
-    0 10px 24px -12px rgb(11 31 58 / 0.12);
+    0 1px 1px 0 rgb(10 11 13 / 0.03),
+    0 10px 24px -12px rgb(10 11 13 / 0.10);
   --shadow-card-hover:
-    0 2px 2px 0 rgb(11 31 58 / 0.04),
-    0 28px 56px -18px rgb(11 31 58 / 0.24),
+    0 2px 2px 0 rgb(10 11 13 / 0.04),
+    0 28px 56px -18px rgb(10 11 13 / 0.20),
     0 0 0 1px rgb(var(--accent-volt) / 0.28);
   --grain-strength: 0.035;
+  /**
+   * Motion tokens — named so the same curve isn't retyped by hand at
+   * every call site (it previously was, ~17 times, alongside near-
+   * duplicate siblings with no way to tell intentional variety from
+   * drift). Values unchanged; only given names.
+   */
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-entrance: cubic-bezier(0.22, 0.98, 0.22, 1);
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark {
-  --brand-cream: #F3EEE6;
-  --brand-navy: #8BA3C4;
-  --brand-navy-deep: #061428;
-  --brand-navy-soft: #132538;
-  --brand-orange: #E8954A;
-  /* Same gold as light. On #061428 it lands at ~8.9:1, so labels stay legible. */
-  --brand-burgundy: #EFB042;
-  --brand-burgundy-strong: #F5C46B;
+  /* Graphite, not navy. The luminance steps are deliberately wide —
+     0A0B0D → 141619 → 24272C — so elevated surfaces actually separate from
+     the ground. The old set (061428 → 0B1F3A → 132538 → 1A2F4A) sat inside
+     one narrow blue band, which is what made everything look foggy. */
+  --brand-cream: #F2F3F5;
+  --brand-navy: #D7DADE;
+  --brand-navy-deep: #0A0B0D;
+  --brand-navy-soft: #141619;
+  --brand-orange: #E3B34E;
+  /* On #0A0B0D this lands ≈ 9.6:1, so gold labels stay well clear of AA. */
+  --brand-burgundy: #E3B34E;
+  --brand-burgundy-strong: #F0C673;
 
-  --background: #061428;
-  --foreground: #F3EEE6;
-  --card: #0B1F3A;
-  --card-foreground: #F3EEE6;
-  --popover: #0B1F3A;
-  --popover-foreground: #F3EEE6;
-  --primary: #F3EEE6;
-  --primary-foreground: #061428;
-  --secondary: #132538;
-  --secondary-foreground: #F3EEE6;
-  --muted: #132538;
-  --muted-foreground: #A8B4C4;
-  --accent: #E07A2F;
-  --accent-foreground: #061428;
+  --background: #0A0B0D;
+  --foreground: #F2F3F5;
+  --card: #141619;
+  --card-foreground: #F2F3F5;
+  --popover: #141619;
+  --popover-foreground: #F2F3F5;
+  --primary: #F2F3F5;
+  --primary-foreground: #0A0B0D;
+  --secondary: #141619;
+  --secondary-foreground: #F2F3F5;
+  --muted: #141619;
+  --muted-foreground: #9AA0A8;
+  --accent: #E3B34E;
+  --accent-foreground: #0A0B0D;
   --destructive: #C45A68;
   --destructive-foreground: #FFFFFF;
-  --border: #1A2F4A;
-  --input: #132538;
-  --ring: #E07A2F;
-  --chart-1: #F3EEE6;
-  --chart-2: #C45A68;
-  --chart-3: #E8954A;
-  --chart-4: #A8B4C4;
-  --chart-5: #1A2F4A;
-  --sidebar: #061428;
-  --sidebar-foreground: #F3EEE6;
-  --sidebar-primary: #E07A2F;
-  --sidebar-primary-foreground: #061428;
-  --sidebar-accent: #132538;
-  --sidebar-accent-foreground: #F3EEE6;
-  --sidebar-border: #1A2F4A;
-  --sidebar-ring: #E07A2F;
-  --accent-volt: 232 149 74;
-  --accent-volt-strong: 239 176 66;
+  --border: #24272C;
+  --input: #141619;
+  --ring: #E3B34E;
+  --chart-1: #F2F3F5;
+  --chart-2: #E3B34E;
+  --chart-3: #C99A34;
+  --chart-4: #9AA0A8;
+  --chart-5: #24272C;
+  --sidebar: #0A0B0D;
+  --sidebar-foreground: #F2F3F5;
+  --sidebar-primary: #E3B34E;
+  --sidebar-primary-foreground: #0A0B0D;
+  --sidebar-accent: #141619;
+  --sidebar-accent-foreground: #F2F3F5;
+  --sidebar-border: #24272C;
+  --sidebar-ring: #E3B34E;
+  --accent-volt: 227 179 78;
+  --accent-volt-strong: 240 198 115;
   --surface-glow: rgb(var(--accent-volt) / 0.12);
   --shadow-elevate:
     0 1px 0 0 rgb(255 255 255 / 0.04) inset,
@@ -207,6 +238,22 @@
   .font-headline,
   .font-hero {
     font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif !important;
+  }
+
+  /**
+   * Cinematic scene type — the one place the site speaks in a light weight.
+   *
+   * Deliberately NOT Oswald: inside a held, full-bleed scene the voice is a
+   * quiet narrator, while Oswald bold uppercase stays the firm catalogue /
+   * structural voice everywhere else. Always sentence case — never combine
+   * with `uppercase`. Size at the call site with `clamp()`.
+   */
+  .type-cinema {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    text-transform: none;
   }
 
   /** Keep true monospace for specs, IEC codes, and catalogue refs. */
@@ -345,7 +392,18 @@
     position: relative;
   }
   .cine-grade > :where(img, video, [data-cine-target]) {
-    filter: contrast(1.06) brightness(0.97);
+    filter: contrast(1.06) brightness(0.97) saturate(var(--cine-saturate, 1));
+  }
+  /**
+   * Add `.cine-grade--muted` for source footage that arrives in full
+   * colour. The page speaks in graphite plus one gold; a raw factory
+   * frame (safety yellow, teal hydraulics, orange guards) reads as a
+   * stock photograph dropped into it. Pulling saturation to just over
+   * half keeps skin tones human and lets the remaining warm cast fall
+   * near the brand gold instead of fighting it.
+   */
+  .cine-grade--muted {
+    --cine-saturate: 0.55;
   }
   .cine-grade::after {
     content: "";
@@ -384,6 +442,71 @@
       );
   }
 
+  /**
+   * Product plate — the ONE surface catalogue photography sits on.
+   *
+   * Every product still the company owns is a studio render on its own
+   * near-white sweep, and each was shot against a slightly different white
+   * (#FFF, #EDEDEF, #E5E5E0). Pinning each card's background to its own
+   * photo is what produced the row of mismatched white boxes punched into
+   * a graphite page — the single loudest thing on the home feed.
+   *
+   * `mix-blend-mode: multiply` on the plate's child solves it at the root
+   * rather than per-image: white × plate = plate, so every sweep collapses
+   * onto this one gradient and no seam survives, whatever the source photo
+   * did. The product itself, being darker than its ground, is essentially
+   * untouched.
+   *
+   * The plate stays light in BOTH themes on purpose. It is a printed
+   * catalogue page inset into the editorial page, not a themed panel —
+   * inverting it would mean re-shooting the entire product library.
+   *
+   * The blend is scoped to media children — a bare `<img>`/`<picture>`, or
+   * an `<ImageReveal>` wrapper, which tags itself `data-image-reveal`. It
+   * has to be the wrapper and not the image inside it, because ImageReveal
+   * writes transform/opacity and so forms its own stacking context: an
+   * image blending inside that context would blend against nothing. Badges,
+   * captions and buttons sitting on the plate are left alone.
+   */
+  .product-plate {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(
+        118% 92% at 50% 0%,
+        #fbfbfc 0%,
+        #f1f2f4 44%,
+        #e3e5e8 100%
+      );
+  }
+  .product-plate > :where(img, picture, [data-image-reveal]) {
+    mix-blend-mode: multiply;
+    /* Multiply only erases a ground that is actually WHITE. Two of these
+       renders sit on a light grey (#EDEDEF), which survives the blend as a
+       visible rectangle inside the plate. Clipping the top of the range to
+       white first removes it; the plate then multiplies the whole frame
+       back down, so net exposure on the product is ≈ +5%. The contrast
+       term does the actual clipping — these grounds carry a soft vignette,
+       and brightness alone lifts the whole gradient rather than closing it
+       onto white. Around mid-grey the two terms cancel, so the product
+       itself comes through at roughly its own density. */
+    /* Sized against the darkest ground in the library (#E6E8ED, the new
+       release shot) — anything lighter clips too. */
+    filter: brightness(1.06) contrast(1.12);
+  }
+  /* Hairline + a soft floor so the sweep reads as a lit surface the
+     product stands on, rather than a flat swatch behind it. */
+  .product-plate::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow:
+      inset 0 0 0 1px rgb(10 11 13 / 0.07),
+      inset 0 -56px 56px -56px rgb(10 11 13 / 0.26);
+  }
+
   /** Tabular numerals for engineering KPI tiles. */
   .tabular {
     font-variant-numeric: tabular-nums;
@@ -392,7 +515,7 @@
   .interactive-lift {
     transition-property: transform, box-shadow, border-color;
     transition-duration: 0.5s;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition-timing-function: var(--ease-standard);
     box-shadow: var(--shadow-card-rest);
   }
 
@@ -414,7 +537,7 @@
     transform: translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: filter 0.5s var(--ease-standard);
   }
   @media (hover: hover) {
     /**
@@ -460,7 +583,7 @@
       transparent 65%
     );
     opacity: 0;
-    transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 220ms var(--ease-standard);
     z-index: 1;
   }
   @media (hover: hover) {
@@ -542,8 +665,8 @@
       0 1px 0 0 rgb(255 255 255 / 0.18) inset,
       0 8px 22px -8px rgb(0 0 0 / 0.35);
     transition:
-      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      transform 0.4s var(--ease-standard),
+      box-shadow 0.4s var(--ease-standard);
   }
   @media (hover: hover) {
     .pill-elevate:hover {
@@ -617,8 +740,9 @@
   }
 
   .dark ::selection {
-    background-color: rgb(var(--accent-volt-strong) / 0.7);
-    color: #ffffff;
+    /* Near-black on gold — white on this gold is ~2:1. */
+    background-color: rgb(var(--accent-volt) / 0.85);
+    color: var(--brand-navy-deep);
   }
   
   html {
@@ -731,6 +855,35 @@
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+  }
+}
+
+/* Brand intro plate — mark + wordmark settle in before exit */
+@keyframes intro-mark-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+html[data-tn-intro="done"] [data-site-intro] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes intro-mark-in {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
@@ -1011,13 +1164,15 @@
   cursor: grabbing;
 }
 
-/** Printed datasheet table — navy header survives light/dark theme. */
+/** Printed datasheet header — must stay dark in BOTH themes, so it uses
+    `--brand-navy-deep` (the fixed graphite ground) rather than
+    `--brand-navy`, which is the type colour and inverts by theme. */
 .tech-table thead th.tech-table__head {
-  background-color: var(--brand-navy);
+  background-color: var(--brand-navy-deep);
   color: #ffffff;
 }
 .tech-table thead th.tech-table__head[class*="sticky"] {
-  background-color: var(--brand-navy);
+  background-color: var(--brand-navy-deep);
 }
 
 /* Cookie banner entrance/exit motion without inline styles. */
@@ -1025,8 +1180,8 @@
   opacity: 0;
   transform: translate3d(0, 24px, 0);
   transition:
-    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 320ms var(--ease-standard),
+    transform 320ms var(--ease-standard);
 }
 .cookie-consent-shell[data-animate="in"],
 .cookie-consent-shell[data-animate="off"] {

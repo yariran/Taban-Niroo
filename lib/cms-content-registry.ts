@@ -67,6 +67,17 @@ export const CONTENT_SECTIONS: ContentSectionDef[] = [
     ...homeSet("newRelease"),
   },
   {
+    key: "home.proof",
+    group: "خانه",
+    label: "اعداد کلیدی (زیر هیرو)",
+    description:
+      "چهار عدد شاخص که بلافاصله زیر هیرو دیده می‌شوند. اگر خالی بماند، اعداد قبلی از «چرا تابان نیرو» خوانده می‌شود.",
+    previewPath: "/#proof",
+    fields: ["eyebrow", "body", "items"],
+    itemsHint: "برچسب = نام متریک · مقدار = ‎+80 یا 6-1000 kV.",
+    ...homeSet("proof"),
+  },
+  {
     key: "home.philosophy",
     group: "خانه",
     label: "فلسفه / Composite & Hybrid",
@@ -103,6 +114,16 @@ export const CONTENT_SECTIONS: ContentSectionDef[] = [
     ...homeSet("engineering"),
   },
   {
+    key: "home.gallery",
+    group: "خانه",
+    label: "کارخانه (ویدئو و گالری)",
+    description:
+      "عنوان و متن بخش کارخانه — ویدئوی خط تولید به‌همراه نوار تصاویر محصولات.",
+    previewPath: "/#plant",
+    fields: ["eyebrow", "title", "body"],
+    ...homeSet("gallery"),
+  },
+  {
     key: "home.collection",
     group: "خانه",
     label: "نقشه جهانی / شرکا",
@@ -125,9 +146,10 @@ export const CONTENT_SECTIONS: ContentSectionDef[] = [
   {
     key: "home.testimonials",
     group: "خانه",
-    label: "نقل‌قول / تصویر کارخانه",
-    description: "متن نقل‌قول بزرگ و تصویر زیر آن.",
-    previewPath: "/#testimonials",
+    label: "نقل‌قول پایانی (داخل پیام مدیرعامل)",
+    description:
+      "متن نقل‌قول بزرگ و تصویر پایانی — اکنون داخل بخش «پیام مدیرعامل» نمایش داده می‌شود.",
+    previewPath: "/#ceo",
     fields: ["body", "image"],
     ...homeSet("testimonials"),
   },
@@ -135,11 +157,11 @@ export const CONTENT_SECTIONS: ContentSectionDef[] = [
     key: "home.whyTaban",
     group: "خانه",
     label: "چرا تابان نیرو",
-    description: "عنوان و مقدمه؛ ارکان را در آیتم‌ها ویرایش کنید.",
+    description:
+      "عنوان و مقدمه؛ ارکان را در آیتم‌ها ویرایش کنید. اعداد کلیدی جدا شده‌اند — به «اعداد کلیدی (زیر هیرو)» بروید.",
     previewPath: "/#why-taban",
     fields: ["eyebrow", "title", "body", "items"],
-    itemsHint:
-      "KPIها: برچسب=نام متریک، مقدار=+80 یا 6-1000 kV. ارکان: برچسب=عنوان، متن=توضیح.",
+    itemsHint: "برچسب = عنوان رکن · متن = توضیح.",
     ...homeSet("whyTaban"),
   },
   {

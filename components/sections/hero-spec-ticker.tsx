@@ -98,7 +98,7 @@ function SpecRow({ current, next, index }: { current: Spec; next: Spec; index: n
       <div
         className={cn(
           "absolute inset-0 flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-foreground/80 md:text-xs",
-          "animate-[reveal-up_0.7s_cubic-bezier(0.16,1,0.3,1)_forwards]"
+          "animate-[reveal-up_0.7s_var(--ease-reveal)_forwards]"
         )}
       >
         <span className="text-foreground/55">{current.label}</span>

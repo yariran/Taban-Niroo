@@ -202,7 +202,12 @@ export function NewReleaseShowcaseSection({
             aria-hidden
           />
 
-          <div className="mt-6 w-full sm:mt-8">{media}</div>
+          {/* Same plate as the standalone showcase and the featured grid:
+              this shot is a white-ground studio render, and unplated it
+              floated as a hard white rectangle on the graphite scene. */}
+          <div className="product-plate mt-6 w-full overflow-hidden rounded-2xl p-4 sm:mt-8 sm:p-6">
+            {media}
+          </div>
 
           <div className="mt-6 border-t border-brand-navy/10 pt-5 sm:mt-8 sm:pt-6">
             <SpecActions productHref={productHref} compact />
@@ -226,9 +231,14 @@ export function NewReleaseShowcaseSection({
             aria-hidden
           />
 
-          <div className="mt-10 w-full overflow-hidden rounded-2xl border border-brand-navy/10 bg-white shadow-elevate dark:border-white/[0.08]">
-            <div className="px-4 pt-6 sm:px-8 sm:pt-8">{media}</div>
-            <div className="mt-2 border-t border-brand-navy/10 px-4 py-5 sm:px-8 sm:py-6">
+          {/* The photograph gets the shared catalogue plate; the actions
+              strip stays on the card surface, outside it — `.product-plate`
+              multiplies its whole child group, which would eat the links. */}
+          <div className="mt-10 w-full overflow-hidden rounded-2xl border border-brand-navy/10 bg-card shadow-elevate dark:border-white/[0.08]">
+            <div className="product-plate px-4 pt-6 sm:px-8 sm:pt-8">
+              {media}
+            </div>
+            <div className="border-t border-brand-navy/10 px-4 py-5 dark:border-white/[0.08] sm:px-8 sm:py-6">
               <SpecActions productHref={productHref} />
             </div>
           </div>

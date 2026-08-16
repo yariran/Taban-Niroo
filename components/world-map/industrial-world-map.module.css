@@ -1,8 +1,28 @@
+/**
+ * Industrial world map — graphite ground, one gold accent.
+ *
+ * This module was written against the retired brand set (#061428 navy,
+ * #7A1F2B burgundy, #E07A2F orange) and did not move when the palette in
+ * `app/globals.css` did. The result was a saturated blue panel sitting in
+ * the middle of a near-neutral graphite page — the exact "corporate
+ * dashboard" read the palette note there says the navy was dropped to
+ * avoid, and the only place on the home feed still painting two accent
+ * hues instead of one.
+ *
+ * Values now key to the same tokens as the rest of the site:
+ *   ground      #0A0B0D  (--brand-navy-deep)
+ *   land        #1B1D21 / #26292F, stroke #3A3E45
+ *   accent      #E3B34E  (--accent-volt), deep step #C99A34
+ *   home fill   #6B4E14  (gold at land luminance, so the home country
+ *                         reads as heated metal rather than a red blob)
+ * Kept as literals rather than `var(--…)`: this is a CSS module rendered
+ * into an SVG that must look identical in both themes.
+ */
 .shell {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background: #061428;
+  background: #0a0b0d;
   box-shadow:
     0 28px 64px -22px rgb(0 0 0 / 0.45),
     inset 0 1px 0 rgb(255 255 255 / 0.05);
@@ -22,8 +42,8 @@
   inset: -18%;
   pointer-events: none;
   background-image:
-    linear-gradient(rgb(139 163 196 / 7%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(139 163 196 / 7%) 1px, transparent 1px);
+    linear-gradient(rgb(154 160 168 / 7%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(154 160 168 / 7%) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: radial-gradient(circle at 50% 45%, black, transparent 78%);
   will-change: transform, opacity;
@@ -33,9 +53,9 @@
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 58% 42%, rgb(122 31 43 / 12%), transparent 36%),
-    radial-gradient(circle at 52% 42%, rgb(11 31 58 / 35%), transparent 44%),
-    linear-gradient(180deg, rgb(8 24 44 / 98%), rgb(6 20 40 / 98%));
+    radial-gradient(circle at 58% 42%, rgb(201 154 52 / 12%), transparent 36%),
+    radial-gradient(circle at 52% 42%, rgb(36 39 44 / 45%), transparent 44%),
+    linear-gradient(180deg, rgb(18 19 22 / 98%), rgb(10 11 13 / 98%));
 }
 
 .mapViewportFull {
@@ -56,30 +76,30 @@
 }
 
 .countryBase {
-  fill: #132538;
-  stroke: #3d5168;
+  fill: #1b1d21;
+  stroke: #3a3e45;
   stroke-width: 0.55;
   stroke-opacity: 0.72;
   vector-effect: non-scaling-stroke;
 }
 
 .countryInteractiveBase {
-  fill: #1a3052;
+  fill: #26292f;
 }
 
 .countryHomeBase {
-  fill: #7a1f2b;
-  stroke: #e8a070;
+  fill: #6b4e14;
+  stroke: #e3b34e;
   stroke-width: 1.1;
   stroke-opacity: 0.9;
   filter:
-    drop-shadow(0 0 4px rgb(224 122 47 / 0.85))
-    drop-shadow(0 0 14px rgb(122 31 43 / 0.7))
-    drop-shadow(0 0 28px rgb(224 122 47 / 0.35));
+    drop-shadow(0 0 4px rgb(227 179 78 / 0.85))
+    drop-shadow(0 0 14px rgb(201 154 52 / 0.7))
+    drop-shadow(0 0 28px rgb(227 179 78 / 0.35));
 }
 
 .hoverLayer {
-  fill: #8ba3c4;
+  fill: #9aa0a8;
   pointer-events: all;
   cursor: pointer;
 }
@@ -87,41 +107,41 @@
 .homeHeat {
   pointer-events: none;
   filter:
-    drop-shadow(0 0 3px rgb(243 238 230 / 0.55))
-    drop-shadow(0 0 10px rgb(224 122 47 / 0.9))
-    drop-shadow(0 0 22px rgb(122 31 43 / 0.75))
-    drop-shadow(0 0 40px rgb(224 122 47 / 0.4));
+    drop-shadow(0 0 3px rgb(244 245 246 / 0.55))
+    drop-shadow(0 0 10px rgb(227 179 78 / 0.9))
+    drop-shadow(0 0 22px rgb(201 154 52 / 0.75))
+    drop-shadow(0 0 40px rgb(227 179 78 / 0.4));
 }
 
 .activeHeat {
   pointer-events: none;
   filter:
-    drop-shadow(0 0 3px rgb(224 122 47 / 0.95))
-    drop-shadow(0 0 9px rgb(122 31 43 / 0.75))
-    drop-shadow(0 0 20px rgb(122 31 43 / 0.45))
-    drop-shadow(0 0 38px rgb(224 122 47 / 0.28));
+    drop-shadow(0 0 3px rgb(227 179 78 / 0.95))
+    drop-shadow(0 0 9px rgb(201 154 52 / 0.75))
+    drop-shadow(0 0 20px rgb(201 154 52 / 0.45))
+    drop-shadow(0 0 38px rgb(227 179 78 / 0.28));
 }
 
 .activeBorder {
   fill: none;
-  stroke: #e07a2f;
+  stroke: #e3b34e;
   stroke-width: 1.45;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
   filter:
-    drop-shadow(0 0 3px rgb(224 122 47 / 0.95))
-    drop-shadow(0 0 10px rgb(122 31 43 / 0.65));
+    drop-shadow(0 0 3px rgb(227 179 78 / 0.95))
+    drop-shadow(0 0 10px rgb(201 154 52 / 0.65));
 }
 
 .homeBorder {
   fill: none;
-  stroke: #f3eee6;
+  stroke: #f4f5f6;
   stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
   filter:
-    drop-shadow(0 0 4px rgb(243 238 230 / 0.7))
-    drop-shadow(0 0 12px rgb(224 122 47 / 0.65));
+    drop-shadow(0 0 4px rgb(244 245 246 / 0.7))
+    drop-shadow(0 0 12px rgb(227 179 78 / 0.65));
 }
 
 .hitTarget {
@@ -133,16 +153,16 @@
 }
 
 .hitTarget:focus-visible {
-  stroke: #e07a2f;
+  stroke: #e3b34e;
   stroke-width: 1.75;
   vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 7px rgb(224 122 47 / 0.85));
+  filter: drop-shadow(0 0 7px rgb(227 179 78 / 0.85));
 }
 
 .panel {
   background:
-    linear-gradient(145deg, rgb(11 31 58 / 0.97), rgb(6 20 40 / 0.98));
-  border: 1px solid rgb(224 122 47 / 0.18);
+    linear-gradient(145deg, rgb(24 26 30 / 0.97), rgb(12 13 16 / 0.98));
+  border: 1px solid rgb(227 179 78 / 0.18);
   box-shadow:
     0 28px 80px rgb(0 0 0 / 0.45),
     inset 0 1px 0 rgb(255 255 255 / 0.06);
@@ -159,6 +179,6 @@
 }
 
 .cardScrim {
-  background: rgb(6 20 40 / 0.42);
+  background: rgb(10 11 13 / 0.48);
   backdrop-filter: blur(2px);
 }

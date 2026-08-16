@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
+import { useBeat } from "@/components/ui/beat";
 
 /**
  * Word-by-word cinematic reveal — filmic title card.
@@ -18,10 +19,11 @@ import { cn } from "@/lib/utils";
  * viewport. Honours `prefers-reduced-motion` and disconnects the observer
  * after the first reveal so the cost is bounded.
  *
- * Important: do NOT use this inside `<HomeSectionSnap>` content — the
- * home page already runs an outer envelope reveal, and a second per-word
- * reveal stacked on top reads as "the section arrived twice". Use this on
- * inner-route pages (about, products, projects, contact, blog, 404).
+ * Safe inside `<HomeSectionSnap>` since the wrapper's entrance envelope
+ * was removed — there is no outer reveal left to stack against, so the
+ * old "the section arrived twice" hazard is gone. On the home page put it
+ * inside a `<Beat>` so it shares the section clock rather than observing
+ * itself; see `components/ui/beat.tsx`.
  */
 type RevealWordsProps = {
   children: string;
@@ -47,8 +49,11 @@ export function RevealWords({
   threshold = 0.25,
 }: RevealWordsProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [shown, setShown] = useState(false);
+  const [selfShown, setSelfShown] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+
+  const beat = useBeat();
+  const shown = beat ? beat.entered : selfShown;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -59,8 +64,9 @@ export function RevealWords({
   }, []);
 
   useEffect(() => {
+    if (beat) return;
     if (reduceMotion) {
-      setShown(true);
+      setSelfShown(true);
       return;
     }
     const node = ref.current;
@@ -68,7 +74,7 @@ export function RevealWords({
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
+          setSelfShown(true);
           obs.disconnect();
         }
       },
@@ -76,7 +82,7 @@ export function RevealWords({
     );
     obs.observe(node);
     return () => obs.disconnect();
-  }, [reduceMotion, threshold]);
+  }, [reduceMotion, threshold, beat]);
 
   const words = children.trim().split(/\s+/).filter(Boolean);
   const TagName = Tag as ElementType;
@@ -96,7 +102,7 @@ export function RevealWords({
           : {
               transform: shown ? "translateY(0)" : "translateY(110%)",
               opacity: shown ? 1 : 0,
-              transition: `transform ${duration}ms cubic-bezier(0.16,1,0.3,1) ${delay + i * stagger}ms, opacity ${duration}ms cubic-bezier(0.16,1,0.3,1) ${delay + i * stagger}ms`,
+              transition: `transform ${duration}ms var(--ease-reveal) ${delay + i * stagger}ms, opacity ${duration}ms var(--ease-reveal) ${delay + i * stagger}ms`,
               willChange: "transform, opacity",
             };
         return (
@@ -140,8 +146,16 @@ export function RevealUp({
   threshold = 0.2,
 }: RevealUpProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [shown, setShown] = useState(false);
+  const [selfShown, setSelfShown] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [settled, setSettled] = useState(false);
+
+  /**
+   * Inside a `<Beat>` the section owns the clock; outside one (inner
+   * routes) this keeps observing itself. See `components/ui/beat.tsx`.
+   */
+  const beat = useBeat();
+  const shown = beat ? beat.entered : selfShown;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -152,8 +166,9 @@ export function RevealUp({
   }, []);
 
   useEffect(() => {
+    if (beat) return;
     if (reduceMotion) {
-      setShown(true);
+      setSelfShown(true);
       return;
     }
     const node = ref.current;
@@ -161,7 +176,7 @@ export function RevealUp({
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
+          setSelfShown(true);
           obs.disconnect();
         }
       },
@@ -169,7 +184,14 @@ export function RevealUp({
     );
     obs.observe(node);
     return () => obs.disconnect();
-  }, [reduceMotion, threshold]);
+  }, [reduceMotion, threshold, beat]);
+
+  /** Release the compositing layer once the lift has landed. */
+  useEffect(() => {
+    if (!shown || reduceMotion) return;
+    const t = window.setTimeout(() => setSettled(true), delay + duration + 60);
+    return () => window.clearTimeout(t);
+  }, [shown, reduceMotion, delay, duration]);
 
   const TagName = Tag as ElementType;
   const style: CSSProperties = reduceMotion
@@ -177,12 +199,17 @@ export function RevealUp({
     : {
         transform: shown ? "translate3d(0,0,0)" : `translate3d(0,${distance}px,0)`,
         opacity: shown ? 1 : 0,
-        transition: `transform ${duration}ms cubic-bezier(0.16,1,0.3,1) ${delay}ms, opacity ${duration}ms cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
-        willChange: "transform, opacity",
+        transition: `transform ${duration}ms var(--ease-reveal) ${delay}ms, opacity ${duration}ms var(--ease-reveal) ${delay}ms`,
+        willChange: settled ? undefined : "transform, opacity",
       };
 
   return (
-    <TagName ref={ref as never} className={className} style={style}>
+    <TagName
+      ref={ref as never}
+      className={className}
+      style={style}
+      data-reveal-up={shown ? "in" : "pre"}
+    >
       {children}
     </TagName>
   );

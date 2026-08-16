@@ -34,7 +34,7 @@ export default function NotFound() {
         <RevealUp delay={420}>
           <Link
             href="/"
-            className="mt-10 inline-flex rounded-full bg-brand-navy px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
+            className="mt-10 inline-flex rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
           >
             Back to home
           </Link>

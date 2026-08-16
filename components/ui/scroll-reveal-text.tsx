@@ -125,7 +125,7 @@ export function ScrollRevealText({
         const revealed = progress >= wordProgress;
         const style: CSSProperties = {
           color: revealed ? postColor : preColor,
-          transition: `color ${transitionMs}ms cubic-bezier(0.22,1,0.36,1)`,
+          transition: `color ${transitionMs}ms var(--ease-standard)`,
         };
         return (
           <span key={`${word}-${index}`} style={style}>

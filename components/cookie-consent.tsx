@@ -110,7 +110,7 @@ export function CookieConsent() {
             <button
               type="button"
               onClick={accept}
-              className="touch-target inline-flex min-h-11 items-center justify-center rounded-full bg-brand-navy px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
+              className="touch-target inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
             >
               Accept
             </button>
