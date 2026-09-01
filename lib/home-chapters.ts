@@ -30,6 +30,7 @@ export const HOME_CHAPTERS: readonly HomeChapter[] = [
   { id: "philosophy", label: "Composite & Hybrid", act: 2 },
   { id: "featured-products", label: "Product range", act: 2 },
   { id: "engineering", label: "Engineering DNA", act: 2 },
+  { id: "materials", label: "Materials", act: 2 },
   { id: "technology", label: "Standards", act: 2 },
 
   { id: "plant", label: "On the factory floor", act: 3 },

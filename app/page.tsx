@@ -76,6 +76,7 @@ export default async function Home() {
           {/* ── ACT II tail + ACT III, code-split ─────────────────── */}
           <HomeDeferred
             engineering={content.home.engineering}
+            materials={content.home.materials}
             technology={content.home.technology}
             gallery={content.home.gallery}
             collection={content.home.collection}

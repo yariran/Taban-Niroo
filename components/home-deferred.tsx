@@ -25,6 +25,14 @@ const EngineeringDetailSection = dynamic(
   { loading: () => <SectionSkeleton /> },
 );
 
+const MaterialsScrollytellingSection = dynamic(
+  () =>
+    import("@/components/sections/materials-scrollytelling-section").then(
+      (m) => m.MaterialsScrollytellingSection,
+    ),
+  { loading: () => <SectionSkeleton minH="min-h-[80vh]" /> },
+);
+
 const TechnologySection = dynamic(
   () =>
     import("@/components/sections/technology-section").then(
@@ -63,6 +71,7 @@ const CEOSection = dynamic(
 
 type HomeDeferredProps = {
   engineering?: ContentBlock;
+  materials?: ContentBlock;
   technology?: ContentBlock;
   gallery?: ContentBlock;
   collection?: ContentBlock;
@@ -73,6 +82,7 @@ type HomeDeferredProps = {
 
 export function HomeDeferred({
   engineering,
+  materials,
   technology,
   gallery,
   collection,
@@ -85,6 +95,12 @@ export function HomeDeferred({
       {/* ── ACT II tail ─────────────────────────────────────────── */}
       <HomeSectionSnap chapterId="engineering">
         <EngineeringDetailSection cms={engineering} />
+      </HomeSectionSnap>
+
+      {/* The three layers Engineering names, told against a held cutaway.
+          Sits between the argument and the standards that certify it. */}
+      <HomeSectionSnap chapterId="materials">
+        <MaterialsScrollytellingSection cms={materials} />
       </HomeSectionSnap>
 
       <HomeSectionSnap chapterId="technology">

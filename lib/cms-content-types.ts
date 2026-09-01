@@ -35,6 +35,7 @@ export type SiteContent = {
     featured?: ContentBlock;
     technology?: ContentBlock;
     engineering?: ContentBlock;
+    materials?: ContentBlock;
     gallery?: ContentBlock;
     collection?: ContentBlock;
     timeline?: ContentBlock;

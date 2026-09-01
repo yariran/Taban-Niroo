@@ -29,33 +29,6 @@ const MAGICAL_FEATURES: readonly MagicalFeature[] = [
   },
 ];
 
-type RawMaterial = {
-  label: string;
-  title: string;
-  description: string;
-};
-
-const RAW_MATERIALS: readonly RawMaterial[] = [
-  {
-    label: "01",
-    title: "ECR rod",
-    description:
-      "Electrical-grade, corrosion-resistant fibre-reinforced plastic core. Mechanical load path of the insulator.",
-  },
-  {
-    label: "02",
-    title: "HTV silicone rubber",
-    description:
-      "High-temperature vulcanised silicone housing. Hydrophobic, UV-stable, and fully recoverable under pollution.",
-  },
-  {
-    label: "03",
-    title: "Hot-dip galvanized forged steel",
-    description:
-      "Forged end-fittings protected by hot-dip galvanising for decades of atmospheric corrosion resistance.",
-  },
-];
-
 type Patent = {
   id: string;
   title: string;
@@ -105,12 +78,18 @@ export function EngineeringDetailSection({
       aria-labelledby="engineering-heading"
     >
       {/*
-        Three beats, not one. This section is roughly three viewports tall
-        and carries three separate sub-arguments (silicone properties /
-        raw materials / patents). On a single clock the lower two groups
-        finish animating far off screen. Repeating the same
-        statement+evidence pair three times is also where the grammar
-        becomes audible as a grammar rather than a one-off.
+        Two beats, not one. This section is roughly two viewports tall and
+        carries two separate sub-arguments (silicone properties / patents).
+        On a single clock the lower group finishes animating far off
+        screen. Repeating the same statement+evidence pair is also where
+        the grammar becomes audible as a grammar rather than a one-off.
+
+        It used to be three: a "Raw material — Three components. One
+        product." bento grid sat between these two. That argument now has
+        its own chapter, `materials-scrollytelling-section.tsx`, which
+        tells the same three layers against a held cutaway instead of in
+        three static tiles. Do not reintroduce it here — the page would
+        state the same three ingredients twice, two viewports apart.
       */}
       <div className="px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
         <div className="mx-auto max-w-6xl">
@@ -192,135 +171,6 @@ export function EngineeringDetailSection({
               </article>
             ))}
           </RevealBlock>
-          </Beat>
-
-          <Beat className="mt-24 md:mt-32">
-            <div className="flex items-end justify-between gap-6 border-b border-border pb-6">
-              <div>
-                <RevealBlock
-                  delayMs={BEAT.first}
-                  durationMs={EVIDENCE.duration}
-                  distance={EVIDENCE.distance}
-                >
-                  <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                    Raw material
-                  </p>
-                </RevealBlock>
-                <RevealUp
-                  as="h3"
-                  delay={BEAT.headline}
-                  duration={STATEMENT.duration}
-                  distance={STATEMENT.distance}
-                  className="mt-3 text-2xl font-medium tracking-tight text-brand-navy md:text-3xl"
-                >
-                  Three components. One product.
-                </RevealUp>
-              </div>
-              <p className="hidden max-w-xs text-sm leading-relaxed text-muted-foreground md:block">
-                Every Taban Niroo insulator is built from the same three
-                rigorously-specified ingredients.
-              </p>
-            </div>
-
-            <RevealBlock
-              stagger={EVIDENCE.stagger}
-              delayMs={BEAT.group}
-              durationMs={EVIDENCE.duration}
-              distance={EVIDENCE.distance}
-              /**
-               * Bento Box Grid — ui-ux-pro-max › styles.csv, followed to spec.
-               *
-               * Database values, verbatim from the record:
-               *   grid-template-columns: repeat(4, 1fr)   → md:grid-cols-4
-               *   grid-auto-rows: 200px                   → md:auto-rows-[200px]
-               *   gap: 16px                               → gap-4
-               *   border-radius: 24px                     → rounded-3xl
-               *   hover scale (1.02)                      → on the inner card
-               *   responsive 4→2→1                        → 1 / sm:2 / md:4
-               *
-               * Spans are 2×2 + 2×1 + 2×1, which tiles a 4-column field with
-               * no holes. The ECR rod takes the 2×2: it is the mechanical load
-               * path the whole insulator hangs from, so equal thirds asserted
-               * a parity the product does not have.
-               *
-               * Palette is left on the project tokens because they already ARE
-               * the database's: it specifies --page-bg #F5F5F7 / --card-bg
-               * #FFFFFF, and the project ships #F4F5F6 / #FFFFFF.
-               */
-              className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-12 md:grid-cols-4 md:auto-rows-[200px]"
-            >
-              {RAW_MATERIALS.map((item, i) => {
-                const anchor = i === 0;
-                return (
-                  /*
-                   * Wrapper exists so the database's `hover: scale(1.02)` can
-                   * actually run. RevealBlock sets `transform` as an INLINE
-                   * style on each direct child, and inline beats a class — a
-                   * hover scale on the card itself would silently do nothing.
-                   * The wrapper absorbs the reveal transform; the card scales.
-                   */
-                  <div
-                    key={item.label}
-                    className={cn(
-                      "sm:col-span-2",
-                      anchor && "md:row-span-2",
-                    )}
-                  >
-                  <article
-                    className={cn(
-                      "flex h-full flex-col rounded-3xl border border-border/50 bg-card/80 p-7 shadow-card-rest md:p-8",
-                      "transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-card-hover",
-                      "motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100",
-                      "dark:border-white/[0.08] dark:bg-card/40",
-                      anchor && "md:p-10",
-                    )}
-                  >
-                    <p className="font-mono text-xs tracking-widest text-muted-foreground">
-                      {item.label}
-                    </p>
-                    {/* The anchor tile is two rows tall. Its copy is centred
-                        in the space below the index rather than hung from the
-                        bottom edge: bottom-hanging put the whole 220px of
-                        slack above the title, which reads as an unfinished
-                        tile, where splitting it reads as the extra room a
-                        featured tile is entitled to. */}
-                    <div className={cn(anchor && "md:my-auto")}>
-                      <p
-                        className={cn(
-                          /*
-                            Rank is carried by size, span and elevation — the
-                            same three levers the feature cards above this
-                            block already use. It used to be carried by
-                            TYPEFACE too: the anchor was Oswald uppercase at
-                            5xl while its two siblings were Inter sentence
-                            case at lg, so a set of three ingredients read as
-                            one headline plus two footnotes from a different
-                            design. Same voice now, three sizes apart.
-                          */
-                          "font-medium tracking-tight text-brand-navy",
-                          anchor
-                            ? "mt-5 text-3xl md:mt-0 md:text-4xl"
-                            : "mt-4 text-lg md:text-xl",
-                        )}
-                      >
-                        {item.title}
-                      </p>
-                      <p
-                        className={cn(
-                          "leading-relaxed text-muted-foreground",
-                          anchor
-                            ? "mt-5 max-w-md text-base md:text-lg"
-                            : "mt-3 text-sm",
-                        )}
-                      >
-                        {item.description}
-                      </p>
-                    </div>
-                  </article>
-                  </div>
-                );
-              })}
-            </RevealBlock>
           </Beat>
 
           <Beat className="mt-24 md:mt-32">

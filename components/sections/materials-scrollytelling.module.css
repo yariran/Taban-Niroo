@@ -1,0 +1,114 @@
+/**
+ * Materials scrollytelling — cutaway layer states.
+ *
+ * A CSS module rather than inline stroke values so the transition is declared
+ * once and the active/inactive rule sits next to the thing it applies to.
+ * Follows the precedent of `components/world-map/industrial-world-map.module.css`.
+ *
+ * Literals, not `var(--…)`, for the greys: this SVG is a dark technical scene
+ * that must look identical in both themes — the same reason the world-map
+ * module keeps its values literal. The one gold IS tokenised, because it is
+ * the brand accent and must move if the token moves.
+ *
+ * Every rule below is scoped to a local class on purpose. Next compiles
+ * `*.module.css` through css-loader in `pure` mode, which rejects any selector
+ * with no local class or id — a bare `[data-lyr-on='false']` fails the build,
+ * not just the lint.
+ */
+
+.line {
+  fill: none;
+  stroke: #6e747c;
+  stroke-width: 1.35;
+  vector-effect: non-scaling-stroke;
+  transition:
+    stroke 0.55s var(--ease-standard),
+    stroke-width 0.55s var(--ease-standard);
+}
+
+.fill {
+  fill: #191b1f;
+  transition: fill 0.55s var(--ease-standard);
+}
+
+.layer {
+  transition: opacity 0.55s var(--ease-standard);
+}
+
+/* Live layer: gold, heavier stroke, heated fill. */
+.layer[data-lyr-on='true'] .line {
+  stroke: var(--brand-orange);
+  stroke-width: 2;
+}
+
+.layer[data-lyr-on='true'] .fill {
+  fill: #3a2e12;
+}
+
+/* Dormant layers stay legible as context — not hidden, just recessed. */
+.layer[data-lyr-on='false'] {
+  opacity: 0.42;
+}
+
+.callout {
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+.callout[data-on='true'] {
+  opacity: 1;
+}
+
+.callout text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  fill: var(--brand-orange);
+}
+
+.callout line {
+  stroke: var(--brand-orange);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.axis {
+  stroke: #2a2d33;
+  stroke-width: 1;
+}
+
+/**
+ * Below `lg` the stage does not hold and nothing drives it, so every layer is
+ * drawn lit and none are recessed — the same fallback policy as
+ * `philosophy-section.tsx`.
+ *
+ * This lives here rather than in a `narrow` React state on purpose. State read
+ * from `matchMedia` is false during SSR and the first client render, so a
+ * JS-driven fallback flashes the desktop appearance on every phone load. The
+ * breakpoint is `1023.98px` because that is where Tailwind's `lg:` takes over
+ * the layout — a rounder 900px would leave a 124px band where the CSS has
+ * stacked the columns but the styling still believes a stage is holding.
+ */
+@media (max-width: 1023.98px) {
+  .layer .line {
+    stroke: var(--brand-orange);
+    stroke-width: 2;
+  }
+
+  .layer .fill {
+    fill: #3a2e12;
+  }
+
+  .layer[data-lyr-on='false'] {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line,
+  .fill,
+  .layer,
+  .callout {
+    transition: none;
+  }
+}

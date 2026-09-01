@@ -114,6 +114,16 @@ export const CONTENT_SECTIONS: ContentSectionDef[] = [
     ...homeSet("engineering"),
   },
   {
+    key: "home.materials",
+    group: "خانه",
+    label: "مواد اولیه (اسکرول لایه‌ها)",
+    description:
+      "عنوان و متن بخش سه لایه‌ی بدنه‌ی مقره. متن چهار مرحله در خود کامپوننت است و از اینجا ویرایش نمی‌شود.",
+    previewPath: "/#materials",
+    fields: ["eyebrow", "title", "body"],
+    ...homeSet("materials"),
+  },
+  {
     key: "home.gallery",
     group: "خانه",
     label: "کارخانه (ویدئو و گالری)",
