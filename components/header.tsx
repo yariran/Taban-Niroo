@@ -179,8 +179,17 @@ export function Header() {
               isScrolled
                 ? "h-7 px-2.5 text-[11px]"
                 : "pill-elevate h-7 px-3 text-[12px] sm:h-8 sm:px-3.5",
+              /* `--brand-navy-deep`, not `--brand-navy`. The pill fill here
+                 is a literal `bg-white` that does NOT invert, while
+                 `--brand-navy` is the heading colour and DOES — it resolves
+                 to #D7DADE in dark, which measured 1.4:1 on this pill and
+                 made the site's primary CTA unreadable over the hero.
+                 `--brand-navy-deep` is the fixed graphite (#0A0B0D in both
+                 themes), so it stays pinned to the fill: 19.7:1 on white,
+                 17.7:1 on the `brand-cream` hover. Same reasoning as the
+                 `default` button variant — see components/ui/button.tsx. */
               onDarkHero
-                ? "bg-white text-brand-navy hover:bg-brand-cream"
+                ? "bg-white text-brand-navy-deep hover:bg-brand-cream"
                 : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
             )}
           >
