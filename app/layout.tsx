@@ -116,9 +116,15 @@ export const viewport: Viewport = {
   /** Lets Android Chrome resize layout when the keyboard opens (contact form). */
   interactiveWidget: "resizes-content",
   colorScheme: "dark light",
+  /**
+   * Must track `--background` in `globals.css`. These were left on the
+   * retired cream/navy set (#F3EEE6 / #061428) when the palette moved to
+   * graphite, so the browser chrome — the iOS status bar, the Android
+   * toolbar, the PWA splash — painted a colour the page no longer uses.
+   */
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F3EEE6" },
-    { media: "(prefers-color-scheme: dark)", color: "#061428" },
+    { media: "(prefers-color-scheme: light)", color: "#F4F5F6" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0B0D" },
   ],
 };
 

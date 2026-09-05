@@ -257,8 +257,13 @@ export function Header() {
                 "pb-[max(1rem,var(--sab))]",
                 "[-webkit-overflow-scrolling:touch]",
                 "pl-[max(1rem,var(--sal))] pr-[max(1rem,var(--sar))]",
+                /* No `bg-zinc-950` here: `.glass-mobile-menu--hero` already
+                   sets the ground, and the two are a same-specificity
+                   conflict decided by emitted order — with zinc-950
+                   (#09090B) being an off-palette near-miss of the scene
+                   ground it was competing with. The utility class owns it. */
                 onDarkHero
-                  ? "glass-mobile-menu--hero border-white/10 bg-zinc-950 text-white"
+                  ? "glass-mobile-menu--hero border-white/10 text-white"
                   : "glass-mobile-menu--default border-border bg-background text-foreground",
               )}
               role="dialog"

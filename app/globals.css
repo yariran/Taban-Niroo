@@ -308,16 +308,33 @@
       0 1px 0 0 rgb(255 255 255 / 0.06) inset,
       0 8px 28px -16px rgb(0 0 0 / 0.35);
   }
+  /**
+   * Header pill surfaces.
+   *
+   * These are literals rather than `var(--…)` because they are translucent
+   * fills over arbitrary page content, so they need an alpha the tokens do
+   * not carry. That is also how they went stale: the palette moved from
+   * cream/navy to graphite and these did not follow. The dark pill was
+   * `rgb(6 20 40 / 0.68)` — the retired #061428 navy — which is why the
+   * header read as a blue capsule floating on a neutral graphite page,
+   * clearly visible on /products in dark. The light pill's shadow carried
+   * the same tint at `rgb(11 31 58 / 0.14)`.
+   *
+   * They now track the real tokens: `--card` for the fill (the pill is an
+   * elevated surface, not the page ground) and neutral graphite for shadow.
+   */
   .glass-header-pill--default {
     border-color: rgb(255 255 255 / 0.1);
+    /* --card light: #FFFFFF */
     background-color: rgb(255 255 255 / 0.72);
     box-shadow:
       0 1px 0 0 rgb(255 255 255 / 0.55) inset,
-      0 6px 24px -14px rgb(11 31 58 / 0.14);
+      0 6px 24px -14px rgb(10 11 13 / 0.14);
   }
   .dark .glass-header-pill--default {
     border-color: rgb(255 255 255 / 0.1);
-    background-color: rgb(6 20 40 / 0.68);
+    /* --card dark: #141619 */
+    background-color: rgb(20 22 25 / 0.68);
     box-shadow:
       0 1px 0 0 rgb(255 255 255 / 0.05) inset,
       0 8px 28px -16px rgb(0 0 0 / 0.45);
@@ -340,16 +357,23 @@
     /* Solid base — blur is optional enhancement only */
     background-color: var(--background);
   }
+  /* The hero menu drops onto the dark hero, so it takes the fixed scene
+     ground `--brand-navy-deep` (#0A0B0D). It was #09090b — Tailwind's
+     zinc-950, a colour the brand does not define. */
   .glass-mobile-menu--hero {
-    background-color: #09090b;
+    background-color: #0a0b0d;
   }
   .glass-mobile-menu--default {
     background-color: var(--background);
   }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    /* Opaque fallbacks, same tokens as the translucent versions above:
+       #141619 (--card dark) for the dark surfaces, #0A0B0D for the hero
+       scene. Previously #161618, #0C0C0C and #09090b — three separate
+       near-misses of greys the palette already names. */
     .glass-header-pill--hero {
-      background-color: rgb(22 22 24 / 0.94);
+      background-color: rgb(20 22 25 / 0.94);
       border-color: rgb(255 255 255 / 0.1);
     }
     .glass-header-pill--default {
@@ -357,13 +381,13 @@
       border-color: rgb(255 255 255 / 0.1);
     }
     .dark .glass-header-pill--default {
-      background-color: rgb(12 12 12 / 0.96);
+      background-color: rgb(20 22 25 / 0.96);
     }
     .glass-mobile-scrim {
       background-color: rgb(0 0 0 / 0.78);
     }
     .glass-mobile-menu--hero {
-      background-color: #09090b;
+      background-color: #0a0b0d;
     }
     .glass-mobile-menu--default {
       background-color: var(--background);
