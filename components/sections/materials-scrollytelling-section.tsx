@@ -405,16 +405,33 @@ export function MaterialsScrollytellingSection({
                     stepRefs.current[i] = n;
                   }}
                   className={cn(
-                    "flex flex-col justify-center border-t border-border py-8 transition-opacity duration-[600ms] first:border-t-0 first:pt-0 [transition-timing-function:var(--ease-standard)]",
+                    styles.step,
+                    "flex flex-col justify-center border-t border-border py-8 first:border-t-0 first:pt-0",
                     !staticLayout &&
                       "lg:min-h-[78vh] lg:border-0 lg:py-2 lg:first:pt-2",
-                    /* Dimming is appearance, not layout, so it is safe to key
-                       off `active` — but only where a stage is actually being
-                       driven, hence the `lg:`. */
-                    isOn ? "opacity-100" : "opacity-100 lg:opacity-[0.34]",
                   )}
+                  data-step-on={String(isOn)}
                   aria-current={driving && i === active ? "step" : undefined}
                 >
+                  {/*
+                    Inactive steps step DOWN A COLOUR TIER; they are never
+                    dimmed with opacity. Both tiers clear AA:
+
+                      active   heading/value → --brand-heading / --foreground
+                                               16.5:1 light · 17.7:1 dark
+                      inactive heading/value → --muted-foreground
+                                               5.8:1  light ·  7.5:1 dark
+
+                    See `materials-scrollytelling.module.css` for why the
+                    tier is applied there and not as `lg:` classes here —
+                    short version: two of the three lost the cascade.
+
+                    The number below keeps its Tailwind pair because its
+                    states are gold ↔ muted rather than the shared
+                    strong ↔ muted tier, and it was verified to apply.
+                    Body copy and spec labels are already the quiet tier and
+                    stay put in both states — no headroom left to drop.
+                  */}
                   <span
                     className={cn(
                       "font-mono text-xs tracking-[0.2em] transition-colors duration-500",
@@ -425,7 +442,12 @@ export function MaterialsScrollytellingSection({
                   >
                     {s.num}
                   </span>
-                  <h3 className="mt-2.5 font-hero-slogan text-xl font-medium uppercase leading-tight text-brand-heading md:text-2xl">
+                  <h3
+                    className={cn(
+                      styles.stepTitle,
+                      "mt-2.5 font-hero-slogan text-xl font-medium uppercase leading-tight text-brand-heading transition-colors duration-500 md:text-2xl",
+                    )}
+                  >
                     {s.title}
                   </h3>
                   <p className="mt-3.5 max-w-[42ch] leading-relaxed text-muted-foreground">
@@ -437,7 +459,12 @@ export function MaterialsScrollytellingSection({
                         <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                           {sp.label}
                         </dt>
-                        <dd className="mt-1 font-mono text-[13px] text-foreground">
+                        <dd
+                          className={cn(
+                            styles.stepValue,
+                            "mt-1 font-mono text-[13px] text-foreground transition-colors duration-500",
+                          )}
+                        >
                           {sp.value}
                         </dd>
                       </div>
