@@ -161,9 +161,40 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
               {title}
             </RevealUp>
 
+            {/*
+              Explicit pre/post colours, because this scene does not follow
+              the theme.
+
+              `ScrollRevealText` defaults to `--muted-foreground` ->
+              `--foreground`, which is correct on the page ground but wrong
+              here: the block is `bg-brand-navy-deep`, #0A0B0D in BOTH
+              themes. In light mode `--foreground` is #15171A, so the fully
+              revealed statement painted near-black on near-black — 1.09:1,
+              a 36px paragraph nobody could see, and the last color-contrast
+              node left on the home page. The muted start was 3.1:1, which
+              only scraped the large-text floor and would have failed
+              outright if the type were ever set below 24px.
+
+              Both ends are now pinned to values that do not invert, the
+              same way the eyebrow above takes `--brand-orange` and the
+              heading takes `text-white`:
+
+                pre   white @ 55%   ->  6.3:1   (clears 4.5, not just 3.0)
+                post  --brand-cream -> 18.0:1 light / 17.7:1 dark
+
+              Cream rather than white for the revealed state keeps the
+              statement one tier under the `text-white` heading, which is
+              the hierarchy the rest of the dark scenes use.
+
+              `text-slate-100` also came off the className: a raw Tailwind
+              palette hue that is in neither the token set nor this page,
+              and dead regardless since the inline colour wins.
+            */}
             <ScrollRevealText
               as="p"
-              className="mt-10 text-2xl font-medium leading-snug tracking-tight text-slate-100 md:mt-12 md:text-3xl lg:text-4xl"
+              preColor="rgb(255 255 255 / 0.55)"
+              postColor="var(--brand-cream)"
+              className="mt-10 text-2xl font-medium leading-snug tracking-tight md:mt-12 md:text-3xl lg:text-4xl"
             >
               {statement}
             </ScrollRevealText>
