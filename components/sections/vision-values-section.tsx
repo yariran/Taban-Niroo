@@ -134,7 +134,11 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
                 key={value.number}
                 className="grid gap-2 border-t border-border py-6 md:grid-cols-[4rem_minmax(0,14rem)_minmax(0,1fr)] md:items-baseline md:gap-8 md:py-7"
               >
-                <span className="font-mono text-xs text-muted-foreground/70 tabular">
+                {/* Undiluted: `/70` measured 3.06:1 light / 4.13:1 dark on
+                    12px, both under the 4.5 floor. `--muted-foreground` is
+                    already the de-emphasis tier — thinning it further just
+                    invented a second, failing one. */}
+                <span className="font-mono text-xs text-muted-foreground tabular">
                   {value.number}
                 </span>
                 <h3 className="text-base font-medium text-brand-heading md:text-lg">

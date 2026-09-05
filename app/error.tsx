@@ -55,8 +55,11 @@ export default function RouteError({
           directly.
         </p>
 
+        {/* `/80` measured 3.75:1 light on 10.5px — under 4.5. This is the
+            error screen: the one place a reader most needs the reference
+            code to be legible. */}
         {error?.digest && (
-          <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground/80">
+          <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground">
             Reference · <span className="tabular">{error.digest}</span>
           </p>
         )}

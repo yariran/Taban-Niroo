@@ -469,7 +469,11 @@ export function ProductCatalogSection({
             <h3 className="font-hero-slogan mt-3 text-3xl font-bold uppercase tracking-tight text-foreground md:text-4xl">
               {filteredItems.length} product
               {filteredItems.length === 1 ? "" : "s"}
-              <span className="text-foreground/45">
+              {/* `text-foreground/45` measured 2.89:1 light — under even the
+                  3.0 large-text floor this 36px bold heading gets. The
+                  trailing clause still reads as secondary against the count
+                  beside it: 5.8:1 vs 16.5:1. */}
+              <span className="text-muted-foreground">
                 {activeFamily === "All" && !query.trim()
                   ? " across all families."
                   : " match your filter."}

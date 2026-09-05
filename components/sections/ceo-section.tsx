@@ -109,7 +109,8 @@ export function CEOSection({
                 <p className="mt-1.5 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                   Chief Executive Officer
                 </p>
-                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80">
+                {/* `/80` measured 3.75:1 light on 10px — under 4.5. */}
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                   October 2024
                 </p>
               </figcaption>

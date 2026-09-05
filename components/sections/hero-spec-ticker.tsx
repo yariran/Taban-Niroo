@@ -54,7 +54,8 @@ export function HeroSpecTicker() {
         <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-4 px-5 py-5 text-[11px] uppercase tracking-[0.18em] text-foreground/65 sm:px-6 md:grid-cols-4 md:px-8 lg:grid-cols-6 lg:px-10">
           {TICKER.map((t) => (
             <div key={t.label} className="flex flex-col">
-              <span className="text-foreground/45">{t.label}</span>
+              {/* Was `/45` — 2.89:1 light on 11px. */}
+              <span className="text-muted-foreground">{t.label}</span>
               <span className="mt-1 font-mono tabular text-foreground">{t.value}</span>
             </div>
           ))}
@@ -101,13 +102,32 @@ function SpecRow({ current, next, index }: { current: Spec; next: Spec; index: n
           "animate-[reveal-up_0.7s_var(--ease-reveal)_forwards]"
         )}
       >
-        <span className="text-foreground/55">{current.label}</span>
+        {/*
+          Three tiers, all of which clear 4.5:1 at 11px on the light ground.
+
+          The row previously graded itself with opacity suffixes — /55 for
+          the live label, /45 for the upcoming one, /30 for the word "next"
+          — which measured 3.89, 2.89 and 1.94:1. Every tier failed; the
+          quietest was effectively invisible. `aria-hidden` does not excuse
+          it, since 1.4.3 is about what a sighted reader can make out.
+
+          The palette already carries three usable steps, so the hierarchy
+          survives intact rather than flattening to one colour:
+
+            value            --foreground        16.5:1
+            live label       --foreground / 80    9.1:1
+            next label       --muted-foreground   5.8:1
+
+          The middot keeps /30: it is punctuation between two data points,
+          decoration rather than content.
+        */}
+        <span className="text-foreground/80">{current.label}</span>
         <span aria-hidden className="text-foreground/30">·</span>
         <span className="font-mono tabular text-foreground">{current.value}</span>
-        <span aria-hidden className="ml-auto hidden text-foreground/30 sm:inline">
+        <span aria-hidden className="ml-auto hidden text-muted-foreground sm:inline">
           next
         </span>
-        <span aria-hidden className="hidden text-foreground/45 sm:inline">
+        <span aria-hidden className="hidden text-muted-foreground sm:inline">
           {next.label}
         </span>
       </div>
