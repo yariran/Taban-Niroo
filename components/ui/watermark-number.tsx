@@ -78,10 +78,10 @@ export function WatermarkNumber({
   }, [reduceMotion]);
 
   const positionClass: Record<NonNullable<WatermarkNumberProps["position"]>, string> = {
-    "bottom-left": "left-2 bottom-0 md:left-6",
-    "bottom-right": "right-2 bottom-0 md:right-6",
-    "top-left": "left-2 top-0 md:left-6",
-    "top-right": "right-2 top-0 md:right-6",
+    "bottom-left": "start-2 bottom-0 md:start-6",
+    "bottom-right": "end-2 bottom-0 md:end-6",
+    "top-left": "start-2 top-0 md:start-6",
+    "top-right": "end-2 top-0 md:end-6",
     center: "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
   };
 

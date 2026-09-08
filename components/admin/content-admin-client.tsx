@@ -15,11 +15,14 @@ import {
   type ContentFieldKey,
   type ContentSectionDef,
 } from "@/lib/cms-content-registry";
+import { localeHref, type Locale } from "@/lib/i18n";
+import { AdminLocaleToggle } from "@/components/admin/admin-locale-toggle";
 
 const inputClass =
   "mt-1.5 w-full rounded-lg border border-[#d0d7e0] bg-white px-3 py-2.5 text-sm text-[#0f1720] outline-none transition focus:border-[#0f1720] focus:ring-2 focus:ring-[#0f1720]/10";
 
 export function ContentAdminClient({ initial }: { initial: SiteContent }) {
+  const [locale, setLocale] = useState<Locale>("en");
   const [content, setContent] = useState(initial);
   const [savedSnapshot, setSavedSnapshot] = useState(() =>
     JSON.stringify(initial),
@@ -35,6 +38,7 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
   const [isPending, startTransition] = useTransition();
 
   const dirty = JSON.stringify(content) !== savedSnapshot;
+  const fieldDir = locale === "fa" ? "rtl" : "ltr";
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -52,6 +56,7 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
   const section =
     CONTENT_SECTIONS.find((s) => s.key === activeKey) ?? CONTENT_SECTIONS[0]!;
   const block: ContentBlock = section.get(content) ?? {};
+  const previewHref = localeHref(locale, section.previewPath);
 
   function selectSection(def: ContentSectionDef) {
     startTransition(() => {
@@ -72,11 +77,49 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
     setContent(section.set(content, {}));
   }
 
+  async function switchLocale(next: Locale) {
+    if (next === locale) return;
+    if (
+      dirty &&
+      !window.confirm(
+        "تغییرات ذخیره‌نشده برای این زبان از بین می‌رود. ادامه می‌دهید؟",
+      )
+    ) {
+      return;
+    }
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/cms/content?locale=${next}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        setMessage({ kind: "err", text: "بارگذاری محتوای این زبان ناموفق بود" });
+        return;
+      }
+      const data = (await res.json()) as SiteContent;
+      setContent(data);
+      setSavedSnapshot(JSON.stringify(data));
+      setLocale(next);
+      setMessage({
+        kind: "ok",
+        text:
+          next === "fa"
+            ? "در حال ویرایش نسخه فارسی — فیلد خالی روی سایت به انگلیسی برمی‌گردد."
+            : "در حال ویرایش نسخه انگلیسی",
+      });
+    } catch {
+      setMessage({ kind: "err", text: "خطای شبکه — دوباره تلاش کنید." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function save() {
     setBusy(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/cms/content", {
+      const res = await fetch(`/api/cms/content?locale=${locale}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(content),
@@ -94,7 +137,7 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
       setSavedSnapshot(JSON.stringify(next));
       setMessage({
         kind: "ok",
-        text: "ذخیره شد. تغییرات روی سایت پس از بازخوانی دیده می‌شود.",
+        text: `ذخیره شد (${locale === "fa" ? "فارسی" : "EN"}). تغییرات روی سایت پس از بازخوانی دیده می‌شود.`,
       });
     } catch {
       setMessage({ kind: "err", text: "خطای شبکه — دوباره تلاش کنید." });
@@ -167,7 +210,12 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
               ویرایش محتوای سایت
             </h1>
             <p className="mt-0.5 text-xs text-[#5a6570]">
-              فیلد خالی = متن پیش‌فرض سایت ·{" "}
+              زبان فعال:{" "}
+              <span className="font-medium text-[#0f1720]">
+                {locale === "fa" ? "فارسی" : "English"}
+              </span>
+              {" · "}
+              فیلد خالی = متن پیش‌فرض / fallback انگلیسی ·{" "}
               {dirty ? (
                 <span className="font-medium text-amber-700">تغییرات ذخیره‌نشده</span>
               ) : (
@@ -176,8 +224,13 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <AdminLocaleToggle
+              value={locale}
+              onChange={(next) => void switchLocale(next)}
+              disabled={busy}
+            />
             <Link
-              href={section.previewPath}
+              href={previewHref}
               target="_blank"
               rel="noreferrer"
               className="rounded-lg border border-[#d0d7e0] bg-white px-3 py-2 text-sm text-[#0f1720] hover:bg-[#f4f6f8]"
@@ -256,7 +309,7 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
                   key={s.key}
                   type="button"
                   onClick={() => selectSection(s)}
-                  className={`flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-right text-sm transition ${
+                  className={`flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-end text-sm transition ${
                     selected
                       ? "bg-[#0f1720] text-white"
                       : "hover:bg-[#f4f6f8] text-[#0f1720]"
@@ -316,6 +369,8 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
                 field={field}
                 block={block}
                 itemsHint={section.itemsHint}
+                dir={fieldDir}
+                locale={locale}
                 onPatch={patchBlock}
                 onUpload={uploadImage}
                 onUpdateItem={updateItem}
@@ -335,6 +390,8 @@ function FieldEditor({
   field,
   block,
   itemsHint,
+  dir,
+  locale,
   onPatch,
   onUpload,
   onUpdateItem,
@@ -345,6 +402,8 @@ function FieldEditor({
   field: ContentFieldKey;
   block: ContentBlock;
   itemsHint?: string;
+  dir: "ltr" | "rtl";
+  locale: Locale;
   onPatch: (patch: Partial<ContentBlock>) => void;
   onUpload: (file: File) => Promise<void>;
   onUpdateItem: (index: number, patch: Partial<ContentItem>) => void;
@@ -353,6 +412,8 @@ function FieldEditor({
   busy: boolean;
 }) {
   const label = FIELD_LABELS[field];
+  const bodyPlaceholder =
+    locale === "fa" ? "متن فارسی این سکشن…" : "متن انگلیسی سایت…";
 
   if (field === "image") {
     return (
@@ -429,14 +490,14 @@ function FieldEditor({
                 value={item.label}
                 onChange={(e) => onUpdateItem(index, { label: e.target.value })}
                 className={inputClass}
-                dir="ltr"
+                dir={dir}
                 placeholder="برچسب / عنوان"
               />
               <input
                 value={item.value ?? ""}
                 onChange={(e) => onUpdateItem(index, { value: e.target.value })}
                 className={inputClass}
-                dir="ltr"
+                dir={dir}
                 placeholder="مقدار (اختیاری)"
               />
               <textarea
@@ -444,7 +505,7 @@ function FieldEditor({
                 value={item.body ?? ""}
                 onChange={(e) => onUpdateItem(index, { body: e.target.value })}
                 className={inputClass}
-                dir="ltr"
+                dir={dir}
                 placeholder="توضیح (اختیاری)"
               />
             </div>
@@ -468,8 +529,8 @@ function FieldEditor({
           value={block.body ?? ""}
           onChange={(e) => onPatch({ body: e.target.value })}
           className={inputClass}
-          dir="ltr"
-          placeholder="متن انگلیسی سایت…"
+          dir={dir}
+          placeholder={bodyPlaceholder}
         />
         <span className="mt-1 block text-[11px] text-[#8a949e]">
           پاراگراف‌ها را با یک خط خالی از هم جدا کنید.
@@ -486,7 +547,9 @@ function FieldEditor({
         value={value}
         onChange={(e) => onPatch({ [field]: e.target.value })}
         className={inputClass}
-        dir="ltr"
+        dir={
+          field === "ctaHref" || field === "ctaHref2" ? "ltr" : dir
+        }
       />
     </label>
   );

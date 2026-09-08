@@ -344,7 +344,7 @@ function PickerCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative flex h-full flex-col items-start gap-5 overflow-hidden rounded-2xl border border-border/70 bg-background p-6 text-left transition-all duration-300",
+        "group relative flex h-full flex-col items-start gap-5 overflow-hidden rounded-2xl border border-border/70 bg-background p-6 text-start transition-all duration-300",
         "hover:-translate-y-0.5 hover:border-foreground hover:shadow-elevate",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
       )}
@@ -510,7 +510,7 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
                       className={cn(
                         techTableBodyCellClass,
                         i !== TECH_BODY_COLUMNS.length - 1 &&
-                          "border-r border-border/70",
+                          "border-e border-border/70",
                         !isLast && "border-b border-border/70",
                       )}
                     >
@@ -562,7 +562,7 @@ function TableView({
             </p>
           </div>
           {product.standard && (
-            <p className="max-w-[18rem] text-right text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="max-w-[18rem] text-end text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {product.standard}
             </p>
           )}

@@ -123,7 +123,7 @@ export function CEOSection({
             delayMs={BEAT.group}
             durationMs={EVIDENCE.duration}
             distance={EVIDENCE.distance}
-            className="min-w-0 lg:border-l lg:border-border/40 lg:pl-14 xl:pl-16 dark:lg:border-white/[0.07]"
+            className="min-w-0 lg:border-s lg:border-border/40 lg:ps-14 xl:ps-16 dark:lg:border-white/[0.07]"
           >
             {lead && (
               <p className="relative text-lg leading-[1.7] text-foreground/90 md:text-xl md:leading-[1.65]">
@@ -177,7 +177,7 @@ export function CEOSection({
           distance={STATEMENT.distance}
           className="mx-auto block max-w-5xl"
         >
-          <p className="relative pl-5 text-2xl leading-relaxed text-brand-navy before:absolute before:left-0 before:top-[0.35em] before:h-[1.15em] before:w-0.5 before:rounded-full before:bg-gradient-to-b before:from-brand-burgundy before:to-brand-navy before:content-[''] md:pl-6 md:text-3xl lg:text-[2.5rem] lg:leading-snug dark:text-brand-cream dark:before:from-brand-burgundy/80 dark:before:to-brand-orange/80">
+          <p className="relative ps-5 text-2xl leading-relaxed text-brand-navy before:absolute before:start-0 before:top-[0.35em] before:h-[1.15em] before:w-0.5 before:rounded-full before:bg-gradient-to-b before:from-brand-burgundy before:to-brand-navy before:content-[''] md:ps-6 md:text-3xl lg:text-[2.5rem] lg:leading-snug dark:text-brand-cream dark:before:from-brand-burgundy/80 dark:before:to-brand-orange/80">
             {closingQuote}
           </p>
         </RevealUp>

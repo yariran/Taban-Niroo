@@ -39,7 +39,7 @@ export function PillNav() {
         {/* Wordmark — the mark is a solid tile, the name is tight sans. */}
         <a
           href="#top"
-          className="mr-1 flex shrink-0 items-center gap-2 rounded-lg px-1 py-1"
+          className="me-1 flex shrink-0 items-center gap-2 rounded-lg px-1 py-1"
         >
           <span
             aria-hidden
@@ -53,7 +53,7 @@ export function PillNav() {
           </span>
         </a>
 
-        <ul className="ml-1 hidden items-center gap-0.5 lg:flex">
+        <ul className="ms-1 hidden items-center gap-0.5 lg:flex">
           {LINKS.map((label) => (
             <li key={label}>
               <a
@@ -76,7 +76,7 @@ export function PillNav() {
           ))}
         </ul>
 
-        <div className="ml-auto flex items-center gap-1.5 md:gap-2">
+        <div className="ms-auto flex items-center gap-1.5 md:gap-2">
           <a
             href="tel:+987137175115"
             aria-label="Call sales"

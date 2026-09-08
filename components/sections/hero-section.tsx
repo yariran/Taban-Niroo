@@ -15,6 +15,7 @@ import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { NewReleaseShowcaseSection } from "@/components/sections/new-release-showcase-section";
+import { TechRef } from "@/components/ui/tech-ref";
 
 const DEFAULT_HERO_WORDS = ["INSPIRE", "INNOVATE", "INTEGRATE"] as const;
 const WORD_STAGGER_S = 0.18;
@@ -75,8 +76,8 @@ function HeroNameplate({
           <dt className="font-mono text-[9px] uppercase leading-none tracking-[0.2em] text-brand-orange md:text-[10px]">
             {row.label}
           </dt>
-          <dd className="mt-2 font-mono text-[11px] leading-[1.45] text-brand-cream md:text-xs">
-            {row.value}
+          <dd className="mt-2 text-[11px] leading-[1.45] text-brand-cream md:text-xs">
+            <TechRef>{row.value}</TechRef>
           </dd>
         </div>
       ))}
@@ -356,7 +357,7 @@ export function HeroSection({
           <HeroNameplate
             className={cn(
               "col-span-12 mt-9 border-t border-white/15 pt-6",
-              "lg:col-span-4 lg:col-start-9 lg:mt-0 lg:border-t-0 lg:border-l lg:border-white/15 lg:pl-7 lg:pt-0",
+              "lg:col-span-4 lg:col-start-9 lg:mt-0 lg:border-t-0 lg:border-s lg:border-white/15 lg:ps-7 lg:pt-0",
               !staticLayout && "opacity-0",
             )}
             style={{

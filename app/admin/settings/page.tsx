@@ -16,7 +16,7 @@ export default async function AdminSettingsPage() {
 
         <div className="rounded-xl border border-[#d8dee6] bg-white p-5 text-sm leading-relaxed text-[#5a6570]">
           <p className="font-medium text-[#0f1720]">وضعیت فعلی</p>
-          <ul className="mt-3 list-disc space-y-1 pr-5">
+          <ul className="mt-3 list-disc space-y-1 pe-5">
             <li>
               CMS_ADMIN_USERNAME / CMS_ADMIN_PASSWORD:{" "}
               {cmsPasswordConfigured() ? "تنظیم شده" : "تنظیم نشده"}
@@ -30,7 +30,7 @@ export default async function AdminSettingsPage() {
 
         <div className="rounded-xl border border-[#d8dee6] bg-white p-5 text-sm leading-relaxed text-[#5a6570]">
           <p className="font-medium text-[#0f1720]">راهنمای سریع کارفرما</p>
-          <ol className="mt-3 list-decimal space-y-3 pr-5">
+          <ol className="mt-3 list-decimal space-y-3 pe-5">
             <li>
               <span className="font-medium text-[#0f1720]">محصولات:</span> از منوی{" "}
               <Link href="/admin/products" className="text-[#0f1720] underline">
@@ -52,7 +52,7 @@ export default async function AdminSettingsPage() {
               </Link>{" "}
               بر اساس صفحه (خانه، درباره، …) فیلدها را پر کنید. فیلد خالی = متن
               پیش‌فرض سایت. معنی فیلدهای رایج:
-              <ul className="mt-2 list-disc space-y-1 pr-5">
+              <ul className="mt-2 list-disc space-y-1 pe-5">
                 <li>
                   <strong>برچسب بالای عنوان (eyebrow)</strong> — خط کوچک بالای تیتر
                 </li>
@@ -91,7 +91,7 @@ export default async function AdminSettingsPage() {
 
         <div className="rounded-xl border border-[#d8dee6] bg-white p-5 text-sm leading-relaxed text-[#5a6570]">
           <p className="font-medium text-[#0f1720]">راه‌اندازی فنی (یک‌بار)</p>
-          <ol className="mt-3 list-decimal space-y-2 pr-5">
+          <ol className="mt-3 list-decimal space-y-2 pe-5">
             <li>
               در Vercel یک Blob Store بسازید و{" "}
               <code className="font-mono text-xs">BLOB_READ_WRITE_TOKEN</code> را

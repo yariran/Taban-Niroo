@@ -2,21 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductsMegaMenu } from "@/components/products-mega-menu";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { LocaleLink, useBarePath } from "@/components/locale-link";
 import { cn } from "@/lib/utils";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 import { trapFocusKeydown } from "@/lib/focus-trap";
-
-const NAV_ITEMS = [
-  ["Company", "/about", false] as const,
-  ["Products", "/products", true] as const,
-  ["Projects & Partners", "/projects", false] as const,
-  ["Blog – R&D", "/blog", false] as const,
-] as const;
 
 const navLinkClass = (onDarkHero: boolean, isActive: boolean) =>
   cn(
@@ -31,9 +24,23 @@ const navLinkClass = (onDarkHero: boolean, isActive: boolean) =>
         : "text-foreground/70 hover:text-brand-burgundy",
   );
 
-export function Header() {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
+export type HeaderNavItem = {
+  label: string;
+  href: string;
+  hasMega: boolean;
+};
+
+export function Header({
+  brand,
+  contactLabel,
+  navItems,
+}: {
+  brand: string;
+  contactLabel: string;
+  navItems: HeaderNavItem[];
+}) {
+  const barePath = useBarePath();
+  const isHome = barePath === "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -41,8 +48,6 @@ export function Header() {
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
 
-  const navItems = NAV_ITEMS;
-  /** Home hero is dark: white text. All other routes (or scrolled home) use dark text. */
   const onDarkHero = isHome && !isScrolled;
 
   const closeMobileMenu = useCallback(() => {
@@ -109,8 +114,7 @@ export function Header() {
           onDarkHero ? "glass-header-pill--hero" : "glass-header-pill--default",
         )}
       >
-        {/* Brand — left */}
-        <Link
+        <LocaleLink
           href="/"
           className={cn(
             "justify-self-start shrink-0 font-semibold uppercase tracking-[0.2em]",
@@ -119,10 +123,9 @@ export function Header() {
             onDarkHero ? "text-white" : "text-brand-navy",
           )}
         >
-          Taban Niroo
-        </Link>
+          {brand}
+        </LocaleLink>
 
-        {/* Nav — centered */}
         <nav
           aria-label="Primary"
           className={cn(
@@ -131,9 +134,9 @@ export function Header() {
             isScrolled ? "gap-4 lg:gap-5" : "gap-5 lg:gap-7",
           )}
         >
-          {navItems.map(([label, href, hasMega]) => {
+          {navItems.map(({ label, href, hasMega }) => {
             const isActive =
-              pathname === href || pathname.startsWith(`${href}/`);
+              barePath === href || barePath.startsWith(`${href}/`);
 
             if (hasMega) {
               return (
@@ -141,25 +144,26 @@ export function Header() {
                   key={href}
                   isActive={isActive}
                   onDarkHero={onDarkHero}
+                  label={label}
                 />
               );
             }
 
             return (
-              <Link
+              <LocaleLink
                 key={href}
                 href={href}
                 aria-current={isActive ? "page" : undefined}
                 className={navLinkClass(onDarkHero, isActive)}
               >
                 {label}
-              </Link>
+              </LocaleLink>
             );
           })}
         </nav>
 
-        {/* Actions — right (desktop) */}
-        <div className="hidden items-center justify-end gap-1.5 md:flex">
+        <div className="hidden items-center justify-end gap-2 md:flex">
+          <LanguageSwitcher onDarkHero={onDarkHero} />
           <ThemeToggle
             variant="ghost"
             compact
@@ -171,7 +175,7 @@ export function Header() {
                 : "text-foreground hover:bg-foreground/10",
             )}
           />
-          <Link
+          <LocaleLink
             href="/contact"
             className={cn(
               "group inline-flex items-center gap-1.5 rounded-full font-medium leading-none",
@@ -179,31 +183,22 @@ export function Header() {
               isScrolled
                 ? "h-7 px-2.5 text-[11px]"
                 : "pill-elevate h-7 px-3 text-[12px] sm:h-8 sm:px-3.5",
-              /* `--brand-navy-deep`, not `--brand-navy`. The pill fill here
-                 is a literal `bg-white` that does NOT invert, while
-                 `--brand-navy` is the heading colour and DOES — it resolves
-                 to #D7DADE in dark, which measured 1.4:1 on this pill and
-                 made the site's primary CTA unreadable over the hero.
-                 `--brand-navy-deep` is the fixed graphite (#0A0B0D in both
-                 themes), so it stays pinned to the fill: 19.7:1 on white,
-                 17.7:1 on the `brand-cream` hover. Same reasoning as the
-                 `default` button variant — see components/ui/button.tsx. */
               onDarkHero
                 ? "bg-white text-brand-navy-deep hover:bg-brand-cream"
                 : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
             )}
           >
-            Contact
+            {contactLabel}
             <ArrowRight
               size={isScrolled ? 11 : 12}
               aria-hidden
               className="transition-transform group-hover:translate-x-0.5"
             />
-          </Link>
+          </LocaleLink>
         </div>
 
-        {/* Phone: theme + hamburger on the right */}
         <div className="col-start-3 flex items-center justify-end gap-1 md:hidden">
+          <LanguageSwitcher onDarkHero={onDarkHero} />
           <ThemeToggle
             variant="ghost"
             compact
@@ -256,12 +251,7 @@ export function Header() {
                 "flex flex-col overflow-y-auto overscroll-contain rounded-t-[1.35rem] border-t px-4 pt-2",
                 "pb-[max(1rem,var(--sab))]",
                 "[-webkit-overflow-scrolling:touch]",
-                "pl-[max(1rem,var(--sal))] pr-[max(1rem,var(--sar))]",
-                /* No `bg-zinc-950` here: `.glass-mobile-menu--hero` already
-                   sets the ground, and the two are a same-specificity
-                   conflict decided by emitted order — with zinc-950
-                   (#09090B) being an off-palette near-miss of the scene
-                   ground it was competing with. The utility class owns it. */
+                "ps-[max(1rem,env(safe-area-inset-inline-start,0px))] pe-[max(1rem,env(safe-area-inset-inline-end,0px))]",
                 onDarkHero
                   ? "glass-mobile-menu--hero border-white/10 text-white"
                   : "glass-mobile-menu--default border-border bg-background text-foreground",
@@ -278,12 +268,12 @@ export function Header() {
                 )}
                 aria-label="Mobile primary"
               >
-                {navItems.map(([label, href], index) => {
+                {navItems.map(({ label, href }, index) => {
                   const isActive =
-                    pathname === href || pathname.startsWith(`${href}/`);
+                    barePath === href || barePath.startsWith(`${href}/`);
 
                   return (
-                    <Link
+                    <LocaleLink
                       key={href}
                       ref={index === 0 ? firstMobileLinkRef : undefined}
                       href={href}
@@ -301,18 +291,32 @@ export function Header() {
                       onClick={closeMobileMenu}
                     >
                       <span>{label}</span>
-                    </Link>
+                    </LocaleLink>
                   );
                 })}
               </nav>
 
               <div
                 className={cn(
-                  "mt-3 border-t pt-3",
+                  "mt-3 flex flex-col gap-3 border-t pt-3",
                   onDarkHero ? "border-white/10" : "border-border/50",
                 )}
               >
-                <Link
+                <div className="flex items-center justify-between gap-3 px-0.5">
+                  <span
+                    className={cn(
+                      "text-[11px] font-medium tracking-[0.14em] uppercase",
+                      onDarkHero ? "text-white/55" : "text-muted-foreground",
+                    )}
+                  >
+                    Language
+                  </span>
+                  <LanguageSwitcher
+                    onDarkHero={onDarkHero}
+                    onNavigate={closeMobileMenu}
+                  />
+                </div>
+                <LocaleLink
                   href="/contact"
                   onClick={closeMobileMenu}
                   className={cn(
@@ -322,9 +326,9 @@ export function Header() {
                       : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
                   )}
                 >
-                  Contact
+                  {contactLabel}
                   <ArrowRight size={12} aria-hidden />
-                </Link>
+                </LocaleLink>
               </div>
             </div>
           </>,

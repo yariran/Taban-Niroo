@@ -456,7 +456,7 @@ export default function StylePreviewPage() {
 
       {/* Sandbox marker — this route is unlinked and noindexed, but anyone
           who lands on it should know immediately what they are looking at. */}
-      <p className="tp-mono pointer-events-none fixed bottom-3 left-3 z-50 rounded-md border border-[var(--tp-line-dark)] bg-black/75 px-3 py-2 text-[9px] text-white/50 backdrop-blur">
+      <p className="tp-mono pointer-events-none fixed bottom-3 start-3 z-50 rounded-md border border-[var(--tp-line-dark)] bg-black/75 px-3 py-2 text-[9px] text-white/50 backdrop-blur">
         Style preview · not linked from the site
       </p>
     </div>

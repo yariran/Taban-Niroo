@@ -13,7 +13,16 @@
  *
  * Shapes mirror what the catalogue UI already expects so this refactor
  * is purely additive — no consumer needs to change.
+ *
+ * Text fields may be plain English strings or `{ en, fa }` objects.
+ * Specs (kV, codes, dimensions) stay locale-neutral strings.
+ * Resolve with `localizeProduct` / `t` before rendering.
  */
+
+import type { Locale } from "@/lib/i18n";
+import { t, tEn, type LocalizedString } from "@/lib/i18n/localize";
+
+export type { LocalizedString };
 
 export type ProductTechnicalRow = {
   shedNo?: string;
@@ -54,12 +63,12 @@ export type ProductFamilyId =
 export type Product = {
   /** Stable kebab-case slug used in URLs. */
   id: string;
-  name: string;
+  name: LocalizedString;
   family: ProductFamilyId;
-  subFamily: string;
+  subFamily: LocalizedString;
   catalogueRef: string;
-  summary: string;
-  applications: string;
+  summary: LocalizedString;
+  applications: LocalizedString;
   voltageClass?: string;
   standard?: string;
   /** Optional product image in `/public/images/...`. */
@@ -73,6 +82,31 @@ export type Product = {
   hidden?: boolean;
   variants?: ProductVariant[];
 };
+
+/** Product with text fields resolved for one locale (safe for UI/SEO). */
+export type ResolvedProduct = Omit<
+  Product,
+  "name" | "subFamily" | "summary" | "applications"
+> & {
+  name: string;
+  subFamily: string;
+  summary: string;
+  applications: string;
+};
+
+/** Resolve localized product text; specs stay as-is. */
+export function localizeProduct(
+  product: Product,
+  locale: Locale,
+): ResolvedProduct {
+  return {
+    ...product,
+    name: t(product.name, locale),
+    subFamily: t(product.subFamily, locale),
+    summary: t(product.summary, locale),
+    applications: t(product.applications, locale),
+  };
+}
 
 /** Family metadata. */
 export const FAMILY_ORDER: readonly ProductFamilyId[] = [
@@ -132,7 +166,7 @@ export function resolveProductImage(
   if (product.image) return product.image;
 
   const id = product.id;
-  const sub = product.subFamily.toLowerCase();
+  const sub = tEn(product.subFamily).toLowerCase();
   const family = product.family as ProductFamilyId;
 
   if (id.includes("hollow-core")) {
@@ -3271,7 +3305,10 @@ export function listProducts(products: readonly Product[]): Product[] {
   return products
     .filter(isProductListed)
     .slice()
-    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+    .sort(
+      (a, b) =>
+        a.order - b.order || tEn(a.name).localeCompare(tEn(b.name)),
+    );
 }
 
 /** Lookup helpers used across pages, sitemap, dynamic OG. */

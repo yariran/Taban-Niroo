@@ -31,7 +31,7 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby={`country-card-${country.name}`}
-            className={`${styles.panel} ${styles.shortCard} absolute inset-x-4 bottom-3 z-50 mx-auto rounded-2xl p-4 sm:inset-x-auto sm:bottom-4 sm:right-6 sm:mx-0 sm:p-5`}
+            className={`${styles.panel} ${styles.shortCard} absolute inset-x-4 bottom-3 z-50 mx-auto rounded-2xl p-4 sm:inset-x-auto sm:bottom-4 sm:end-6 sm:mx-0 sm:p-5`}
             initial={{ opacity: 0, y: reduceMotion ? 0 : 40, scale: reduceMotion ? 1 : 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: reduceMotion ? 0 : 28, scale: reduceMotion ? 1 : 0.97 }}

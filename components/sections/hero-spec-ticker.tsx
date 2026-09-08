@@ -124,7 +124,7 @@ function SpecRow({ current, next, index }: { current: Spec; next: Spec; index: n
         <span className="text-foreground/80">{current.label}</span>
         <span aria-hidden className="text-foreground/30">·</span>
         <span className="font-mono tabular text-foreground">{current.value}</span>
-        <span aria-hidden className="ml-auto hidden text-muted-foreground sm:inline">
+        <span aria-hidden className="ms-auto hidden text-muted-foreground sm:inline">
           next
         </span>
         <span aria-hidden className="hidden text-muted-foreground sm:inline">

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { HOME_CHAPTERS } from "../lib/home-chapters";
 
 /**
@@ -12,9 +12,22 @@ import { HOME_CHAPTERS } from "../lib/home-chapters";
 const REVEAL_SELECTOR =
   "[data-reveal-block],[data-reveal-text],[data-image-reveal],[data-reveal-up]";
 
+/** Skip brand intro + consent so body scroll is not `position: fixed`. */
+async function gotoHome(page: Page) {
+  await page.addInitScript(() => {
+    try {
+      sessionStorage.setItem("tn-intro-v2", "1");
+      localStorage.setItem("tn:consent:v1", "decline");
+    } catch {
+      /* storage disabled */
+    }
+  });
+  await page.goto("/");
+}
+
 test.describe("chapter sentinels", () => {
   test("exactly match HOME_CHAPTERS, one node each", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
 
     const ids = await page.$$eval("[data-chapter-id]", (nodes) =>
       nodes.map((n) => (n as HTMLElement).dataset.chapterId),
@@ -28,7 +41,7 @@ test.describe("chapter sentinels", () => {
   });
 
   test("the rail renders one entry per chapter", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     // Rail is desktop-only (`hidden lg:block`).
     await page.setViewportSize({ width: 1440, height: 900 });
     const items = page.locator('aside[aria-label="Chapter navigation"] li');
@@ -40,7 +53,7 @@ test.describe("parallax", () => {
   test("stays within budget and never wraps a sticky or a reveal", async ({
     page,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
 
     const report = await page.$$eval("[data-parallax]", (nodes) =>
       nodes.map((n) => {
@@ -69,8 +82,19 @@ test.describe("parallax", () => {
 
 test.describe("sticky sections", () => {
   test("philosophy stage sticks to the viewport top", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await page.setViewportSize({ width: 1440, height: 900 });
+    // Lenis mounts in useEffect — wait before programmatic scroll.
+    await page.waitForFunction(
+      () =>
+        Boolean(
+          (window as Window & { __tnLenis?: unknown }).__tnLenis,
+        ) &&
+        ((window as Window & { __tnLenis?: { limit: number } }).__tnLenis
+          ?.limit ?? 0) > 0,
+      undefined,
+      { timeout: 10_000 },
+    );
 
     // The wrapper applies `overflow-x: clip` with `overflow-y: visible`.
     // Pairing the axes (the previous behaviour) creates a scrollport and
@@ -94,11 +118,19 @@ test.describe("sticky sections", () => {
       if (!stage) return null;
       const trackTop = window.scrollY + track.getBoundingClientRect().top;
       // 30% into the runway is comfortably inside the stick window.
-      window.scrollTo(0, trackTop + track.offsetHeight * 0.3);
+      const target = trackTop + track.offsetHeight * 0.3;
+      // Lenis owns scroll on fine pointers — native window.scrollTo is a no-op.
+      const lenis = (
+        window as Window & {
+          __tnLenis?: { scrollTo: (v: number, opts?: { immediate?: boolean }) => void };
+        }
+      ).__tnLenis;
+      if (lenis) lenis.scrollTo(target, { immediate: true });
+      else window.scrollTo(0, target);
       return new Promise<number>((resolve) =>
         setTimeout(
           () => resolve(Math.round(stage.getBoundingClientRect().top)),
-          400,
+          200,
         ),
       );
     });
@@ -114,7 +146,7 @@ test.describe("reduced motion", () => {
   test("leaves every reveal fully visible without scrolling", async ({
     page,
   }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await page.waitForTimeout(600);
 
     /**
@@ -138,7 +170,7 @@ test.describe("reduced motion", () => {
   });
 
   test("hides the chapter rail", async ({ page }) => {
-    await page.goto("/");
+    await gotoHome(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(400);
     await expect(

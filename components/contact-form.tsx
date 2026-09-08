@@ -136,7 +136,7 @@ export function ContactForm({
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden"
+        className="pointer-events-none absolute start-[-9999px] top-auto h-0 w-0 overflow-hidden"
       >
         <label htmlFor="_hp">Leave this field empty</label>
         <input

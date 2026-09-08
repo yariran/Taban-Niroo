@@ -1,4 +1,10 @@
 import { readCmsJson, writeCmsJson } from "@/lib/cms-store";
+import {
+  DEFAULT_LOCALE,
+  isLocale,
+  type Locale,
+} from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n/get-dictionary";
 
 export type BlogPostStatus = "draft" | "published";
 
@@ -12,6 +18,11 @@ export type BlogPost = {
   status: BlogPostStatus;
   publishedAt: string | null;
   updatedAt: string;
+  /**
+   * Posts are per-locale documents (not translations of each other).
+   * Missing field → treated as `en` for legacy manifests.
+   */
+  locale: Locale;
 };
 
 export type BlogManifest = {
@@ -26,8 +37,20 @@ function emptyManifest(): BlogManifest {
   return { version: 1, updatedAt: new Date().toISOString(), posts: [] };
 }
 
+function normalizePost(raw: BlogPost & { locale?: string }): BlogPost {
+  const locale =
+    raw.locale && isLocale(raw.locale) ? raw.locale : DEFAULT_LOCALE;
+  return { ...raw, locale };
+}
+
 export async function readBlogManifest(): Promise<BlogManifest> {
-  return readCmsJson(PATHNAME, emptyManifest());
+  const manifest = await readCmsJson(PATHNAME, emptyManifest());
+  return {
+    ...manifest,
+    posts: (manifest.posts ?? []).map((p) =>
+      normalizePost(p as BlogPost & { locale?: string }),
+    ),
+  };
 }
 
 export async function writeBlogManifest(
@@ -36,13 +59,41 @@ export async function writeBlogManifest(
   const manifest: BlogManifest = {
     version: 1,
     updatedAt: new Date().toISOString(),
-    posts,
+    posts: posts.map((p) => normalizePost(p)),
   };
   await writeCmsJson(PATHNAME, manifest);
   return manifest;
 }
 
-export async function getPublishedPosts(): Promise<BlogPost[]> {
+async function resolveLocale(locale?: Locale): Promise<Locale> {
+  if (locale && isLocale(locale)) return locale;
+  try {
+    return await getLocale();
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
+
+export async function getPublishedPosts(
+  locale?: Locale,
+): Promise<BlogPost[]> {
+  try {
+    const loc = await resolveLocale(locale);
+    const { posts } = await readBlogManifest();
+    return posts
+      .filter((p) => p.status === "published" && p.locale === loc)
+      .sort((a, b) =>
+        (b.publishedAt ?? b.updatedAt).localeCompare(
+          a.publishedAt ?? a.updatedAt,
+        ),
+      );
+  } catch {
+    return [];
+  }
+}
+
+/** All published posts across locales (sitemap). */
+export async function getAllPublishedPosts(): Promise<BlogPost[]> {
   try {
     const { posts } = await readBlogManifest();
     return posts
@@ -59,8 +110,9 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
 
 export async function getPostBySlug(
   slug: string,
+  locale?: Locale,
 ): Promise<BlogPost | undefined> {
-  const posts = await getPublishedPosts();
+  const posts = await getPublishedPosts(locale);
   return posts.find((p) => p.slug === slug);
 }
 

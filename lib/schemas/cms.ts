@@ -1,9 +1,30 @@
 import { z } from "zod";
 import { FAMILY_ORDER } from "@/lib/products";
+import { LOCALES } from "@/lib/i18n";
 
 const familySchema = z.enum(
   FAMILY_ORDER as unknown as [string, ...string[]],
 );
+
+const localizedStringSchema = z.union([
+  z.string().max(5000),
+  z
+    .object({
+      en: z.string().max(5000),
+      fa: z.string().max(5000).optional(),
+    })
+    .strict(),
+]);
+
+const localizedNameSchema = z.union([
+  z.string().trim().min(1).max(200),
+  z
+    .object({
+      en: z.string().trim().min(1).max(200),
+      fa: z.string().max(200).optional(),
+    })
+    .strict(),
+]);
 
 const technicalRowSchema = z
   .object({
@@ -47,12 +68,12 @@ export const productIdSchema = z
 export const productSchema = z
   .object({
     id: productIdSchema,
-    name: z.string().trim().min(1).max(200),
+    name: localizedNameSchema,
     family: familySchema,
-    subFamily: z.string().trim().min(1).max(200),
+    subFamily: localizedNameSchema,
     catalogueRef: z.string().trim().max(200),
-    summary: z.string().max(5000),
-    applications: z.string().max(5000),
+    summary: localizedStringSchema,
+    applications: localizedStringSchema,
     voltageClass: z.string().max(200).optional(),
     standard: z.string().max(500).optional(),
     image: z.string().max(2000).nullable().optional(),
@@ -77,6 +98,8 @@ export const loginSchema = z
   })
   .strict();
 
+const localeSchema = z.enum(LOCALES as unknown as [string, ...string[]]);
+
 export const blogCreateSchema = z
   .object({
     title: z.string().trim().min(1).max(300),
@@ -85,6 +108,7 @@ export const blogCreateSchema = z
     body: z.string().max(200_000).optional(),
     coverImage: z.string().max(2000).nullable().optional(),
     status: z.enum(["draft", "published"]).optional(),
+    locale: localeSchema.optional(),
   })
   .strict();
 
@@ -96,6 +120,7 @@ export const blogPatchSchema = z
     body: z.string().max(200_000).optional(),
     coverImage: z.string().max(2000).nullable().optional(),
     status: z.enum(["draft", "published"]).optional(),
+    locale: localeSchema.optional(),
   })
   .strict();
 

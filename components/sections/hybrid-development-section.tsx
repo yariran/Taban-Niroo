@@ -126,7 +126,7 @@ export function HybridDevelopmentSection({ cms }: { cms?: ContentBlock } = {}) {
             {BENEFITS.map((benefit) => (
               <li
                 key={benefit}
-                className="border-b border-border py-5 pr-6 text-sm leading-relaxed text-muted-foreground md:text-base"
+                className="border-b border-border py-5 pe-6 text-sm leading-relaxed text-muted-foreground md:text-base"
               >
                 {benefit}
               </li>

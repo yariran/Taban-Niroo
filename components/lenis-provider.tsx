@@ -35,6 +35,11 @@ export function LenisProvider() {
       syncTouch: false,
     });
 
+    // E2E + in-page nav helpers; cleared on teardown.
+    (
+      window as Window & { __tnLenis?: typeof lenis }
+    ).__tnLenis = lenis;
+
     let rafId = 0;
     const raf = (time: number) => {
       lenis.raf(time);
@@ -76,6 +81,8 @@ export function LenisProvider() {
       document.removeEventListener("click", onClick);
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      const w = window as Window & { __tnLenis?: typeof lenis };
+      if (w.__tnLenis === lenis) delete w.__tnLenis;
       html.style.scrollBehavior = previousScrollBehavior;
     };
   }, []);

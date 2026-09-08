@@ -74,6 +74,10 @@ export async function PATCH(request: Request, ctx: Ctx) {
     publishedAt:
       status === "published" ? (current.publishedAt ?? now) : null,
     updatedAt: now,
+    locale:
+      patch.locale === "fa" || patch.locale === "en"
+        ? patch.locale
+        : current.locale,
   };
 
   if (posts.some((p, i) => i !== index && p.slug === next.slug)) {

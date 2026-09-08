@@ -82,7 +82,7 @@ function ReleaseHeading({
               ) : null}
               <span>
                 <span className="text-brand-navy/80">{v}</span>
-                <span className="ml-1 text-[0.85em] normal-case tracking-normal text-muted-foreground">
+                <span className="ms-1 text-[0.85em] normal-case tracking-normal text-muted-foreground">
                   kV
                 </span>
               </span>

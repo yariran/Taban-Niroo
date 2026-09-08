@@ -41,6 +41,20 @@ describe("cms schemas", () => {
     expect(r.success).toBe(true);
   });
 
+  it("accepts localized product text fields", () => {
+    const r = productSchema.safeParse({
+      id: "test-product",
+      name: { en: "Line Post", fa: "مقره اتکایی" },
+      family: "Silicone Composite Insulators",
+      subFamily: { en: "Post" },
+      catalogueRef: "TN-1",
+      summary: { en: "Summary", fa: "خلاصه" },
+      applications: { en: "Apps" },
+      order: 1,
+    });
+    expect(r.success).toBe(true);
+  });
+
   it("validates contact payload", () => {
     const ok = contactSchema.safeParse({
       name: "Ada",

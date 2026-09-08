@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { LocaleLink } from "@/components/locale-link";
 import { cn } from "@/lib/utils";
 import {
   FAMILY_ANCHOR,
@@ -20,6 +20,7 @@ import {
   type Product,
   type ProductFamilyId,
 } from "@/lib/products";
+import { tEn } from "@/lib/i18n/localize";
 
 /**
  * Products mega-menu trigger + panel.
@@ -42,9 +43,14 @@ import {
 type Props = {
   isActive: boolean;
   onDarkHero: boolean;
+  label?: string;
 };
 
-export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
+export function ProductsMegaMenu({
+  isActive,
+  onDarkHero,
+  label = "Products",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [catalogue, setCatalogue] = useState<Product[]>(() =>
     listProducts(PRODUCTS),
@@ -131,7 +137,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
     string[]
   >;
   for (const f of FAMILY_ORDER) grouped[f] = [];
-  for (const p of catalogue) grouped[p.family].push(p.name);
+  for (const p of catalogue) grouped[p.family].push(tEn(p.name));
 
   return (
     <div
@@ -163,7 +169,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
               : "text-foreground/70 hover:text-foreground",
         )}
       >
-        Products
+        {label}
         <ChevronDown
           size={12}
           aria-hidden
@@ -207,14 +213,14 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
               Product range
             </p>
-            <Link
+            <LocaleLink
               href="/products"
               onClick={() => setOpen(false)}
               className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:text-foreground/70"
             >
               See all
               <ArrowRight size={12} aria-hidden />
-            </Link>
+            </LocaleLink>
           </div>
 
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -222,7 +228,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
               const count = grouped[family].length;
               return (
                 <li key={family}>
-                  <Link
+                  <LocaleLink
                     data-mm-firstlink={idx === 0 ? "true" : undefined}
                     href={`/products#${FAMILY_ANCHOR[family]}`}
                     onClick={() => setOpen(false)}
@@ -256,7 +262,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
                         />
                       </span>
                     </div>
-                  </Link>
+                  </LocaleLink>
                 </li>
               );
             })}

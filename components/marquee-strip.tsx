@@ -1,35 +1,24 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/locale-link";
 
 type MarqueeStripProps = {
   items: readonly string[];
   /** Seconds per full loop. Larger = slower, more cinematic. */
   duration?: number;
-  /** Reverse direction (right-to-left by default). */
+  /** Reverse direction (left-to-right in LTR; mirrored automatically in RTL). */
   reverse?: boolean;
   className?: string;
-  /** Eyebrow label shown to the left, e.g. "Voltage classes". */
+  /** Eyebrow label shown at the inline-start edge, e.g. "Voltage classes". */
   label?: string;
 };
 
 /**
  * Continuous spec ticker — pacing punctuation between sections.
  *
- * A horizontal band that loops a fixed list of tokens (voltage classes,
- * standards, certifications). Two copies of the list are rendered so
- * the translate animation can wrap seamlessly at -50%.
- *
- * Visual language:
- *  - Hairline border top + bottom (matches blueprint divider).
- *  - `font-hero-slogan` uppercase, weight 700, slightly translucent.
- *  - No new colour tokens — uses `foreground/60` and reads correctly in
- *    both light and dark mode.
- *  - Pauses on hover so a curious reader can stop and read a token.
- *  - Honours `prefers-reduced-motion`: animation freezes statically.
- *
- * Use sparingly — drop one between two heavy sections to break the
- * "section, section, section" cadence.
+ * Scroll direction flips under `dir=rtl` so the band still reads
+ * "outgoing" relative to the reading direction.
  */
 export function MarqueeStrip({
   items,
@@ -38,19 +27,31 @@ export function MarqueeStrip({
   className,
   label,
 }: MarqueeStripProps) {
+  const locale = useLocale();
+  const isRtl = locale === "fa";
+  /** RTL mirrors the default direction; an explicit `reverse` flips again. */
+  const playReverse = isRtl ? !reverse : reverse;
   const sequence = [...items, ...items];
+  const fadeStart = isRtl ? "bg-gradient-to-l" : "bg-gradient-to-r";
+  const fadeEnd = isRtl ? "bg-gradient-to-r" : "bg-gradient-to-l";
 
   return (
     <div
       className={cn(
         "relative flex items-center overflow-hidden border-y border-border/60 bg-background py-6 md:py-8",
         "dark:border-white/[0.06]",
-        className
+        className,
       )}
       role="presentation"
     >
       {label && (
-        <div className="absolute left-0 top-1/2 z-[2] hidden h-full -translate-y-1/2 items-center bg-gradient-to-r from-background via-background to-transparent pl-6 pr-12 md:flex md:pl-12 lg:pl-20">
+        <div
+          className={cn(
+            "absolute start-0 top-1/2 z-[2] hidden h-full -translate-y-1/2 items-center ps-6 pe-12 md:flex md:ps-12 lg:ps-20",
+            fadeStart,
+            "from-background via-background to-transparent",
+          )}
+        >
           <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
             {label}
           </span>
@@ -59,7 +60,9 @@ export function MarqueeStrip({
       <div
         className="flex min-w-max gap-12 will-change-transform motion-reduce:!animate-none md:gap-16"
         style={{
-          animation: `marquee-strip ${duration}s linear infinite ${reverse ? "reverse" : ""}`,
+          animation: `marquee-strip ${duration}s linear infinite${
+            playReverse ? " reverse" : ""
+          }`,
         }}
       >
         {sequence.map((item, i) => (
@@ -77,11 +80,19 @@ export function MarqueeStrip({
       </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-[3] w-24 bg-gradient-to-r from-background via-background to-transparent md:w-32 lg:w-40"
+        className={cn(
+          "pointer-events-none absolute inset-y-0 start-0 z-[3] w-24 md:w-32 lg:w-40",
+          fadeStart,
+          "from-background via-background to-transparent",
+        )}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 z-[3] w-24 bg-gradient-to-l from-background via-background to-transparent md:w-32 lg:w-40"
+        className={cn(
+          "pointer-events-none absolute inset-y-0 end-0 z-[3] w-24 md:w-32 lg:w-40",
+          fadeEnd,
+          "from-background via-background to-transparent",
+        )}
       />
     </div>
   );

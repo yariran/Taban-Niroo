@@ -245,7 +245,7 @@ export function EngineeringDetailSection({
                   <h4 className="col-span-10 text-lg font-medium tracking-tight text-brand-navy md:col-span-6 md:text-2xl">
                     {patent.title}
                   </h4>
-                  <p className="col-span-10 col-start-3 text-xs uppercase tracking-widest text-brand-burgundy md:col-span-4 md:col-start-9 md:text-right">
+                  <p className="col-span-10 col-start-3 text-xs uppercase tracking-widest text-brand-burgundy md:col-span-4 md:col-start-9 md:text-end">
                     {patent.subtitle}
                   </p>
                 </article>

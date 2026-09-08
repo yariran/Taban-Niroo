@@ -8,17 +8,24 @@ import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { ImageReveal } from "@/components/ui/image-reveal";
+import { useLocale } from "@/components/locale-link";
 
 /**
  * Philosophy — same sticky scrub on every viewport size.
  * Only `prefers-reduced-motion` switches to a static stacked layout.
  * Resizing the browser must not swap motion systems mid-scroll.
+ *
+ * Card enter signs flip under RTL so each plate still arrives from the
+ * outer edge relative to reading direction.
  */
 export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const reduceMotion = usePrefersReducedMotion();
-  const [alpineTranslateX, setAlpineTranslateX] = useState(-100);
-  const [forestTranslateX, setForestTranslateX] = useState(100);
+  const isRtl = useLocale() === "fa";
+  const enterOuter = isRtl ? 100 : -100;
+  const enterInner = isRtl ? -100 : 100;
+  const [alpineTranslateX, setAlpineTranslateX] = useState(enterOuter);
+  const [forestTranslateX, setForestTranslateX] = useState(enterInner);
   const [titleOpacity, setTitleOpacity] = useState(1);
   const rafRef = useRef<number | null>(null);
   const title = cmsText(cms, "title", "Composite & Hybrid.");
@@ -40,10 +47,10 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
     const scrolled = -rect.top;
     const progress = Math.max(0, Math.min(1, scrolled / scrollableRange));
 
-    setAlpineTranslateX((1 - progress) * -100);
-    setForestTranslateX((1 - progress) * 100);
+    setAlpineTranslateX((1 - progress) * enterOuter);
+    setForestTranslateX((1 - progress) * enterInner);
     setTitleOpacity(1 - progress);
-  }, [staticLayout]);
+  }, [staticLayout, enterOuter, enterInner]);
 
   useEffect(() => {
     if (staticLayout) return;
@@ -160,7 +167,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                       sizes="45vw"
                     />
                   )}
-                  <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6">
+                  <div className="absolute bottom-2 start-2 sm:bottom-4 sm:start-4 md:bottom-6 md:start-6">
                     <span className="rounded-full bg-brand-navy-deep/90 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-md sm:px-3 sm:py-1.5 sm:text-xs md:px-4 md:py-2 md:text-sm">
                       Long Rod Insulators
                     </span>
@@ -195,7 +202,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                       sizes="45vw"
                     />
                   )}
-                  <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 md:bottom-6 md:left-6">
+                  <div className="absolute bottom-2 start-2 sm:bottom-4 sm:start-4 md:bottom-6 md:start-6">
                     <span className="rounded-full bg-brand-navy-deep/90 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-md sm:px-3 sm:py-1.5 sm:text-xs md:px-4 md:py-2 md:text-sm">
                       Post Insulators
                     </span>

@@ -55,7 +55,9 @@ test.describe("smoke", () => {
     expect([200, 503]).toContain(res.status());
     const body = await res.json();
     expect(body).toHaveProperty("status");
-    expect(body).toHaveProperty("checks");
+    expect(body).toHaveProperty("ts");
+    // Detail payload is gated behind HEALTH_DETAIL_KEY — public body stays minimal.
+    expect(body).not.toHaveProperty("missing");
   });
 });
 
@@ -127,7 +129,7 @@ test.describe("a11y", () => {
         await page.evaluate(() => {
           try {
             localStorage.setItem("tn:consent:v1", "decline");
-            sessionStorage.setItem("tn-intro-seen", "1");
+            sessionStorage.setItem("tn-intro-v2", "1");
           } catch {
             /* storage disabled — banner simply stays up */
           }

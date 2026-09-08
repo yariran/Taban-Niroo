@@ -223,7 +223,7 @@ export function SpecSelector() {
         </p>
         <p className="tp-display mt-2 text-[clamp(2.75rem,7vw,4.5rem)] text-[var(--tp-gold)]">
           <Odometer value={String(result.spec)} />
-          <span className="ml-2 align-baseline text-[0.32em] tracking-[0.16em] text-white/50">
+          <span className="ms-2 align-baseline text-[0.32em] tracking-[0.16em] text-white/50">
             MM
           </span>
         </p>

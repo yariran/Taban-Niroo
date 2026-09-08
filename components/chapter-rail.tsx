@@ -101,7 +101,7 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
   return (
     <aside
       aria-label="Chapter navigation"
-      className="pointer-events-none fixed right-5 top-1/2 z-40 hidden -translate-y-1/2 lg:block"
+      className="pointer-events-none fixed end-5 top-1/2 z-40 hidden -translate-y-1/2 lg:block"
     >
       <ul className="flex flex-col gap-3">
         {chapters.map((c, i) => {
@@ -141,7 +141,7 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
               <span
                 aria-hidden
                 className={cn(
-                  "pointer-events-none absolute right-7 top-1/2 -translate-y-1/2 whitespace-nowrap",
+                  "pointer-events-none absolute end-7 top-1/2 -translate-y-1/2 whitespace-nowrap",
                   "rounded-full border border-border/40 bg-background/85 px-2.5 py-1 backdrop-blur-md dark:border-white/10",
                   "font-mono text-[10px] uppercase tracking-[0.22em] text-foreground/85",
                   "opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-standard)]",
@@ -152,7 +152,7 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
                 <span className="tabular text-brand-burgundy">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="ml-2">{c.title}</span>
+                <span className="ms-2">{c.title}</span>
               </span>
               <button
                 type="button"

@@ -12,6 +12,8 @@ import {
   type ProductVariant,
 } from "./product-modal";
 import { PRODUCTS, listProducts, resolveProductImage } from "@/lib/products";
+import { TechRef } from "@/components/ui/tech-ref";
+import { LocaleLink } from "@/components/locale-link";
 
 type ProductItem = {
   id: string;
@@ -140,12 +142,12 @@ function ProductVisual({
           className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.04] group-hover:grayscale-0"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-        <div className="absolute left-3 top-3 rounded-full border border-white/30 bg-black/45 px-2 py-0.5 font-mono text-[10px] tracking-wider text-white backdrop-blur-sm">
-          {codeLabel}
+        <div className="absolute start-3 top-3 rounded-full border border-white/30 bg-black/45 px-2 py-0.5 text-[10px] tracking-wider text-white backdrop-blur-sm">
+          <TechRef>{codeLabel}</TechRef>
         </div>
         {item.voltageClass && (
-          <div className="absolute right-3 top-3 rounded-full border border-white/30 bg-black/45 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-white backdrop-blur-sm">
-            {item.voltageClass}
+          <div className="absolute end-3 top-3 rounded-full border border-white/30 bg-black/45 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+            <TechRef>{item.voltageClass}</TechRef>
           </div>
         )}
       </>
@@ -163,7 +165,10 @@ function ProductVisual({
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_50%,var(--surface-glow),transparent_70%)] opacity-80" />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
-        <span className="font-hero-slogan text-[clamp(2.2rem,5vw,3.4rem)] font-bold tracking-tight text-foreground/25">
+        <span
+          dir="ltr"
+          className="font-hero-slogan text-[clamp(2.2rem,5vw,3.4rem)] font-bold tracking-tight text-foreground/25 [unicode-bidi:isolate]"
+        >
           {codeLabel}
         </span>
         <span className="max-w-[16rem] text-[11px] font-medium uppercase tracking-[0.22em] text-foreground/50">
@@ -171,7 +176,7 @@ function ProductVisual({
         </span>
       </div>
       {item.voltageClass && (
-        <div className="absolute right-3 top-3 rounded-full border border-border/60 bg-background/70 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-foreground/70 backdrop-blur-sm">
+        <div className="absolute end-3 top-3 rounded-full border border-border/60 bg-background/70 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-foreground/70 backdrop-blur-sm">
           {item.voltageClass}
         </div>
       )}
@@ -203,7 +208,7 @@ function ProductCard({
   onOpen: (item: ProductItem, view?: ProductModalView) => void;
 }) {
   return (
-    <article className="group interactive-lift relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/90 text-left shadow-elevate dark:border-white/[0.08] dark:bg-card/50">
+    <article className="group interactive-lift relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/90 text-start shadow-elevate dark:border-white/[0.08] dark:bg-card/50">
       <button
         type="button"
         onClick={() => onOpen(item, "picker")}
@@ -233,7 +238,7 @@ function ProductCard({
               ? undefined
               : `Open product ${item.id} overview`
           }
-          className="text-left text-base font-semibold leading-snug tracking-tight text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground md:text-lg"
+          className="text-start text-base font-semibold leading-snug tracking-tight text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground md:text-lg"
         >
           {item.name.trim() || item.catalogueRef || item.id}
         </button>
@@ -389,7 +394,7 @@ export function ProductCatalogSection({
                     type="button"
                     onClick={() => setActiveFamily("All")}
                     className={cn(
-                      "flex w-full items-center justify-between gap-3 border-b border-border/40 px-4 py-3 text-left text-sm transition-colors dark:border-white/[0.06]",
+                      "flex w-full items-center justify-between gap-3 border-b border-border/40 px-4 py-3 text-start text-sm transition-colors dark:border-white/[0.06]",
                       activeFamily === "All"
                         ? "bg-muted/40 text-foreground"
                         : "text-muted-foreground hover:bg-muted/30 hover:text-foreground",
@@ -416,7 +421,7 @@ export function ProductCatalogSection({
                         type="button"
                         onClick={() => setActiveFamily(family)}
                         className={cn(
-                          "flex w-full items-start justify-between gap-3 px-4 py-3 text-left text-sm transition-colors",
+                          "flex w-full items-start justify-between gap-3 px-4 py-3 text-start text-sm transition-colors",
                           !isLast &&
                             "border-b border-border/40 dark:border-white/[0.06]",
                           isActive
@@ -450,13 +455,13 @@ export function ProductCatalogSection({
               <p className="mt-2 text-sm leading-relaxed text-foreground">
                 Need a custom configuration, drawing or test report?
               </p>
-              <a
+              <LocaleLink
                 href="/contact"
                 className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-foreground/70"
               >
                 Engineering request
                 <ArrowRight size={14} aria-hidden />
-              </a>
+              </LocaleLink>
             </div>
           </aside>
 
@@ -534,21 +539,21 @@ export function ProductCatalogSection({
                 <Search
                   size={16}
                   aria-hidden
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                 />
                 <input
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search product, application, voltage or DPL code"
-                  className="h-11 w-full rounded-full border border-border bg-background pl-9 pr-9 text-base text-foreground outline-none transition-colors focus:border-foreground md:h-10 md:text-sm"
+                  className="h-11 w-full rounded-full border border-border bg-background ps-9 pe-9 text-base text-foreground outline-none transition-colors focus:border-foreground md:h-10 md:text-sm"
                   aria-label="Search products"
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={() => setQuery("")}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground"
+                    className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground"
                     aria-label="Clear search"
                   >
                     <X size={14} aria-hidden />

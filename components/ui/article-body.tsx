@@ -185,7 +185,7 @@ export function ArticleBody({ source }: { source: string }) {
             );
           case "ul":
             return (
-              <ul key={i} className="mt-6 list-disc space-y-3 pl-5 marker:text-brand-burgundy">
+              <ul key={i} className="mt-6 list-disc space-y-3 ps-5 marker:text-brand-burgundy">
                 {block.items.map((item, j) => (
                   <li key={j}>{renderInline(item, `u${i}-${j}`)}</li>
                 ))}
@@ -193,7 +193,7 @@ export function ArticleBody({ source }: { source: string }) {
             );
           case "ol":
             return (
-              <ol key={i} className="mt-6 list-decimal space-y-3 pl-5 marker:text-brand-burgundy">
+              <ol key={i} className="mt-6 list-decimal space-y-3 ps-5 marker:text-brand-burgundy">
                 {block.items.map((item, j) => (
                   <li key={j}>{renderInline(item, `o${i}-${j}`)}</li>
                 ))}

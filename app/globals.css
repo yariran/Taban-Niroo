@@ -234,10 +234,34 @@
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif !important;
   }
 
+  /** Persian UI — Vazirmatn body (+ Estedad Latin fallback). */
+  .font-fa {
+    font-family: var(--font-vazirmatn), var(--font-estedad), var(--font-inter),
+      ui-sans-serif, system-ui, sans-serif !important;
+  }
+
+  html[lang="fa"] .font-sans,
+  html[lang="fa"] .font-serif,
+  html[lang="fa"] .font-display {
+    font-family: var(--font-vazirmatn), var(--font-estedad), var(--font-inter),
+      ui-sans-serif, system-ui, sans-serif !important;
+  }
+
   .font-hero-slogan,
   .font-headline,
   .font-hero {
     font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif !important;
+  }
+
+  html[lang="fa"] .font-hero-slogan,
+  html[lang="fa"] .font-headline,
+  html[lang="fa"] .font-hero {
+    font-family: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
+      system-ui, sans-serif !important;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.3;
   }
 
   /**
@@ -256,11 +280,106 @@
     text-transform: none;
   }
 
+  html[lang="fa"] .type-cinema {
+    font-family: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
+      system-ui, sans-serif;
+    letter-spacing: 0;
+    line-height: 1.5;
+  }
+
   /** Keep true monospace for specs, IEC codes, and catalogue refs. */
   .font-mono {
     font-family:
       ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace !important;
+  }
+
+  /**
+   * Phase 5 — Persian typography overrides.
+   * Swap families via CSS variables; neutralize case/tracking that break
+   * connected Arabic script. Compensates lost uppercase eyebrows with
+   * weight + existing gold (brand-burgundy) + optional hairline.
+   */
+  :root[lang="fa"] {
+    --font-sans: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
+      system-ui, sans-serif;
+    --font-serif: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
+      system-ui, sans-serif;
+    --font-display: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
+      system-ui, sans-serif;
+    --font-hero: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
+      system-ui, sans-serif;
+    --font-headline: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
+      system-ui, sans-serif;
+    --font-hero-slogan: var(--font-estedad), var(--font-vazirmatn),
+      ui-sans-serif, system-ui, sans-serif;
+  }
+
+  :root[lang="fa"] .font-hero-slogan,
+  :root[lang="fa"] .font-headline,
+  :root[lang="fa"] .font-hero {
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+
+  :root[lang="fa"] .type-cinema {
+    letter-spacing: 0;
+    line-height: 1.5;
+  }
+
+  /* Eyebrows / step labels — tracking breaks joins; keep gold + weight. */
+  :root[lang="fa"] .uppercase {
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  :root[lang="fa"] .tracking-widest,
+  :root[lang="fa"] .tracking-wider,
+  :root[lang="fa"] .tracking-wide,
+  :root[lang="fa"] .tracking-\[0\.28em\],
+  :root[lang="fa"] .tracking-\[0\.22em\],
+  :root[lang="fa"] .tracking-\[0\.2em\],
+  :root[lang="fa"] .tracking-\[0\.18em\],
+  :root[lang="fa"] .tracking-\[0\.16em\],
+  :root[lang="fa"] .tracking-\[0\.14em\] {
+    letter-spacing: 0;
+  }
+
+  /* Eyebrow gold signal — short hairline under brand-burgundy labels. */
+  :root[lang="fa"] .text-brand-burgundy.uppercase,
+  :root[lang="fa"] .text-brand-burgundy.text-xs {
+    font-weight: 600;
+  }
+
+  :root[lang="fa"] .fa-eyebrow {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-weight: 600;
+    color: var(--brand-burgundy);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  :root[lang="fa"] .fa-eyebrow::after {
+    content: "";
+    display: block;
+    width: 1.75rem;
+    height: 1px;
+    background: var(--brand-burgundy);
+    opacity: 0.85;
+  }
+
+  /* Mono tech refs stay Latin — never swap to Persian fonts. */
+  :root[lang="fa"] .font-mono {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace !important;
+    letter-spacing: normal;
+    text-transform: none;
   }
 
   .text-brand-heading {
@@ -680,6 +799,31 @@
     }
   }
 
+  /* RTL: pulse travels inline-start ← inline-end (right → left). */
+  :root[dir="rtl"] .voltage-flow {
+    background: linear-gradient(
+      to left,
+      transparent 0%,
+      rgb(var(--accent-volt) / 0.10) 8%,
+      rgb(var(--accent-volt) / 0.18) 50%,
+      rgb(var(--accent-volt) / 0.10) 92%,
+      transparent 100%
+    );
+  }
+  :root[dir="rtl"] .voltage-flow::after {
+    transform: translateX(100%);
+    animation-name: voltage-flow-pulse-rtl;
+  }
+  @keyframes voltage-flow-pulse-rtl {
+    0% {
+      transform: translateX(100%);
+    }
+    55%,
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
   /**
    * Premium "depth pill" — used for CTA buttons that should feel
    * physical rather than flat. Stack on top of `rounded-full`.
@@ -774,7 +918,9 @@
     /**
      * Mirror body's `overflow-x: clip`. Some browsers propagate the
      * body rule to the root viewport only when the html element also
-     * declares it.
+     * declares it. Safe once the site-intro body-scroll lock is not
+     * active (that lock uses `position: fixed` and collapses
+     * `documentElement.scrollHeight` independently of this rule).
      */
     overflow-x: clip;
     /* Notch / home-indicator tokens for fixed chrome */
@@ -882,7 +1028,7 @@
   }
 }
 
-/* Brand intro plate — mark + wordmark settle in before exit */
+/* Brand intro plate — industrial shutter, not a centered SaaS splash */
 @keyframes intro-mark-in {
   from {
     opacity: 0;
@@ -891,6 +1037,28 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes intro-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-volt {
+  from {
+    transform: scaleX(0);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
   }
 }
 
@@ -907,6 +1075,26 @@ html[data-tn-intro="done"] [data-site-intro] {
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+  @keyframes intro-fade-up {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes intro-volt {
+    from {
+      transform: none;
+      opacity: 1;
+    }
+    to {
+      transform: none;
+      opacity: 1;
     }
   }
 }
