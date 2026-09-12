@@ -9,8 +9,10 @@ import { ImageReveal } from "@/components/ui/image-reveal";
 import { ScrollRevealText } from "@/components/ui/scroll-reveal-text";
 import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE, STATEMENT as STATEMENT_ROLE } from "@/lib/motion-roles";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
 
 /**
  * Technology section — two-act composition.
@@ -40,6 +42,7 @@ const STATEMENT =
   "IEC 61109, 62217, 61466, 60120, 60471. ECR core. HTV silicone. Galvanized fittings. Accredited laboratories. 6-1000 kV.";
 
 export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const image = cmsImage(cms, SITE_IMAGES.technology) ?? SITE_IMAGES.technology;
   const eyebrow = cmsText(cms, "eyebrow", "Standards · 2025 — 2026");
   const title = cmsText(cms, "title", "Type-tested. Field-proven.");
@@ -75,8 +78,8 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
                    full viewport read as a loading state. A small grade gives
                    the pylons something to separate against. */
                 className="object-cover contrast-[1.14] saturate-[0.88] brightness-[0.96]"
-                sizes="100vw"
-                quality={80}
+                sizes="(min-width: 1280px) 1280px, 100vw"
+                quality={70}
                 decoding="async"
               />
             </ImageReveal>
@@ -156,7 +159,10 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
               delay={BEAT.headline}
               duration={STATEMENT_ROLE.duration}
               distance={STATEMENT_ROLE.distance}
-              className="font-hero-slogan mt-4 text-3xl font-semibold uppercase tracking-tight text-white md:text-4xl lg:text-5xl"
+              className={cn(
+                "font-hero-slogan mt-4 font-semibold uppercase tracking-tight text-white",
+                pageHeadingScale(locale),
+              )}
             >
               {title}
             </RevealUp>

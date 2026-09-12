@@ -7,23 +7,17 @@ import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE } from "@/lib/motion-roles";
 import type { ContentBlock } from "@/lib/cms-content";
 import { resolveKpis } from "@/lib/home-kpis";
-import { cn } from "@/lib/utils";
 
 /**
  * Proof band — the first thing under the hero.
  *
- * The four headline metrics used to sit inside "Why Taban Niroo?" at position
- * ten of the home feed, behind `HomeDeferred`'s dynamic imports, which meant a
- * first-time visitor met the company's strongest credibility signal only after
- * a long scroll. They now land immediately after the hero.
+ * Four equal metric cells in a bordered table: same padding, same value
+ * line box, same label track. Ranges ("6–1000 kV") share the figure size
+ * with counted integers so the row reads as one instrument panel, not four
+ * mismatched posters.
  *
- * Reads `home.proof`, falling back to `home.whyTaban` for payloads saved
- * before the two were split apart — see `resolveKpis`. The client edits
- * these numbers in exactly one place in `/admin` either way.
- *
- * Renders dark in both themes — same choice the hero's first scene makes — so
- * the opening of the page reads as one continuous cinematic frame rather than
- * a dark hero followed by an abrupt light band.
+ * Reads `home.proof`, falling back to `home.whyTaban` — see `resolveKpis`.
+ * Renders dark in both themes so the opening stays one cinematic frame.
  */
 export function ProofBandSection({
   cms,
@@ -43,30 +37,29 @@ export function ProofBandSection({
     >
       <div className="grain-layer" aria-hidden />
 
-      {/* Exaggerated Minimalism asks for "extreme negative space" and sets
-          --spacing-huge: 8rem. lg padding is now exactly that. */}
       <Beat className="relative px-6 py-20 md:px-12 md:py-28 lg:px-20 lg:py-32">
         <div className="mx-auto max-w-6xl">
           <h2 id="proof-heading" className="sr-only">
             Taban Niroo by the numbers
           </h2>
 
-          <BlurReveal
-            as="p"
-            delayMs={BEAT.headline}
-            className="type-cinema max-w-2xl text-[clamp(1.15rem,2.4vw,1.9rem)] text-brand-cream/85"
-          >
-            Twenty-nine years of composite insulation, proven on energised
-            networks.
-          </BlurReveal>
-
           {/*
-            The numbers lean forward while the grain layer behind them
-            stays put — that contrast is the depth cue. `data-parallax`
-            sits on this wrapper alone: `useElementParallax` writes
-            `style.transform`, so it must never share a node with a
-            component that also writes one.
+            `dir="ltr"` because this string is hardcoded English with no
+            dictionary key behind it. `BlurReveal` splits text into per-word
+            spans, and inside the Persian page's RTL container those spans
+            lay out right-to-left without this wrapper.
           */}
+          <div dir="ltr">
+            <BlurReveal
+              as="p"
+              delayMs={BEAT.headline}
+              className="type-hig-lede max-w-2xl text-brand-cream"
+            >
+              Twenty-nine years of composite insulation, proven on energised
+              networks.
+            </BlurReveal>
+          </div>
+
           <div data-parallax="1.08" className="mt-10 md:mt-14">
             <RevealBlock
               as="dl"
@@ -74,55 +67,66 @@ export function ProofBandSection({
               distance={EVIDENCE.distance}
               durationMs={EVIDENCE.duration}
               stagger={EVIDENCE.stagger}
-              className="grid grid-cols-2 gap-x-6 gap-y-10 border-t border-white/12 pt-10 md:grid-cols-4 md:gap-x-8 md:pt-12"
+              className="grid grid-cols-2 overflow-hidden border border-white/14 md:grid-cols-4"
             >
-              {kpis.map((kpi) => (
-                <div key={kpi.label} className="flex min-w-0 flex-col">
-                  {/*
-                    Range metrics ("6-1000 kV") are several times wider than a
-                    counted integer, so they get their own step down the scale
-                    and are allowed to wrap. At the numeric size they overflow
-                    the grid column and collide with the next metric.
-                  */}
+              {kpis.map((kpi, index) => (
+                <div
+                  key={kpi.label}
+                  className={[
+                    "flex min-h-[9.5rem] flex-col justify-between gap-5 p-5 sm:min-h-[10.5rem] sm:p-6 md:min-h-[11.5rem] md:gap-6 md:p-7 lg:p-8",
+                    "border-white/14",
+                    /* Mobile 2×2: east edge on col 1, south edge on row 1. */
+                    index % 2 === 0 ? "border-e" : "",
+                    index < 2 ? "border-b md:border-b-0" : "",
+                    /* Desktop 1×4: east edge on every cell but the last. */
+                    "md:border-e md:last:border-e-0",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  <dt className="type-hig-label min-h-[2.75em] text-brand-orange">
+                    {kpi.label}
+                  </dt>
                   <dd
-                    className={cn(
-                      // `min-h` matches the numeric line box and `items-end`
-                      // bottom-aligns the stepped-down range value with it, so
-                      // every label sits on one line across the row.
-                      //
-                      // Exaggerated Minimalism (ui-ux-pro-max › styles.csv):
-                      // font-weight 900 and letter-spacing -0.05em, applied
-                      // verbatim. Inter is loaded as a variable font in
-                      // app/layout.tsx (no `weight` array), so 900 is real
-                      // here — Oswald would not have it, it stops at 700.
-                      //
-                      // The record's --type-giant is clamp(3rem, 10vw, 12rem).
-                      // The upper half of that range does NOT fit this layout
-                      // and is deliberately not used: measured against the
-                      // 264px column this grid gives each metric at 1440px,
-                      // "+80" at 900 weight runs 300px at 10vw (144px) and
-                      // 400px at 12rem (192px). 120px is the largest that
-                      // clears it, so the ceiling is 7.5rem. The 3rem floor is
-                      // the record's own.
-                      "order-1 flex min-h-[clamp(3rem,8vw,7.5rem)] items-end font-black tracking-[-0.05em] text-brand-cream tabular-nums",
+                    className={[
+                      "flex min-h-[2.75rem] items-end text-brand-cream tabular-nums",
+                      "font-[300] tracking-[var(--hig-track-display)] leading-none",
+                      /*
+                        Range metrics take their own step down the scale.
+
+                        One size for every cell is the better idea and it was
+                        tried here, but it does not survive the arithmetic.
+                        "6–1000 kV" sets about 4.8x its own font size, and the
+                        tightest cell the grid ever produces is at `md`: four
+                        columns inside the section's own `md:px-12` leave just
+                        112px of content width after `p-7`. That caps a single
+                        shared size at ~23px — a caption, not a headline
+                        figure. At the 46px the counted values want, the range
+                        needs 222px and wrapped to two lines, which is worse
+                        than a size difference: three cells showed one line and
+                        one showed two, and the row stopped reading as a row.
+
+                        So: counted integers keep the large step, ranges get
+                        the smaller one, and `whitespace-nowrap` guarantees the
+                        thing the cell exists to guarantee. `items-end` still
+                        hangs every value from one baseline, which is what
+                        actually carries the instrument-panel reading — the
+                        shared baseline, not the shared size.
+
+                        The range clamp is sized for HEADROOM, not for a fit.
+                        `nowrap` converts an overflow into text spilling out of
+                        the cell rather than wrapping inside it, so a value
+                        that merely fits is a trap — the first CMS edit or font
+                        swap breaks it. Measured against the painted glyphs,
+                        every breakpoint now keeps 18-29% slack: 89px in 112 at
+                        `md`, 119 in 168 at `lg`, 167 in 224 at the
+                        `max-w-6xl` ceiling, 184 in 224 once the cap bites.
+                      */
+                      "whitespace-nowrap",
                       kpi.value
-                        ? // Range metrics ("6-1000 kV") are ~5x the width of a
-                          // counted integer, so they take their own step down
-                          // the scale. They must NOT wrap: this row's whole
-                          // job is four values hung from one baseline, and a
-                          // two-line metric pushes its own label out of line
-                          // with the other three — the single thing that made
-                          // the band look accidental. `2.6vw` is measured: at
-                          // the 264px column this grid gives each metric at
-                          // 1440px, "6-1000 kV" sets to 246px, and the 1.4rem
-                          // floor clears the 148px column at 375px.
-                          "whitespace-nowrap text-[clamp(1.4rem,2.6vw,2.75rem)]"
-                        : "whitespace-nowrap text-[clamp(3rem,8vw,7.5rem)]",
-                      // Must come last: tailwind-merge treats the arbitrary
-                      // `text-[clamp(…)]` above as a font-size/line-height pair
-                      // and drops an earlier `leading-*`.
-                      "leading-none",
-                    )}
+                        ? "text-[clamp(1.15rem,2.4vw,2.375rem)]"
+                        : "text-[clamp(1.65rem,3.4vw,2.85rem)]",
+                    ].join(" ")}
                   >
                     {kpi.value ?? (
                       <CountUp
@@ -133,9 +137,6 @@ export function ProofBandSection({
                       />
                     )}
                   </dd>
-                  <dt className="order-2 mt-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-orange md:text-[11px]">
-                    {kpi.label}
-                  </dt>
                 </div>
               ))}
             </RevealBlock>

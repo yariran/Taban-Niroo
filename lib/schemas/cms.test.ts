@@ -41,18 +41,32 @@ describe("cms schemas", () => {
     expect(r.success).toBe(true);
   });
 
-  it("accepts localized product text fields", () => {
+  it("accepts localized product text fields (name stays plain Latin)", () => {
     const r = productSchema.safeParse({
       id: "test-product",
-      name: { en: "Line Post", fa: "مقره اتکایی" },
+      name: "Line Post",
       family: "Silicone Composite Insulators",
-      subFamily: { en: "Post" },
+      subFamily: { en: "Post", fa: "اتکایی" },
       catalogueRef: "TN-1",
       summary: { en: "Summary", fa: "خلاصه" },
       applications: { en: "Apps" },
       order: 1,
     });
     expect(r.success).toBe(true);
+  });
+
+  it("rejects bilingual object for product name", () => {
+    const r = productSchema.safeParse({
+      id: "test-product",
+      name: { en: "Line Post", fa: "مقره اتکایی" },
+      family: "Silicone Composite Insulators",
+      subFamily: "Post",
+      catalogueRef: "TN-1",
+      summary: "Summary",
+      applications: "Apps",
+      order: 1,
+    });
+    expect(r.success).toBe(false);
   });
 
   it("validates contact payload", () => {

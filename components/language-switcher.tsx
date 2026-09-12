@@ -6,11 +6,10 @@ import { useEffect, useState } from "react";
 import { LOCALES, swapLocalePath, type Locale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
-const LABELS: Record<Locale, string> = {
-  en: "EN",
-  fa: "فارسی",
-};
-
+/**
+ * Ultra-minimal locale control — Apple-style: only the *other* language
+ * as quiet text. No pill, no globe, no dual chip.
+ */
 function usePathWithExtras(): string {
   const pathname = usePathname() || "/";
   const [extras, setExtras] = useState({ search: "", hash: "" });
@@ -34,10 +33,6 @@ function usePathWithExtras(): string {
   return `${pathname}${extras.search}${extras.hash}`;
 }
 
-/**
- * Path-preserving language control — swaps only the first locale segment.
- * Real `<Link>`s (crawlable / middle-clickable), not a JS-only button.
- */
 export function LanguageSwitcher({
   className,
   onDarkHero = false,
@@ -45,7 +40,6 @@ export function LanguageSwitcher({
 }: {
   className?: string;
   onDarkHero?: boolean;
-  /** e.g. close the mobile drawer after a locale tap */
   onNavigate?: () => void;
 }) {
   const pathname = usePathname() || "/";
@@ -55,49 +49,29 @@ export function LanguageSwitcher({
     return LOCALES.includes(seg as Locale) ? (seg as Locale) : "en";
   })();
 
+  const target: Locale = activeLocale === "en" ? "fa" : "en";
+  const label = target === "fa" ? "فارسی" : "English";
+  const aria =
+    target === "fa" ? "Switch to Persian" : "Switch to English";
+
   return (
-    <div
+    <Link
+      href={swapLocalePath(current, target)}
+      hrefLang={target === "fa" ? "fa-IR" : "en"}
+      lang={target}
+      onClick={onNavigate}
+      aria-label={aria}
       className={cn(
-        "inline-flex shrink-0 items-center gap-0.5 rounded-full border px-1 py-0.5",
-        "backdrop-blur-sm transition-colors",
+        "shrink-0 text-[11px] font-medium leading-none tracking-wide",
+        "transition-opacity duration-200",
+        "focus-visible:outline-none focus-visible:opacity-100",
         onDarkHero
-          ? "border-white/20 bg-white/10"
-          : "border-border/80 bg-background/60",
+          ? "text-white/70 hover:text-white"
+          : "text-muted-foreground hover:text-foreground",
         className,
       )}
-      role="group"
-      aria-label="Language"
     >
-      {LOCALES.map((code) => {
-        const active = code === activeLocale;
-        return (
-          <Link
-            key={code}
-            href={swapLocalePath(current, code)}
-            hrefLang={code === "fa" ? "fa-IR" : "en"}
-            lang={code === "fa" ? "fa" : "en"}
-            onClick={onNavigate}
-            className={cn(
-              "rounded-full px-2 py-1 text-[10px] font-medium leading-none transition-colors",
-              code === "en" && "font-mono tracking-[0.14em]",
-              code === "fa" && "font-fa text-[11px] tracking-normal",
-              active
-                ? onDarkHero
-                  ? "bg-white/20 text-white"
-                  : "bg-foreground/10 text-brand-navy"
-                : onDarkHero
-                  ? "text-white/50 hover:text-white/85"
-                  : "text-muted-foreground hover:text-brand-burgundy",
-            )}
-            aria-current={active ? "true" : undefined}
-            aria-label={
-              code === "fa" ? "Switch to Persian" : "Switch to English"
-            }
-          >
-            {LABELS[code]}
-          </Link>
-        );
-      })}
-    </div>
+      {label}
+    </Link>
   );
 }

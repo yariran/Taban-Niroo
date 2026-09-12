@@ -10,6 +10,8 @@ import { pageSocialFor } from "@/lib/seo";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { LocaleLink } from "@/components/locale-link";
 import { localeFromParams } from "@/lib/i18n";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -71,7 +73,12 @@ export default async function ProjectsPage({
               <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
                 {eyebrow}
               </p>
-              <h1 className="font-hero-slogan text-brand-heading mt-4 text-3xl font-bold uppercase tracking-tight md:text-4xl lg:text-5xl">
+              <h1
+                className={cn(
+                  "font-hero-slogan text-brand-heading mt-4 font-bold uppercase tracking-tight",
+                  pageHeadingScale(locale),
+                )}
+              >
                 <RevealWords as="span" className="block">
                   {titleLine1}
                 </RevealWords>

@@ -45,20 +45,20 @@ describe("splitLocalized / joinLocalized", () => {
 describe("localizeProduct", () => {
   const sample: Product = {
     id: "sample",
-    name: { en: "Line Post", fa: "مقره اتکایی" },
+    name: "Line Post",
     family: "Silicone Composite Insulators",
-    subFamily: "Post",
+    subFamily: { en: "Post", fa: "اتکایی" },
     catalogueRef: "DPL",
     summary: { en: "EN summary", fa: "خلاصه" },
     applications: "Utility",
     order: 1,
   };
 
-  it("resolves fa text and keeps specs", () => {
+  it("keeps Latin name and resolves other fa text", () => {
     const fa = localizeProduct(sample, "fa");
-    expect(fa.name).toBe("مقره اتکایی");
+    expect(fa.name).toBe("Line Post");
     expect(fa.summary).toBe("خلاصه");
-    expect(fa.subFamily).toBe("Post");
+    expect(fa.subFamily).toBe("اتکایی");
     expect(fa.catalogueRef).toBe("DPL");
   });
 });

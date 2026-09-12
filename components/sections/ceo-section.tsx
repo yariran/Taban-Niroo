@@ -7,8 +7,11 @@ import { RevealUp } from "@/components/ui/reveal-words";
 import { ImageReveal } from "@/components/ui/image-reveal";
 import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE, STATEMENT } from "@/lib/motion-roles";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 /**
  * CEO message — the closing chapter, and the page's only human plate.
@@ -35,6 +38,7 @@ export function CEOSection({
    */
   withClosing?: boolean;
 } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Leadership");
   const title = cmsText(cms, "title", "A Message from the CEO");
   const defaultBody = [
@@ -75,7 +79,12 @@ export function CEOSection({
             delay={BEAT.headline}
             duration={STATEMENT.duration}
             distance={STATEMENT.distance}
-            className="font-hero-slogan text-brand-heading mt-3 text-3xl font-semibold uppercase tracking-tight md:text-4xl lg:text-[2.85rem] lg:leading-[1.05]"
+            className={cn(
+              "font-hero-slogan text-brand-heading mt-3 font-semibold uppercase tracking-tight lg:leading-[1.05]",
+              locale === "fa"
+                ? pageHeadingScale("fa")
+                : "text-3xl md:text-4xl lg:text-[2.85rem]",
+            )}
           >
             {title}
           </RevealUp>

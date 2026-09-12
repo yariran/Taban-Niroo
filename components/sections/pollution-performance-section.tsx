@@ -1,8 +1,11 @@
 "use client";
 
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 /**
  * Pollution performance engineering — the IEC/TS 60815-3 chapter.
@@ -68,6 +71,7 @@ const CLOSING =
 export function PollutionPerformanceSection({
   cms,
 }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Pollution performance engineering");
   const title = cmsText(cms, "title", "Every shed profile,");
   const titleLine2 = cmsText(
@@ -103,14 +107,20 @@ export function PollutionPerformanceSection({
           <h2 id="pollution-heading" className="mt-4 max-w-3xl">
             <RevealText
               as="span"
-              className="block font-hero-slogan text-brand-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "block font-hero-slogan text-brand-heading font-bold uppercase leading-[1.05] tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {title}
             </RevealText>
             <RevealText
               as="span"
               delayMs={140}
-              className="block font-hero-slogan text-brand-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "block font-hero-slogan text-brand-heading font-bold uppercase leading-[1.05] tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {titleLine2}
             </RevealText>

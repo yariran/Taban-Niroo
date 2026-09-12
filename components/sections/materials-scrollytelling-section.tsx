@@ -8,6 +8,12 @@ import { BEAT, EVIDENCE, STATEMENT } from "@/lib/motion-roles";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import type { ContentBlock } from "@/lib/cms-content-types";
 import { cmsText } from "@/lib/cms-resolve";
+import { useLocale } from "@/components/locale-link";
+import {
+  MATERIALS_STEPS_COPY,
+  pickLocale,
+} from "@/lib/i18n/section-copy";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { cn } from "@/lib/utils";
 import styles from "./materials-scrollytelling.module.css";
 
@@ -57,14 +63,11 @@ type Step = {
   specs: readonly { label: string; value: string }[];
 };
 
-const STEPS: readonly Step[] = [
+const STEP_META: readonly Omit<Step, "title" | "body">[] = [
   {
     id: "core",
     num: "01",
-    title: "ECR rod",
     readout: "ECR CORE",
-    body:
-      "Electrical-grade, corrosion-resistant fibre-reinforced plastic core. This is the mechanical load path of the insulator — every kilonewton of line tension runs through it. ECR grade resists the brittle-fracture mechanism that ends the service life of ordinary FRP cores.",
     specs: [
       { label: "Function", value: "Load path" },
       { label: "Grade", value: "ECR / FRP" },
@@ -74,10 +77,7 @@ const STEPS: readonly Step[] = [
   {
     id: "housing",
     num: "02",
-    title: "HTV silicone housing",
     readout: "HTV SILICONE HOUSING",
-    body:
-      "High-temperature vulcanised silicone, moulded directly onto the rod. Hydrophobic and UV-stable, and — the property that decides service life in a polluted zone — fully recoverable: the surface regains its water-repellency after contamination rather than degrading toward tracking and erosion.",
     specs: [
       { label: "Function", value: "Insulation + shedding" },
       { label: "Property", value: "Hydrophobicity recovery" },
@@ -87,10 +87,7 @@ const STEPS: readonly Step[] = [
   {
     id: "fittings",
     num: "03",
-    title: "Hot-dip galvanized forged fittings",
     readout: "GALVANISED FITTINGS",
-    body:
-      "Forged steel end-fittings, hot-dip galvanised for decades of atmospheric corrosion resistance. The geometry is rounded — validated by in-house field simulation — to suppress field concentration at the live end and control corona behaviour up to 420 kV.",
     specs: [
       { label: "Function", value: "Attachment + field control" },
       { label: "Protection", value: "Hot-dip galvanised" },
@@ -100,10 +97,7 @@ const STEPS: readonly Step[] = [
   {
     id: "junction",
     num: "04",
-    title: "The triple junction point",
     readout: "TRIPLE JUNCTION",
-    body:
-      "Where rod, housing and fitting meet. Silicone is permanently bonded to both, so air and water cannot reach the junction — eliminating the partial-discharge pathway that ages conventional insulators from the inside out. This is the whole argument for composite over porcelain, in one interface.",
     specs: [
       { label: "Result", value: "No moisture ingress" },
       { label: "Eliminates", value: "PD pathway" },
@@ -112,6 +106,15 @@ const STEPS: readonly Step[] = [
   },
 ];
 
+function useMaterialsSteps(): readonly Step[] {
+  const locale = useLocale();
+  const copy = pickLocale(MATERIALS_STEPS_COPY, locale);
+  return STEP_META.map((meta, i) => ({
+    ...meta,
+    title: copy[i]!.title,
+    body: copy[i]!.body,
+  }));
+}
 /* ---------------------------------------------------------------------------
    Geometry, computed once at module scope — deterministic, so SSR and client
    render byte-identical. (No Date/random anywhere near this.)
@@ -158,6 +161,8 @@ const NARROW_QUERY = "(max-width: 1023.98px)";
 export function MaterialsScrollytellingSection({
   cms,
 }: { cms?: ContentBlock } = {}) {
+  const STEPS = useMaterialsSteps();
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Materials science");
   const title = cmsText(cms, "title", "Three layers. Thirty years on the line.");
   const body = cmsText(
@@ -255,7 +260,10 @@ export function MaterialsScrollytellingSection({
             delay={BEAT.headline}
             duration={STATEMENT.duration}
             distance={STATEMENT.distance}
-            className="mt-4 font-hero-slogan text-3xl font-bold uppercase leading-[1.04] tracking-tight text-brand-heading md:text-4xl lg:text-5xl"
+            className={cn(
+              "mt-4 font-hero-slogan font-bold uppercase leading-[1.04] tracking-tight text-brand-heading",
+              pageHeadingScale(locale),
+            )}
           >
             {title}
           </RevealUp>

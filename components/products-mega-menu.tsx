@@ -20,7 +20,6 @@ import {
   type Product,
   type ProductFamilyId,
 } from "@/lib/products";
-import { tEn } from "@/lib/i18n/localize";
 
 /**
  * Products mega-menu trigger + panel.
@@ -137,7 +136,7 @@ export function ProductsMegaMenu({
     string[]
   >;
   for (const f of FAMILY_ORDER) grouped[f] = [];
-  for (const p of catalogue) grouped[p.family].push(tEn(p.name));
+  for (const p of catalogue) grouped[p.family].push(p.name);
 
   return (
     <div

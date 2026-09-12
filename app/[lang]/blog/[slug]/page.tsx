@@ -12,6 +12,8 @@ import { getSiteContent } from "@/lib/cms-content";
 import { absoluteUrl, pageSocial, pageSocialFor } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import { localeFromParams } from "@/lib/i18n";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
 
@@ -105,7 +107,12 @@ export default async function BlogPostPage({ params }: Props) {
               })
             : "Article"}
         </p>
-        <h1 className="mt-4 max-w-3xl text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl">
+        <h1
+          className={cn(
+            "mt-4 max-w-3xl font-medium tracking-tight text-foreground",
+            pageHeadingScale(lang),
+          )}
+        >
           {post.title}
         </h1>
         {post.excerpt && !bodyLeadsWithExcerpt(post.body, post.excerpt) ? (

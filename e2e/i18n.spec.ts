@@ -1,18 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
+import { declineConsent, skipIntroViaTestFlag } from "./helpers/intro";
 
 const BREAKPOINTS = [375, 768, 1024, 1440] as const;
 const LOCALES = ["en", "fa"] as const;
 
-/** Skip intro + consent chrome so layout measurements are stable. */
+/** Consent declined; intro bypassed via documented `?tn_intro=skip` / flag. */
 async function gotoReady(page: Page, path: string) {
-  await page.addInitScript(() => {
-    try {
-      localStorage.setItem("tn:consent:v1", "decline");
-      sessionStorage.setItem("tn-intro-v2", "1");
-    } catch {
-      /* storage disabled */
-    }
-  });
+  await declineConsent(page);
+  await skipIntroViaTestFlag(page);
   await page.goto(path, { waitUntil: "domcontentloaded" });
   await expect(page.locator("#main-content")).toBeVisible();
 }

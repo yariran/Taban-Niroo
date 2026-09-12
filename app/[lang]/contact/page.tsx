@@ -8,6 +8,8 @@ import { cmsText } from "@/lib/cms-resolve";
 import { getProductBySlugAsync } from "@/lib/cms-products";
 import { pageSocialFor } from "@/lib/seo";
 import { localeFromParams } from "@/lib/i18n";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata({
   params,
@@ -75,7 +77,12 @@ export default async function ContactPage({ params, searchParams }: Props) {
               <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
                 {eyebrow}
               </p>
-              <h1 className="mt-4 font-hero-slogan text-brand-heading text-3xl font-bold uppercase tracking-tight md:text-4xl lg:text-5xl">
+              <h1
+                className={cn(
+                  "mt-4 font-hero-slogan text-brand-heading font-bold uppercase tracking-tight",
+                  pageHeadingScale(lang),
+                )}
+              >
                 <RevealWords as="span" className="block">
                   {titleLine1}
                 </RevealWords>

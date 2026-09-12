@@ -34,4 +34,11 @@ export function unlockBodyScroll(): void {
   body.style.right = "";
   body.style.width = "";
   window.scrollTo(0, savedScrollY);
+  // Intro (and other locks) collapse scrollHeight while active; Lenis must remeasure.
+  try {
+    window.dispatchEvent(new Event("resize"));
+    (window as Window & { __tnLenis?: { resize?: () => void } }).__tnLenis?.resize?.();
+  } catch {
+    /* ignore */
+  }
 }

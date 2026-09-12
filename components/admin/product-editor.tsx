@@ -19,21 +19,19 @@ const inputClass =
 
 type TextPair = { en: string; fa: string };
 type LocalizedDrafts = {
-  name: TextPair;
   subFamily: TextPair;
   summary: TextPair;
   applications: TextPair;
 };
 
-/** Specs + meta; localized copy lives in `LocalizedDrafts`. */
+/** Specs + meta + Latin name; bilingual copy lives in `LocalizedDrafts`. */
 type ProductShell = Omit<
   Product,
-  "name" | "subFamily" | "summary" | "applications"
+  "subFamily" | "summary" | "applications"
 >;
 
 function draftsFrom(p?: Product): LocalizedDrafts {
   return {
-    name: splitLocalized(p?.name),
     subFamily: splitLocalized(p?.subFamily),
     summary: splitLocalized(p?.summary),
     applications: splitLocalized(p?.applications),
@@ -44,6 +42,7 @@ function shellFrom(p?: Product): ProductShell {
   if (!p) {
     return {
       id: "",
+      name: "",
       family: FAMILY_ORDER[0],
       catalogueRef: "",
       voltageClass: "",
@@ -55,6 +54,7 @@ function shellFrom(p?: Product): ProductShell {
   }
   return {
     id: p.id,
+    name: p.name,
     family: p.family,
     catalogueRef: p.catalogueRef,
     voltageClass: p.voltageClass,
@@ -173,17 +173,16 @@ export function ProductEditor({
     setBusy(true);
     setError(null);
     setStatus(null);
-    if (!drafts.name.en.trim()) {
-      setError("نام انگلیسی الزامی است");
+    if (!product.name.trim()) {
+      setError("نام (لاتین) الزامی است");
       setBusy(false);
-      setLocale("en");
       return;
     }
     try {
       const payload: Product = {
         ...product,
         id: product.id.trim(),
-        name: joinLocalized(drafts.name.en, drafts.name.fa),
+        name: product.name.trim(),
         subFamily: joinLocalized(drafts.subFamily.en, drafts.subFamily.fa),
         summary: joinLocalized(drafts.summary.en, drafts.summary.fa),
         applications: joinLocalized(
@@ -254,9 +253,9 @@ export function ProductEditor({
       )}
 
       <p className="text-xs text-[#5a6570]">
-        متن‌های نام / زیرخانواده / خلاصه / کاربردها به‌ازای زبان ویرایش می‌شوند.
-        مشخصات فنی (کد، ولتاژ، ابعاد) مشترک‌اند. فارسی خالی → روی سایت انگلیسی
-        نمایش داده می‌شود.
+        نام محصول همیشه لاتین است. زیرخانواده / خلاصه / کاربردها به‌ازای زبان
+        ویرایش می‌شوند. مشخصات فنی (کد، ولتاژ، ابعاد) مشترک‌اند. فارسی خالی → روی
+        سایت انگلیسی نمایش داده می‌شود.
       </p>
 
       <section className="space-y-4 rounded-xl border border-[#d8dee6] bg-white p-5">
@@ -271,17 +270,13 @@ export function ProductEditor({
               dir="ltr"
             />
           </Field>
-          <Field
-            label={
-              locale === "fa" ? "نام (فارسی)" : "نام (English)"
-            }
-          >
+          <Field label="نام (Latin)">
             <input
-              required={locale === "en"}
-              value={drafts.name[locale]}
-              onChange={(e) => updateText("name", e.target.value)}
+              required
+              value={product.name}
+              onChange={(e) => update("name", e.target.value)}
               className={inputClass}
-              dir={fieldDir}
+              dir="ltr"
             />
           </Field>
           <Field label="خانواده">

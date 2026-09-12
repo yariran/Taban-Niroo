@@ -98,7 +98,7 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
             distance={EVIDENCE.distance}
             durationMs={EVIDENCE.duration}
           >
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-brand-burgundy md:mb-6">
+            <p className="type-hig-label mb-[var(--hig-4)] text-brand-burgundy md:mb-[var(--hig-6)]">
               {eyebrow}
             </p>
           </RevealBlock>
@@ -117,7 +117,10 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
             as="h2"
             splitBy="char"
             delayMs={BEAT.headline}
-            className="font-hero-slogan text-brand-heading block whitespace-pre-line text-4xl font-semibold uppercase tracking-tight md:text-5xl lg:text-6xl"
+            /* Sentence case, not uppercase: Persian has no case, so
+               `uppercase` only ever affected the Latin product names here
+               while widening the line for everyone. */
+            className="type-hig-title text-brand-heading block whitespace-pre-line"
           >
             {titleForReveal.replace(/\s*\|\s*/g, "\n")}
           </BlurReveal>
@@ -125,7 +128,7 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
             {title.replace(/\s*\|\s*/g, " ")}
           </span>
           {body ? (
-            <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            <p className="type-hig-body mx-auto mt-[var(--hig-6)] max-w-2xl text-muted-foreground">
               {body}
             </p>
           ) : null}
@@ -148,7 +151,7 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
                  row's titles share a baseline: grid stretches every card to
                  the tallest in its row, and without this the caption floats
                  wherever its own image happens to end. */
-              "group interactive-lift flex flex-col overflow-hidden rounded-2xl border border-brand-navy/10 bg-white shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60",
+              "group interactive-lift flex flex-col overflow-hidden rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60",
               feature.wide && "sm:col-span-2 lg:col-span-2",
             )}
           >
@@ -193,16 +196,21 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
               </ImageReveal>
             </div>
 
-            <div className="mt-auto border-t border-border/30 px-5 py-6 dark:border-white/[0.06] md:px-6">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
+            {/* 16px horizontal / 16px vertical — the guidelines' card
+                internal padding, replacing the 20-24 / 24 pair. */}
+            <div className="mt-auto border-t border-border/30 px-[var(--hig-4)] py-[var(--hig-4)] dark:border-white/[0.06] md:px-[var(--hig-5)] md:py-[var(--hig-5)]">
+              <p className="type-hig-label mb-[var(--hig-2)] text-brand-burgundy">
                 {feature.description}
               </p>
               <h3
                 className={cn(
-                  "font-medium tracking-tight text-brand-navy",
+                  "type-hig-title text-brand-navy",
+                  /* The card title is a card title, not a section heading —
+                     the wide tile used to jump to 3xl and made two cards in
+                     the same row disagree about their own hierarchy. */
                   feature.wide
-                    ? "text-2xl md:text-3xl"
-                    : "text-xl md:text-2xl",
+                    ? "text-[1.375rem] md:text-[1.5rem]"
+                    : "text-[1.1875rem] md:text-[1.375rem]",
                 )}
               >
                 {feature.title}
@@ -225,16 +233,14 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
           /* Spans the full width at `sm`, where the two-column arrangement
              would otherwise leave it as a half-empty box beside nothing.
              At `lg` it is the ninth cell and takes a single column. */
-          className="group interactive-lift flex flex-col justify-between rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 sm:col-span-2 md:p-7 lg:col-span-1"
+          className="group interactive-lift flex flex-col justify-between rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 sm:col-span-2 md:p-7 lg:col-span-1"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
-            Full catalogue
-          </p>
-          <span className="mt-10 inline-flex items-baseline gap-3 text-2xl font-medium tracking-tight text-brand-navy md:mt-14 md:text-3xl">
+          <p className="type-hig-label text-brand-burgundy">Full catalogue</p>
+          <span className="type-hig-title mt-[var(--hig-10)] inline-flex items-baseline gap-[var(--hig-2)] text-[1.375rem] text-brand-navy md:mt-[var(--hig-12)] md:text-[1.5rem]">
             All product families
             <span
               aria-hidden
-              className="text-brand-burgundy transition-transform duration-300 group-hover:translate-x-1"
+              className="text-brand-burgundy transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
             >
               →
             </span>

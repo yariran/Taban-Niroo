@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -15,75 +14,14 @@ import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { NewReleaseShowcaseSection } from "@/components/sections/new-release-showcase-section";
-import { TechRef } from "@/components/ui/tech-ref";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 const DEFAULT_HERO_WORDS = ["INSPIRE", "INNOVATE", "INTEGRATE"] as const;
 const WORD_STAGGER_S = 0.18;
 const DEFAULT_TAGLINE = "Shaping Tomorrow's Solution Today";
 const DEFAULT_BODY =
   "IEC-tested composite insulation for high-voltage networks.";
-
-/**
- * Above-the-fold nameplate.
- *
- * High-voltage apparatus carries a rating plate — voltage, standard, year,
- * service class — stamped on the body. Borrowing that object is what makes
- * this fold specific to the industry instead of the generic centred
- * hero-stack (kicker / big headline / grey lede) the rest of the web ships.
- * It also does real work: the four hardest credibility facts the company
- * has now land in the first viewport rather than at section two.
- *
- * Every value here already appears elsewhere in `site-content.json`
- * (proof band, standards section) — this restates, it does not invent.
- */
-const NAMEPLATE = [
-  { label: "Rated voltage", value: "6–1000 kV" },
-  { label: "Type-tested", value: "IEC 61109 · 62217 · 60137 · 60099-4" },
-  { label: "In service", value: "29 years" },
-  { label: "Networks", value: "10 countries" },
-] as const;
-
-function HeroNameplate({
-  className,
-  style,
-}: {
-  className?: string;
-  style?: CSSProperties;
-}) {
-  return (
-    <dl
-      className={cn(
-        "grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-1 lg:gap-y-0",
-        className,
-      )}
-      style={style}
-    >
-      {NAMEPLATE.map((row, i) => (
-        <div
-          key={row.label}
-          className={cn(
-            "min-w-0",
-            /* Hairlines only in the stacked desktop column — in the 2×2
-               mobile arrangement they would read as table rules, not as a
-               plate. */
-            "lg:border-t lg:border-white/15 lg:py-3.5",
-            i === 0 && "lg:border-t-0 lg:pt-0",
-            i === NAMEPLATE.length - 1 && "lg:pb-0",
-          )}
-        >
-          {/* Both at full opacity: at 9-11px the AA floor is 4.5:1, and the
-              earlier /85 tint spent contrast this type size cannot afford. */}
-          <dt className="font-mono text-[9px] uppercase leading-none tracking-[0.2em] text-brand-orange md:text-[10px]">
-            {row.label}
-          </dt>
-          <dd className="mt-2 text-[11px] leading-[1.45] text-brand-cream md:text-xs">
-            <TechRef>{row.value}</TechRef>
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
 
 function smoothstep01(t: number): number {
   const x = Math.max(0, Math.min(1, t));
@@ -123,6 +61,8 @@ export function HeroSection({
   const [progress, setProgress] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
   const staticLayout = reduceMotion;
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
 
   const heroImage = cmsImage(cms, SITE_IMAGES.hero) ?? SITE_IMAGES.hero;
   const heroWords = [
@@ -226,84 +166,71 @@ export function HeroSection({
           />
         )}
       </div>
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/70"
-        aria-hidden
-      />
-
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_100%,rgb(0,0,0,0.5),transparent_62%)]"
-        aria-hidden
-      />
       {/*
-        Plate scrim (lg+ only — below that the plate sits full-width in the
-        bottom gradient, which already measures 6.3:1).
+        ONE scrim.
 
-        The default hero photo puts its brightest region — the cloud burst —
-        directly behind the rating plate's column. Measured on real painted
-        pixels, the gold labels landed at 3.11:1 there, under the 4.5 AA floor
-        for text this small. This darkens that band to bring them clear, and
-        because it keys off position rather than off this particular image, it
-        keeps holding when the photo is swapped through the CMS.
+        This was four stacked gradients — a vertical ramp, a radial pool, and
+        an lg-only horizontal band — each added to rescue a different patch of
+        a photo that the type happened to be sitting on. Centring the stack
+        removed the reason for all but one: the copy now lands on the
+        vertical centre, where the ramp already measures past AA, instead of
+        on the cloud burst that the horizontal band existed to darken.
+
+        The ramp itself lives in `--hig-scrim-*` so the contrast floor is
+        stated once and still holds when the photo is swapped through the CMS.
+      */}
+      <div className="hig-scrim pointer-events-none absolute inset-0" aria-hidden />
+
+      {/*
+        Centred stack — the HIG hero posture.
+
+        The stack used to hang bottom-left across columns 1-8, which left the
+        top two-thirds of the frame empty and pinned the type against the
+        gutter. Centring on both axes is what Apple actually does with a
+        full-bleed photograph, and it earns the contrast for free: the middle
+        of the frame is the calmest part of almost any image, so the copy
+        stops fighting the subject instead of being rescued by extra scrims.
       */}
       <div
-        className="pointer-events-none absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,transparent_45%,rgb(0_0_0_/_0.30)_62%,rgb(0_0_0_/_0.38)_100%)]"
-        aria-hidden
-      />
-
-      <div
         className={cn(
-          "absolute inset-0 flex flex-col justify-end",
-          "pb-[max(3.5rem,env(safe-area-inset-bottom))] pt-28",
-          "sm:pb-16 md:pb-20 lg:pb-24",
+          "absolute inset-0 flex flex-col items-center justify-center",
+          "px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-24 sm:px-6 md:px-8",
         )}
       >
-        {/*
-          Asymmetric 12-column field, not a centred stack.
-
-          The slogan holds columns 1-7 and the rating plate columns 9-12,
-          both hung from the same bottom baseline (`items-end`). The empty
-          eighth column is the gutter that makes the split read as a
-          decision. A single centred axis — the default this fold used to
-          share with every generated hero — cannot produce that tension.
-        */}
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-12 items-end gap-x-6 px-5 sm:px-6 md:px-8 lg:px-10">
-          <div className="col-span-12 flex flex-col items-start lg:col-span-7">
-          <div className="flex flex-col gap-1 md:gap-1.5">
-            {heroWords.map((word, index) => {
-              return (
-                <span
-                  key={`${word}-${index}`}
-                  className={cn(
-                    "font-hero-slogan relative isolate block text-start uppercase",
-                    /* Tighter than the old 0.95: at three stacked words the
-                       block should read as one mass, which is what lets the
-                       plate opposite it sit as the counterweight. */
-                    "text-[clamp(2.4rem,7vw,5.5rem)] font-bold leading-[0.88] tracking-[-0.03em]",
-                    "text-brand-cream drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)]",
-                    !staticLayout && "opacity-0",
-                  )}
-                  style={{
-                    animation: staticLayout
-                      ? undefined
-                      : `hero-word-fade 0.9s var(--ease-entrance) ${index * WORD_STAGGER_S}s both`,
-                  }}
-                >
-                  {word}
-                </span>
-              );
-            })}
-          </div>
-
+        <div className="flex w-full max-w-3xl flex-col items-center text-center">
           {/*
-            Positioning line. The slogan above is the brand; this is the
-            sentence that tells a first-time visitor what the company actually
-            makes — so it is set at readable cinematic size, not as caption
-            text under the headline.
+            One word per line, still — but set light, not bold.
+
+            Large-and-light is the inversion the guidelines are built on:
+            weight carries hierarchy so size doesn't have to shout. Oswald
+            bold uppercase was doing the opposite, and uppercase is dead
+            weight in Persian, which has no case to begin with.
           */}
+          <h2 className="flex flex-col">
+            {heroWords.map((word, index) => (
+              <span
+                key={`${word}-${index}`}
+                className={cn(
+                  "type-hig-display block text-brand-cream",
+                  !staticLayout && "opacity-0",
+                )}
+                style={{
+                  animation: staticLayout
+                    ? undefined
+                    : `hero-word-fade 0.9s var(--ease-entrance) ${index * WORD_STAGGER_S}s both`,
+                }}
+              >
+                {word}
+              </span>
+            ))}
+          </h2>
+
           <p
             className={cn(
-              "type-cinema mt-7 max-w-lg text-[clamp(1.05rem,2vw,1.6rem)] leading-[1.3] text-brand-cream/90 drop-shadow-[0_1px_12px_rgba(0,0,0,0.5)] md:mt-9 md:max-w-2xl",
+              /* Full cream, not cream/85 — the scrim under it is now set
+                 from a measured contrast floor, so dimming the type here
+                 would spend that margin for nothing. */
+              "type-hig-lede mt-[var(--hig-6)] max-w-xl text-brand-cream",
               !staticLayout && "opacity-0",
             )}
             style={{
@@ -315,9 +242,17 @@ export function HeroSection({
             {heroBody}
           </p>
 
+          {/*
+            Filled pill + plain chevron link.
+
+            Both used to be 11px uppercase at 0.18em tracking, which reads as
+            a fashion lookbook rather than a control. HIG calls for body-size
+            sentence case, and for exactly one button to look pressable —
+            two equally weighted outlines make the reader choose twice.
+          */}
           <div
             className={cn(
-              "mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 md:mt-10",
+              "mt-[var(--hig-8)] flex flex-wrap items-center justify-center gap-[var(--hig-4)]",
               !staticLayout && "opacity-0",
             )}
             style={{
@@ -326,46 +261,34 @@ export function HeroSection({
                 : `hero-word-fade 0.9s var(--ease-entrance) ${(heroWords.length + 2) * WORD_STAGGER_S}s both`,
             }}
           >
-            <Link
+            <LocaleLink
               href="/products"
-              className="group inline-flex items-center gap-2 border-b border-brand-cream/35 pb-0.5 text-[10px] font-medium uppercase tracking-[0.22em] text-brand-cream transition-colors hover:border-brand-orange hover:text-brand-orange"
+              className="type-hig-body inline-flex min-h-11 items-center justify-center rounded-full bg-white px-[var(--hig-6)] py-[var(--hig-3)] font-medium transition-colors duration-200 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0B0D]"
+              style={{ color: "#0A0B0D", WebkitTextFillColor: "#0A0B0D" }}
             >
-              View products
-              <span
-                aria-hidden
-                className="translate-y-px transition-transform duration-300 group-hover:translate-x-0.5"
-              >
-                →
-              </span>
-            </Link>
-            <Link
+              {dict.home.explore}
+            </LocaleLink>
+            <LocaleLink
               href="/contact"
-              className="inline-flex items-center text-[10px] font-medium uppercase tracking-[0.22em] text-white/55 transition-colors hover:text-brand-cream"
+              className="type-hig-body group inline-flex min-h-11 items-center justify-center gap-[var(--hig-1)] rounded-full px-[var(--hig-4)] py-[var(--hig-3)] font-medium text-white transition-colors duration-200 hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0B0D]"
+              style={{ color: "#FFFFFF", WebkitTextFillColor: "#FFFFFF" }}
             >
-              Talk to an engineer
-            </Link>
+              {dict.home.contact}
+              {/* Points along the reading direction in both scripts. */}
+              <svg
+                viewBox="0 0 16 16"
+                className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M6 3.5 10.5 8 6 12.5" />
+              </svg>
+            </LocaleLink>
           </div>
-
-          </div>
-
-          {/*
-            The rating plate. Replaces the single run-on standards strip that
-            used to sit here — same facts, but arranged as label/value pairs
-            it can be read as data rather than skimmed as decoration, and
-            moved opposite the slogan where it balances the composition.
-          */}
-          <HeroNameplate
-            className={cn(
-              "col-span-12 mt-9 border-t border-white/15 pt-6",
-              "lg:col-span-4 lg:col-start-9 lg:mt-0 lg:border-t-0 lg:border-s lg:border-white/15 lg:ps-7 lg:pt-0",
-              !staticLayout && "opacity-0",
-            )}
-            style={{
-              animation: staticLayout
-                ? undefined
-                : `hero-word-fade 0.9s var(--ease-entrance) ${(heroWords.length + 3) * WORD_STAGGER_S}s both`,
-            }}
-          />
         </div>
       </div>
     </div>
@@ -406,11 +329,15 @@ export function HeroSection({
           aria-hidden
         />
         <div className="mt-8 grid grid-cols-12 items-end gap-x-6 gap-y-6 md:mt-10">
-          <p className="col-span-12 font-hero-slogan text-brand-heading text-[clamp(1.65rem,4.5vw,3.25rem)] font-semibold uppercase leading-[1.06] tracking-tight lg:col-span-8">
+          <p className="type-hig-title col-span-12 text-brand-heading lg:col-span-8">
             {tagline}
           </p>
+          {/* Hardcoded English, same as the proof band's lede — `dir="ltr"`
+              so the sentence stops rendering with its full stop on the
+              wrong side inside the RTL page. It still needs translating. */}
           <p
-            className="col-span-12 text-sm leading-relaxed text-muted-foreground lg:col-span-3 lg:col-start-10 md:text-base"
+            dir="ltr"
+            className="type-hig-body col-span-12 text-muted-foreground lg:col-span-3 lg:col-start-10"
             style={staticLayout ? undefined : { opacity: copyB }}
           >
             High-voltage composite insulators for power transmission.

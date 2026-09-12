@@ -125,15 +125,15 @@ test.describe("a11y", () => {
         page.on("pageerror", (e) => pageErrors.push(String(e)));
 
         await page.emulateMedia({ colorScheme: scheme });
-        const response = await page.goto(path);
-        await page.evaluate(() => {
+        await page.addInitScript(() => {
+          window.__TN_INTRO_SKIP__ = true;
           try {
             localStorage.setItem("tn:consent:v1", "decline");
-            sessionStorage.setItem("tn-intro-v2", "1");
           } catch {
             /* storage disabled — banner simply stays up */
           }
         });
+        const response = await page.goto(path);
         await page.reload();
 
         // Wait for hydration to actually paint. Probing straight after

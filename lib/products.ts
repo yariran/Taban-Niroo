@@ -14,9 +14,10 @@
  * Shapes mirror what the catalogue UI already expects so this refactor
  * is purely additive — no consumer needs to change.
  *
- * Text fields may be plain English strings or `{ en, fa }` objects.
- * Specs (kV, codes, dimensions) stay locale-neutral strings.
- * Resolve with `localizeProduct` / `t` before rendering.
+ * `name` is always a plain Latin string. Other text fields
+ * (`subFamily`, `summary`, `applications`) may be plain English
+ * strings or `{ en, fa }` objects. Specs (kV, codes, dimensions)
+ * stay locale-neutral. Resolve with `localizeProduct` / `t` before rendering.
  */
 
 import type { Locale } from "@/lib/i18n";
@@ -63,7 +64,8 @@ export type ProductFamilyId =
 export type Product = {
   /** Stable kebab-case slug used in URLs. */
   id: string;
-  name: LocalizedString;
+  /** Catalogue title — always Latin (not localized). */
+  name: string;
   family: ProductFamilyId;
   subFamily: LocalizedString;
   catalogueRef: string;
@@ -86,22 +88,21 @@ export type Product = {
 /** Product with text fields resolved for one locale (safe for UI/SEO). */
 export type ResolvedProduct = Omit<
   Product,
-  "name" | "subFamily" | "summary" | "applications"
+  "subFamily" | "summary" | "applications"
 > & {
-  name: string;
   subFamily: string;
   summary: string;
   applications: string;
 };
 
-/** Resolve localized product text; specs stay as-is. */
+/** Resolve localized product text; `name` stays Latin as-is. */
 export function localizeProduct(
   product: Product,
   locale: Locale,
 ): ResolvedProduct {
   return {
     ...product,
-    name: t(product.name, locale),
+    name: product.name,
     subFamily: t(product.subFamily, locale),
     summary: t(product.summary, locale),
     applications: t(product.applications, locale),
@@ -3307,7 +3308,7 @@ export function listProducts(products: readonly Product[]): Product[] {
     .slice()
     .sort(
       (a, b) =>
-        a.order - b.order || tEn(a.name).localeCompare(tEn(b.name)),
+        a.order - b.order || a.name.localeCompare(b.name),
     );
 }
 

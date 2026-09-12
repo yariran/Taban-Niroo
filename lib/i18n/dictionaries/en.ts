@@ -60,6 +60,9 @@ export type Dictionary = {
     email: string;
     company: string;
     message: string;
+    sending: string;
+    success: string;
+    error: string;
   };
   footer: {
     rights: string;
@@ -98,8 +101,8 @@ export const en: Dictionary = {
   home: {
     heroBody: "IEC-tested composite insulation for high-voltage networks.",
     tagline: "Shaping Tomorrow's Solution Today",
-    explore: "Explore products",
-    contact: "Contact",
+    explore: "View products",
+    contact: "Request enquiry",
   },
   projects: {
     metaTitle: "Projects & partners",
@@ -174,6 +177,9 @@ export const en: Dictionary = {
     email: "Work email",
     company: "Company",
     message: "Message",
+    sending: "Sending…",
+    success: "Thank you — your message has been received.",
+    error: "Something went wrong. Please try again.",
   },
   footer: {
     rights: "All rights reserved.",

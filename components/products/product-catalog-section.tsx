@@ -13,7 +13,8 @@ import {
 } from "./product-modal";
 import { PRODUCTS, listProducts, resolveProductImage } from "@/lib/products";
 import { TechRef } from "@/components/ui/tech-ref";
-import { LocaleLink } from "@/components/locale-link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { CATALOGUE_UI, pickLocale } from "@/lib/i18n/section-copy";
 
 type ProductItem = {
   id: string;
@@ -202,10 +203,12 @@ function ProductCard({
   item,
   codeLabel,
   onOpen,
+  ui,
 }: {
   item: ProductItem;
   codeLabel: string;
   onOpen: (item: ProductItem, view?: ProductModalView) => void;
+  ui: (typeof CATALOGUE_UI)["en"] | (typeof CATALOGUE_UI)["fa"];
 }) {
   return (
     <article className="group interactive-lift relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/90 text-start shadow-elevate dark:border-white/[0.08] dark:bg-card/50">
@@ -240,7 +243,9 @@ function ProductCard({
           }
           className="text-start text-base font-semibold leading-snug tracking-tight text-foreground transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground md:text-lg"
         >
-          {item.name.trim() || item.catalogueRef || item.id}
+          <TechRef className="font-semibold font-sans">
+            {item.name.trim() || item.catalogueRef || item.id}
+          </TechRef>
         </button>
 
         {/* Two primary options — exactly as requested: clicking either opens
@@ -250,19 +255,19 @@ function ProductCard({
             type="button"
             onClick={() => onOpen(item, "table")}
             className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-border bg-background px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
-            aria-label={`View technical table for ${item.name}`}
+            aria-label={`${ui.viewTable}: ${item.name}`}
           >
             <Table2 size={13} aria-hidden strokeWidth={1.75} />
-            Table
+            {ui.viewTable}
           </button>
           <button
             type="button"
             onClick={() => onOpen(item, "drawing")}
             className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-border bg-background px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
-            aria-label={`View drawing for ${item.name}`}
+            aria-label={`${ui.viewDrawing}: ${item.name}`}
           >
             <Ruler size={13} aria-hidden strokeWidth={1.75} />
-            Drawing
+            {ui.viewDrawing}
           </button>
         </div>
 
@@ -289,6 +294,8 @@ export function ProductCatalogSection({
 }: {
   products?: ProductItem[];
 } = {}) {
+  const locale = useLocale();
+  const ui = pickLocale(CATALOGUE_UI, locale);
   const PRODUCT_ITEMS: ProductItem[] = products?.length
     ? products
     : PRODUCT_ITEMS_FALLBACK;
@@ -378,14 +385,14 @@ export function ProductCatalogSection({
           {/* Sticky family navigator */}
           <aside className="lg:sticky lg:top-28 lg:self-start">
             <p className="text-xs uppercase tracking-widest text-muted-foreground">
-              Product range
+              {ui.rangeEyebrow}
             </p>
             <h2 className="mt-3 text-lg font-medium tracking-tight text-foreground">
-              Browse by family
+              {ui.browseByFamily}
             </h2>
 
             <nav
-              aria-label="Product family navigator"
+              aria-label={ui.familyNavAria}
               className="mt-6 overflow-hidden rounded-2xl border border-border/40 bg-card/90 shadow-elevate dark:border-white/[0.08] dark:bg-card/50"
             >
               <ul>
@@ -405,7 +412,7 @@ export function ProductCatalogSection({
                       <span className="font-mono text-[11px] text-muted-foreground">
                         00
                       </span>
-                      <span className="font-medium">All products</span>
+                      <span className="font-medium">{ui.allProducts}</span>
                     </span>
                     <span className="font-mono text-[11px] text-muted-foreground">
                       {familyCounts.All}
@@ -450,16 +457,16 @@ export function ProductCatalogSection({
 
             <div className="mt-6 rounded-2xl border border-border/40 bg-muted/30 p-5 dark:border-white/[0.06] dark:bg-white/[0.03]">
               <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                Procurement
+                {ui.procurement}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-foreground">
-                Need a custom configuration, drawing or test report?
+                {ui.procurementBody}
               </p>
               <LocaleLink
                 href="/contact"
                 className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-foreground/70"
               >
-                Engineering request
+                {ui.engineeringRequest}
                 <ArrowRight size={14} aria-hidden />
               </LocaleLink>
             </div>
@@ -468,34 +475,34 @@ export function ProductCatalogSection({
           <div>
             {activeFamily !== "All" && (
               <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                {activeFamily}
+                <TechRef>{activeFamily}</TechRef>
               </p>
             )}
             <h3 className="font-hero-slogan mt-3 text-3xl font-bold uppercase tracking-tight text-foreground md:text-4xl">
-              {filteredItems.length} product
-              {filteredItems.length === 1 ? "" : "s"}
+              {filteredItems.length}{" "}
+              {filteredItems.length === 1 ? ui.product : ui.products}
               {/* `text-foreground/45` measured 2.89:1 light — under even the
                   3.0 large-text floor this 36px bold heading gets. The
                   trailing clause still reads as secondary against the count
                   beside it: 5.8:1 vs 16.5:1. */}
               <span className="text-muted-foreground">
                 {activeFamily === "All" && !query.trim()
-                  ? " across all families."
-                  : " match your filter."}
+                  ? ui.acrossAll
+                  : ui.matchFilter}
               </span>
             </h3>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-              Every product card offers two quick views:{" "}
-              <span className="text-foreground">Table</span> for ratings and
-              dimensions, <span className="text-foreground">Drawing</span> for
-              the sectional diagram. Both open in place — you never leave the
-              page.
+              {ui.viewsHintBefore}
+              <span className="text-foreground">{ui.viewTable}</span>
+              {ui.viewsHintMid}
+              <span className="text-foreground">{ui.viewDrawing}</span>
+              {ui.viewsHintAfter}
             </p>
 
             {/* Mobile family chips — keep the sidebar nav reachable on small screens */}
             <div
               role="region"
-              aria-label="Filter by product family"
+              aria-label={ui.filterAria}
               tabIndex={0}
               className="mt-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 outline-none [scrollbar-width:none] focus-visible:ring-2 focus-visible:ring-foreground/30 lg:hidden [&::-webkit-scrollbar]:hidden"
             >
@@ -510,7 +517,7 @@ export function ProductCatalogSection({
                 )}
                 aria-pressed={activeFamily === "All"}
               >
-                All · {familyCounts.All}
+                {ui.all} · {familyCounts.All}
               </button>
               {orderedFamilies.map((family) => {
                 const isActive = activeFamily === family;
@@ -545,16 +552,16 @@ export function ProductCatalogSection({
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search product, application, voltage or DPL code"
+                  placeholder={ui.searchPlaceholder}
                   className="h-11 w-full rounded-full border border-border bg-background ps-9 pe-9 text-base text-foreground outline-none transition-colors focus:border-foreground md:h-10 md:text-sm"
-                  aria-label="Search products"
+                  aria-label={ui.searchAria}
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={() => setQuery("")}
                     className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-colors hover:text-foreground"
-                    aria-label="Clear search"
+                    aria-label={ui.clearSearch}
                   >
                     <X size={14} aria-hidden />
                   </button>
@@ -563,10 +570,10 @@ export function ProductCatalogSection({
 
               <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 <span className="rounded-full border border-border bg-background px-2.5 py-1">
-                  Total {PRODUCT_ITEMS.length}
+                  {ui.total} {PRODUCT_ITEMS.length}
                 </span>
                 <span className="rounded-full border border-foreground bg-foreground px-2.5 py-1 text-background">
-                  Showing {filteredItems.length}
+                  {ui.showing} {filteredItems.length}
                 </span>
               </div>
             </div>
@@ -576,8 +583,7 @@ export function ProductCatalogSection({
               {filteredItems.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-border/80 bg-card/40 p-10 text-center">
                   <p className="text-sm text-muted-foreground">
-                    No products match the current search. Try another keyword
-                    or reset the family filter.
+                    {ui.noResults}
                   </p>
                   <button
                     type="button"
@@ -587,7 +593,7 @@ export function ProductCatalogSection({
                     }}
                     className="mt-4 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-foreground/70"
                   >
-                    Reset filters
+                    {ui.resetFilters}
                     <ArrowRight size={14} aria-hidden />
                   </button>
                 </div>
@@ -616,12 +622,14 @@ export function ProductCatalogSection({
                                   {FAMILY_INDEX[family]}
                                 </span>
                                 <h4 className="font-hero-slogan text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
-                                  {family}
+                                  <TechRef className="font-bold font-sans uppercase">
+                                    {family}
+                                  </TechRef>
                                 </h4>
                               </div>
                               <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                                {items.length} item
-                                {items.length === 1 ? "" : "s"}
+                                {items.length}{" "}
+                                {items.length === 1 ? ui.item : ui.items}
                               </span>
                             </div>
                           )}
@@ -637,6 +645,7 @@ export function ProductCatalogSection({
                                     item={item}
                                     codeLabel={codeLabel}
                                     onOpen={openProduct}
+                                    ui={ui}
                                   />
                                 </li>
                               );

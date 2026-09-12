@@ -16,8 +16,11 @@ const localizedStringSchema = z.union([
     .strict(),
 ]);
 
+/** Plain Latin product title (not bilingual). */
+const productNameSchema = z.string().trim().min(1).max(200);
+
 const localizedNameSchema = z.union([
-  z.string().trim().min(1).max(200),
+  productNameSchema,
   z
     .object({
       en: z.string().trim().min(1).max(200),
@@ -68,7 +71,7 @@ export const productIdSchema = z
 export const productSchema = z
   .object({
     id: productIdSchema,
-    name: localizedNameSchema,
+    name: productNameSchema,
     family: familySchema,
     subFamily: localizedNameSchema,
     catalogueRef: z.string().trim().max(200),

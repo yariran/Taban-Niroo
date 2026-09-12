@@ -30,9 +30,9 @@ export const PAGE_SEO: Record<
         "High-voltage composite insulators and power transmission. IEC-tested. 6-1000 kV. Shiraz, Iran.",
     },
     fa: {
-      title: "تابان نیرو | مقره‌های کامپوزیتی فشار قوی",
+      title: "تابان نیرو — سازندهٔ مقرهٔ کامپوزیتی سیلیکونی",
       description:
-        "مقره کامپوزیتی و تجهیزات انتقال نیرو. تست‌شده طبق IEC. ۶ تا ۱۰۰۰ کیلوولت. شیراز، ایران.",
+        "تولید مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ هیبریدی، بوشینگ ترانسفورماتور و سرکابل برای شبکه‌های فشار متوسط و فشار قوی. تست‌شده بر اساس IEC، از ۶ تا ۱۰۰۰ کیلوولت.",
     },
   },
   about: {
@@ -43,9 +43,9 @@ export const PAGE_SEO: Record<
         "Taban Niroo: high-voltage composite insulators and power transmission equipment from Shiraz Special Economic Zone. IEC-tested, serving the Middle East and beyond since 1997.",
     },
     fa: {
-      title: "درباره شرکت",
+      title: "دربارهٔ تابان نیرو — بیش از ۲۵ سال تولید مقره",
       description:
-        "تابان نیرو؛ تولیدکننده مقره کامپوزیتی فشار قوی در منطقه ویژه اقتصادی شیراز. تست IEC، فعال در خاورمیانه از ۱۳۷۶.",
+        "تولیدکنندهٔ مقرهٔ کامپوزیتی در شیراز؛ سه ثبت اختراع، تست نوعی IEC، تأمین برای شبکه‌های انتقال و توزیع.",
     },
   },
   products: {
@@ -56,9 +56,9 @@ export const PAGE_SEO: Record<
         "Composite insulators, hybrid insulators, transformer bushings, and cable accessories. IEC 61109, 62217, and related standards. 6-420 kV.",
     },
     fa: {
-      title: "محصولات",
+      title: "محصولات — مقرهٔ کامپوزیتی، هیبریدی و بوشینگ",
       description:
-        "مقره کامپوزیتی، مقره هیبریدی، بوشینگ ترانسفورماتور و متعلقات کابل. استانداردهای IEC 61109 و 62217. ۶ تا ۴۲۰ کیلوولت.",
+        "سبد کامل مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ اتکایی، مقرهٔ هیبریدی، بوشینگ و سرکابل. جست‌وجو بر اساس کلاس ولتاژ و کد DPL.",
     },
   },
   projects: {
@@ -69,9 +69,9 @@ export const PAGE_SEO: Record<
         "Taban Niroo insulators on transmission and distribution projects across the Middle East, Africa, and South America.",
     },
     fa: {
-      title: "پروژه‌ها و شرکا",
+      title: "پروژه‌ها و همکاران — تابان نیرو",
       description:
-        "مقره‌های تابان نیرو در پروژه‌های انتقال و توزیع خاورمیانه، آفریقا و آمریکای جنوبی.",
+        "مقره‌های کامپوزیتی تابان نیرو در پروژه‌های انتقال و توزیع، در شرایط آلودگی و اقلیم سخت.",
     },
   },
   contact: {
@@ -82,9 +82,9 @@ export const PAGE_SEO: Record<
         "Contact Taban Niroo for high-voltage composite insulator enquiries, technical support, and partnerships. Headquarters in Shiraz and office in Tehran.",
     },
     fa: {
-      title: "تماس با ما",
+      title: "تماس با تابان نیرو — استعلام فنی",
       description:
-        "ارتباط با تابان نیرو برای استعلام مقره کامپوزیتی فشار قوی، پشتیبانی فنی و همکاری. دفتر مرکزی شیراز و نمایندگی تهران.",
+        "استعلام فنی، انتخاب محصول و مدارک مناقصه. دفتر مرکزی شیراز، دفتر تهران.",
     },
   },
   blog: {

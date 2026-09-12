@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Product } from "@/lib/products";
-import { tEn } from "@/lib/i18n/localize";
 
 export function ProductsAdminList({
   products,
@@ -22,7 +21,7 @@ export function ProductsAdminList({
     const needle = q.trim().toLowerCase();
     if (!needle) return true;
     return (
-      tEn(p.name).toLowerCase().includes(needle) ||
+      p.name.toLowerCase().includes(needle) ||
       p.id.toLowerCase().includes(needle) ||
       p.family.toLowerCase().includes(needle) ||
       p.catalogueRef.toLowerCase().includes(needle)
@@ -123,7 +122,7 @@ export function ProductsAdminList({
           <tbody>
             {filtered.map((p) => (
               <tr key={p.id} className="border-t border-[#e8ecf0]">
-                <td className="px-4 py-3 font-medium">{tEn(p.name)}</td>
+                <td className="px-4 py-3 font-medium">{p.name}</td>
                 <td className="px-4 py-3 text-[#5a6570]">{p.family}</td>
                 <td className="px-4 py-3 font-mono text-xs text-[#5a6570]">
                   {p.id}

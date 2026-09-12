@@ -1,8 +1,11 @@
 "use client";
 
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 /**
  * Vision, Values & Mission — the "why" chapter of the Company page.
@@ -62,6 +65,7 @@ const VALUES: readonly Value[] = [
 ];
 
 export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Vision, Values & Mission");
   const title = cmsText(
     cms,
@@ -100,7 +104,10 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
           <h2 id="vision-heading" className="mt-4 max-w-3xl">
             <RevealText
               as="span"
-              className="block font-hero-slogan text-brand-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "block font-hero-slogan text-brand-heading font-bold uppercase leading-[1.05] tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {title}
             </RevealText>

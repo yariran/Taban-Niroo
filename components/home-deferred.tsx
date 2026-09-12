@@ -8,9 +8,8 @@ import type { ContentBlock } from "@/lib/cms-content-types";
  * Below-the-fold home sections — code-split so the first paint only pays
  * for Hero → Featured. Each chunk loads as the user approaches it.
  *
- * The Plant chunk now carries the 3.3 MB manufacturing mp4 behind its own
- * IntersectionObserver, so keeping every one of these on `next/dynamic`
- * matters more than it did before, not less.
+ * The Plant chunk is gallery-only now (no manufacturing mp4). Keeping
+ * these on `next/dynamic` still keeps Act II–III JS off the first paint.
  */
 
 function SectionSkeleton({ minH = "min-h-[50vh]" }: { minH?: string }) {

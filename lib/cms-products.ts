@@ -10,6 +10,19 @@ import {
 import { readCmsJson, writeCmsJson } from "@/lib/cms-store";
 import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n/get-dictionary";
+import { tEn, type LocalizedString } from "@/lib/i18n/localize";
+
+/**
+ * Legacy CMS blobs may store `name` as `{ en, fa }`. Product titles are
+ * Latin-only now — keep the English string.
+ */
+function normalizeProduct(product: Product): Product {
+  const name = tEn(product.name as unknown as LocalizedString, "").trim();
+  if (typeof product.name === "string" && product.name === name) {
+    return product;
+  }
+  return { ...product, name };
+}
 
 export type ProductsManifest = {
   version: 1;
@@ -30,10 +43,11 @@ export async function readProductsManifest(): Promise<ProductsManifest> {
 export async function writeProductsManifest(
   products: Product[],
 ): Promise<ProductsManifest> {
+  const normalized = products.map(normalizeProduct);
   const manifest: ProductsManifest = {
     version: 1,
     updatedAt: new Date().toISOString(),
-    products,
+    products: normalized,
   };
   await writeCmsJson(PATHNAME, manifest);
   return manifest;
@@ -43,7 +57,9 @@ export async function writeProductsManifest(
 export async function getProducts(): Promise<Product[]> {
   try {
     const manifest = await readProductsManifest();
-    if (manifest.products.length > 0) return manifest.products;
+    if (manifest.products.length > 0) {
+      return manifest.products.map(normalizeProduct);
+    }
   } catch (err) {
     console.error("[cms-products] getProducts", err);
   }

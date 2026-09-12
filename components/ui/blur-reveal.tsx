@@ -6,6 +6,14 @@ import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 
 const EASE = "var(--ease-standard)";
 
+/**
+ * Scripts whose letters join and change shape by position, so their text
+ * must never be split into one element per character. Arabic and its
+ * Persian/Urdu extensions, plus the presentation-form blocks.
+ */
+const CURSIVE_SCRIPT =
+  /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
 type BlurRevealProps = {
   children: string;
   as?: "span" | "div" | "h1" | "h2" | "h3" | "h4" | "p";
@@ -15,6 +23,9 @@ type BlurRevealProps = {
    * `word` is the default because per-character `filter: blur()` creates one
    * compositing layer per node — fine for a six-word headline, ruinous for a
    * paragraph. Anything longer than a headline must stay on `word`.
+   *
+   * `char` is a REQUEST, not a guarantee: text in a cursive script falls
+   * back to `word` because per-character elements break letter joining.
    */
   splitBy?: "char" | "word";
   delayMs?: number;
@@ -57,7 +68,23 @@ export function BlurReveal({
   const text = children;
 
   const units = useMemo(() => {
-    if (splitBy === "char") return Array.from(text);
+    // `char` is refused for cursive scripts, whatever the caller asked for.
+    //
+    // Arabic-script letters take a different glyph depending on their
+    // neighbours (initial / medial / final / isolated) and join up into a
+    // connected word. That shaping happens per text run, so putting every
+    // character in its own element breaks it: "سبد عایق‌بندی" renders as
+    // "س ب د  ع ا ی ق ب ن د ی", every letter in isolated form. To a Persian
+    // reader that does not look like a typographic effect, it looks like a
+    // broken page.
+    //
+    // The test is on the TEXT, not the locale: an English headline on the
+    // Persian site can still char-split safely, and a Persian word inside
+    // an English page must not. Word splitting stays safe for these scripts
+    // because shaping never crosses a space — and ZWNJ (U+200C), which
+    // Persian uses inside words like "عایق‌بندی", is not matched by `\s`,
+    // so it stays inside its unit where it belongs.
+    if (splitBy === "char" && !CURSIVE_SCRIPT.test(text)) return Array.from(text);
     // Keep the trailing space attached to each word so the label and the
     // rendered line break identically.
     return text.split(/(\s+)/).filter((part) => part.length > 0);

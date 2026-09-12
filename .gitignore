@@ -30,6 +30,7 @@ yarn-error.log*
 
 # large source assets (not shipped; re-encode before replacing public/videos)
 /assets-raw/
+/.media-backups/
 
 # typescript
 *.tsbuildinfo

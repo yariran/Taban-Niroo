@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { HOME_CHAPTERS } from "../lib/home-chapters";
+import { declineConsent, forceIntro, skipIntroViaTestFlag } from "./helpers/intro";
 
 /**
  * Guards for the home-page choreography refactor.
@@ -12,16 +13,10 @@ import { HOME_CHAPTERS } from "../lib/home-chapters";
 const REVEAL_SELECTOR =
   "[data-reveal-block],[data-reveal-text],[data-image-reveal],[data-reveal-up]";
 
-/** Skip brand intro + consent so body scroll is not `position: fixed`. */
+/** Home visit with consent declined; intro bypassed via documented test flag. */
 async function gotoHome(page: Page) {
-  await page.addInitScript(() => {
-    try {
-      sessionStorage.setItem("tn-intro-v2", "1");
-      localStorage.setItem("tn:consent:v1", "decline");
-    } catch {
-      /* storage disabled */
-    }
-  });
+  await declineConsent(page);
+  await skipIntroViaTestFlag(page);
   await page.goto("/");
 }
 
@@ -82,8 +77,18 @@ test.describe("parallax", () => {
 
 test.describe("sticky sections", () => {
   test("philosophy stage sticks to the viewport top", async ({ page }) => {
-    await gotoHome(page);
+    // Exercise the real intro unlock path, then assert sticky — do not
+    // sessionStorage-skip the plate (that hid the scroll-lock bug).
+    await declineConsent(page);
+    await forceIntro(page);
     await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-site-intro]")).toBeVisible();
+    await expect(page.locator("[data-site-intro]")).toHaveCount(0, {
+      timeout: 12_000,
+    });
+    expect(await page.evaluate(() => document.body.style.position)).toBe("");
+
     // Lenis mounts in useEffect — wait before programmatic scroll.
     await page.waitForFunction(
       () =>

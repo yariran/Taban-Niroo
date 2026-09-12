@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
@@ -11,8 +11,20 @@ import { useLocale } from "@/components/locale-link";
 const STORAGE_KEY = "tn-intro-v2";
 const HOLD_MS = 1900;
 const EXIT_MS = 750;
+/** Absolute ceiling — unlock even if timers are throttled in a background tab. */
+const CEILING_MS = HOLD_MS + EXIT_MS + 2000;
 
 type Phase = "in" | "out" | "done";
+
+declare global {
+  interface Window {
+    /**
+     * Documented e2e / automation flag. Prefer `?tn_intro=skip` on the URL;
+     * this mirror exists for init-scripts that cannot rewrite the first hop.
+     */
+    __TN_INTRO_SKIP__?: boolean;
+  }
+}
 
 function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
@@ -44,6 +56,28 @@ function markSeen(): void {
   }
 }
 
+/**
+ * Skip without playing the plate.
+ * - `prefers-reduced-motion`
+ * - already seen this session
+ * - `?tn_intro=skip` (documented test/automation flag)
+ * - `window.__TN_INTRO_SKIP__ === true` (same flag, init-script form)
+ */
+export function shouldSkipIntro(): boolean {
+  if (typeof window === "undefined") return false;
+  if (prefersReducedMotion()) return true;
+  if (alreadySeen()) return true;
+  if (window.__TN_INTRO_SKIP__ === true) return true;
+  try {
+    if (new URLSearchParams(window.location.search).get("tn_intro") === "skip") {
+      return true;
+    }
+  } catch {
+    /* ignore */
+  }
+  return false;
+}
+
 /** Brand plate on first home visit (works with /en and /fa). */
 export function SiteIntro() {
   const pathname = usePathname() || "/";
@@ -53,36 +87,106 @@ export function SiteIntro() {
   const isHome = bare === "/";
   const isAdmin = pathname.startsWith("/admin");
 
+  // SSR defaults to "in" on home; client layout-effect corrects skips before paint.
   const [phase, setPhase] = useState<Phase>(() =>
-    isHome && !isAdmin ? "in" : "done",
+    !isHome || isAdmin ? "done" : "in",
   );
 
-  useEffect(() => {
-    if (!isHome || isAdmin || alreadySeen() || prefersReducedMotion()) {
-      if (isHome && !isAdmin && prefersReducedMotion()) markSeen();
+  const lockedRef = useRef(false);
+  const exitTimerRef = useRef<number | null>(null);
+  const skipRef = useRef(false);
+
+  // Sync skip / reduced-motion before first paint so we never flash-lock.
+  useLayoutEffect(() => {
+    if (!isHome || isAdmin || shouldSkipIntro()) {
+      skipRef.current = true;
+      if (isHome && !isAdmin) markSeen();
       setPhase("done");
       return;
     }
-
-    setPhase("in");
-    lockBodyScroll();
-
-    const hold = window.setTimeout(() => setPhase("out"), HOLD_MS);
-    return () => {
-      window.clearTimeout(hold);
-      unlockBodyScroll();
-    };
-  }, [isHome, isAdmin]);
+    skipRef.current = false;
+  }, [isHome, isAdmin, pathname]);
 
   useEffect(() => {
-    if (phase !== "out") return;
-    const end = window.setTimeout(() => {
-      markSeen();
+    const release = () => {
+      if (!lockedRef.current) return;
+      lockedRef.current = false;
       unlockBodyScroll();
+    };
+
+    const acquire = () => {
+      if (lockedRef.current) return;
+      lockBodyScroll();
+      lockedRef.current = true;
+    };
+
+    if (skipRef.current || !isHome || isAdmin || shouldSkipIntro()) {
+      if (isHome && !isAdmin) markSeen();
       setPhase("done");
-    }, EXIT_MS);
-    return () => window.clearTimeout(end);
-  }, [phase]);
+      release();
+      return () => {
+        release();
+      };
+    }
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (exitTimerRef.current != null) {
+        window.clearTimeout(exitTimerRef.current);
+        exitTimerRef.current = null;
+      }
+      markSeen();
+      release();
+      setPhase("done");
+    };
+
+    setPhase("in");
+
+    try {
+      acquire();
+    } catch (err) {
+      release();
+      throw err;
+    }
+
+    const holdTimer = window.setTimeout(() => {
+      if (finished) return;
+      setPhase("out");
+      exitTimerRef.current = window.setTimeout(() => {
+        finish();
+      }, EXIT_MS);
+    }, HOLD_MS);
+
+    const ceilingTimer = window.setTimeout(() => {
+      finish();
+    }, CEILING_MS);
+
+    const onIntent = () => {
+      finish();
+    };
+
+    window.addEventListener("keydown", onIntent);
+    window.addEventListener("wheel", onIntent, { passive: true });
+    window.addEventListener("touchstart", onIntent, { passive: true });
+    window.addEventListener("pointerdown", onIntent);
+
+    return () => {
+      window.clearTimeout(holdTimer);
+      window.clearTimeout(ceilingTimer);
+      if (exitTimerRef.current != null) {
+        window.clearTimeout(exitTimerRef.current);
+        exitTimerRef.current = null;
+      }
+      window.removeEventListener("keydown", onIntent);
+      window.removeEventListener("wheel", onIntent);
+      window.removeEventListener("touchstart", onIntent);
+      window.removeEventListener("pointerdown", onIntent);
+      if (lockedRef.current) markSeen();
+      release();
+    };
+  }, [isHome, isAdmin, pathname]);
 
   if (phase === "done") return null;
 

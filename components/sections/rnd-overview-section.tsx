@@ -1,8 +1,11 @@
 "use client";
 
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 /**
  * R&D overview — the opening chapter of the Blog – R&D route.
@@ -22,6 +25,7 @@ const CLOSING =
   "This approach has driven two of our most significant engineering efforts: rigorous, standards-based shed profile design for our composite insulator range, and the development of our hybrid insulator technology — a product line we've been refining since 2009.";
 
 export function RnDOverviewSection({ cms }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "R&D overview");
   const title = cmsText(cms, "title", "Engineering that starts");
   const titleLine2 = cmsText(cms, "titleLine2", "before the product does");
@@ -42,14 +46,20 @@ export function RnDOverviewSection({ cms }: { cms?: ContentBlock } = {}) {
           <h2 id="rnd-overview-heading" className="mt-4 max-w-3xl">
             <RevealText
               as="span"
-              className="block font-hero-slogan text-brand-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "block font-hero-slogan text-brand-heading font-bold uppercase leading-[1.05] tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {title}
             </RevealText>
             <RevealText
               as="span"
               delayMs={140}
-              className="block font-hero-slogan text-brand-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "block font-hero-slogan text-brand-heading font-bold uppercase leading-[1.05] tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {titleLine2}
             </RevealText>

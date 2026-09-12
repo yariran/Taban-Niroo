@@ -1,9 +1,14 @@
+"use client";
+
 /**
  * Social Responsibilities section — CMS-overridable.
  */
 
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 type Commitment = {
   number: string;
@@ -35,6 +40,7 @@ const COMMITMENTS: readonly Commitment[] = [
 export function SocialResponsibilitySection({
   cms,
 }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Social responsibilities");
   const title = cmsText(
     cms,
@@ -71,7 +77,10 @@ export function SocialResponsibilitySection({
               </p>
               <h2
                 id="social-responsibility-heading"
-                className="mt-4 text-3xl font-medium tracking-tight text-brand-navy md:text-4xl lg:text-5xl"
+                className={cn(
+                  "mt-4 font-medium tracking-tight text-brand-navy",
+                  pageHeadingScale(locale),
+                )}
               >
                 {titleLines.map((line, i) => (
                   <span key={i}>

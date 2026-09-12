@@ -9,6 +9,10 @@ import { cmsText } from "@/lib/cms-resolve";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { ImageReveal } from "@/components/ui/image-reveal";
 import { useLocale } from "@/components/locale-link";
+import {
+  philosophyStaticClamp,
+  philosophyStickyClamp,
+} from "@/lib/i18n/type-scale";
 
 /**
  * Philosophy — same sticky scrub on every viewport size.
@@ -21,7 +25,8 @@ import { useLocale } from "@/components/locale-link";
 export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const reduceMotion = usePrefersReducedMotion();
-  const isRtl = useLocale() === "fa";
+  const locale = useLocale();
+  const isRtl = locale === "fa";
   const enterOuter = isRtl ? 100 : -100;
   const enterInner = isRtl ? -100 : 100;
   const [alpineTranslateX, setAlpineTranslateX] = useState(enterOuter);
@@ -121,7 +126,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                      token: `font-medium tracking-tighter` is a near-miss of
                      `.type-cinema` (300 / -0.035em), so the page had two
                      almost-identical cinematic voices instead of one. */
-                  className="type-cinema mb-6 px-6 text-center text-[clamp(2rem,8vw,4.5rem)] text-brand-navy md:mb-8"
+                  className={`type-cinema mb-6 px-6 text-center text-brand-navy md:mb-8 ${philosophyStaticClamp(locale)}`}
                 >
                   {title}
                 </RevealText>
@@ -131,7 +136,9 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                   className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
                   style={{ opacity: titleOp }}
                 >
-                  <h2 className="type-cinema px-6 text-center text-[clamp(2rem,7vw,6rem)] text-brand-navy">
+                  <h2
+                    className={`type-cinema px-6 text-center text-brand-navy ${philosophyStickyClamp(locale)}`}
+                  >
                     {title}
                   </h2>
                 </div>

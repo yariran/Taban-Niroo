@@ -3,59 +3,28 @@
 import { RevealBlock } from "@/components/ui/reveal-text";
 import { RevealUp } from "@/components/ui/reveal-words";
 import { Beat } from "@/components/ui/beat";
+import { TechRef } from "@/components/ui/tech-ref";
+import { useLocale } from "@/components/locale-link";
 import { BEAT, EVIDENCE, STATEMENT } from "@/lib/motion-roles";
 import type { ContentBlock } from "@/lib/cms-content-types";
 import { cmsText } from "@/lib/cms-resolve";
+import {
+  ENGINEERING_FEATURES,
+  ENGINEERING_PATENTS_BRIEF,
+  ENGINEERING_PATENTS_HEADER,
+  pickLocale,
+} from "@/lib/i18n/section-copy";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { cn } from "@/lib/utils";
-
-type MagicalFeature = {
-  eyebrow: string;
-  title: string;
-  description: string;
-};
-
-const MAGICAL_FEATURES: readonly MagicalFeature[] = [
-  {
-    eyebrow: "Triple junction point",
-    title: "No moisture infiltrate.",
-    description:
-      "Silicone rubber is directly moulded onto the ECR rod and permanently bonded to each fitting. Air and water cannot reach the triple junction point, eliminating the partial-discharge pathway that causes ageing in conventional insulators.",
-  },
-  {
-    eyebrow: "Up to 420 kV",
-    title: "Minimized electrical field.",
-    description:
-      "Rounded end-fitting geometry, validated by in-house field simulation, suppresses electrical-field concentration at the live end. The result is controlled corona behaviour and longer service life on transmission-class voltages.",
-  },
-];
-
-type Patent = {
-  id: string;
-  title: string;
-  subtitle: string;
-};
-
-const PATENTS_BRIEF: readonly Patent[] = [
-  {
-    id: "01",
-    title: "Hybrid Insulators",
-    subtitle: "Silicone × Ceramic",
-  },
-  {
-    id: "02",
-    title: "Creepage Extenders & Covers",
-    subtitle: "Pollution-zone retrofit",
-  },
-  {
-    id: "03",
-    title: "Hybrid Transformer Bushings",
-    subtitle: "MV–HV transformers",
-  },
-];
 
 export function EngineeringDetailSection({
   cms,
 }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
+  const features = pickLocale(ENGINEERING_FEATURES, locale);
+  const patentsBrief = pickLocale(ENGINEERING_PATENTS_BRIEF, locale);
+  const patentsHeader = pickLocale(ENGINEERING_PATENTS_HEADER, locale);
+
   const eyebrow = cmsText(cms, "eyebrow", "Engineering DNA");
   const title = cmsText(
     cms,
@@ -114,7 +83,10 @@ export function EngineeringDetailSection({
               delay={BEAT.headline}
               duration={STATEMENT.duration}
               distance={STATEMENT.distance}
-              className="font-hero-slogan text-brand-heading mt-4 text-3xl font-semibold uppercase tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "font-hero-slogan text-brand-heading mt-4 font-semibold uppercase tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {titleForReveal.split(/\s*\|\s*/).map((line, i) => (
                 <span key={i} className="block">
@@ -140,7 +112,7 @@ export function EngineeringDetailSection({
             distance={EVIDENCE.distance}
             className="mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-5 md:gap-6"
           >
-            {MAGICAL_FEATURES.map((feature, i) => (
+            {features.map((feature, i) => (
               <article
                 key={feature.title}
                 className={cn(
@@ -182,7 +154,7 @@ export function EngineeringDetailSection({
                   distance={EVIDENCE.distance}
                 >
                   <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                    Patents &amp; Innovation
+                    {patentsHeader.eyebrow}
                   </p>
                 </RevealBlock>
                 <RevealUp
@@ -192,12 +164,11 @@ export function EngineeringDetailSection({
                   distance={STATEMENT.distance}
                   className="mt-3 text-2xl font-medium tracking-tight text-brand-navy md:text-3xl"
                 >
-                  Three patents. One engineering culture.
+                  {patentsHeader.title}
                 </RevealUp>
               </div>
               <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-                Innovations developed in-house, registered, and already deployed
-                on live transmission and distribution networks.
+                {patentsHeader.body}
               </p>
             </div>
 
@@ -229,7 +200,7 @@ export function EngineeringDetailSection({
                */
               className="mt-4 flex flex-col"
             >
-              {PATENTS_BRIEF.map((patent) => (
+              {patentsBrief.map((patent) => (
                 <article
                   key={patent.id}
                   className="group grid grid-cols-12 items-baseline gap-4 border-b border-border py-6 transition-colors duration-300 hover:border-brand-burgundy md:py-8 dark:border-white/[0.08]"
@@ -243,7 +214,9 @@ export function EngineeringDetailSection({
                     {patent.id}
                   </span>
                   <h4 className="col-span-10 text-lg font-medium tracking-tight text-brand-navy md:col-span-6 md:text-2xl">
-                    {patent.title}
+                    <TechRef className="font-medium font-sans">
+                      {patent.title}
+                    </TechRef>
                   </h4>
                   <p className="col-span-10 col-start-3 text-xs uppercase tracking-widest text-brand-burgundy md:col-span-4 md:col-start-9 md:text-end">
                     {patent.subtitle}

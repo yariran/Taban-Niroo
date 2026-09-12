@@ -1,0 +1,424 @@
+/**
+ * Cinematic hero — the pinned product-film runway.
+ *
+ * A CSS module rather than additions to `globals.css` for the same reason
+ * `materials-scrollytelling.module.css` is one: this is a single dark scene
+ * whose values must hold identically in both themes, so none of it belongs
+ * in the tokenised, theme-switched design system. Nothing here leaks.
+ *
+ * Two families only, both already loaded by `app/layout.tsx`:
+ *   headline / brand → `--font-oswald` (the site's `--font-hero`)
+ *   support / CTA    → `--font-inter`  (the site's `--font-sans`)
+ *
+ * Literals, not `var(--…)`, for the scene greys and blues: the frame is a
+ * fixed dark ground in light AND dark mode, so a token that flips would
+ * break the composite the contrast was measured against.
+ *
+ * Next compiles `*.module.css` in css-loader `pure` mode — every selector
+ * below must carry a local class or the build fails, not just the lint.
+ */
+
+/* ─── Runway ──────────────────────────────────────────────────────────── */
+
+/**
+ * 200vh of track for 100vh of stage → exactly one viewport of scroll
+ * drives the whole 10s film. Less than ~180vh and the four scenes cut
+ * into each other; more than ~220vh and the pin outstays its welcome.
+ */
+.track {
+  position: relative;
+  height: 200vh;
+  min-height: 200dvh;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  /* Ground behind the video: the film's own deep blue, so the first paint
+     and any decode gap read as the scene rather than as a black hole. */
+  background-color: #061021;
+}
+
+/* ─── Video layer ─────────────────────────────────────────────────────── */
+
+.videoWrap {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /**
+   * `cover` with the composition left alone.
+   *
+   * The film opens wide — insulator sweeping bottom-left to top-right
+   * across a deep blue ground — and then pushes all the way into the
+   * sheds. On a portrait viewport a landscape source under `cover`
+   * scales to height and crops WIDTH, so the vertical half of
+   * `object-position` is inert there and only the horizontal half does
+   * anything. Centre is what keeps the insulator's axis in frame through
+   * the whole push-in, so nothing is overridden per breakpoint: a
+   * responsive `object-position` here would only throw away composition.
+   */
+  object-fit: cover;
+  object-position: 50% 50%;
+  /* Firefox paints a 1px seam at some scales without this. */
+  background-color: #061021;
+}
+
+/* ─── Overlay ─────────────────────────────────────────────────────────── */
+
+/**
+ * Two layers, and the side ramp is the one doing the work.
+ *
+ * The film only has negative space for its first second and a half. After
+ * the push-in, the frame is wall-to-wall mid-grey silicone at around
+ * sRGB 120-230 with specular droplets at the top of that range — there is
+ * nowhere on it that white type is legible unaided, and the embossed
+ * "Dena Power Line" mark sits centre-right where a centred scrim would
+ * flatten it.
+ *
+ * So the negative space is BUILT, on the left, where the frame is already
+ * in shadow through the whole push-in: a wide directional ramp that
+ * resolves to nothing by ~70% of the width. The product keeps its lit
+ * side, its highlights and its mark; the type gets a graded plate to sit
+ * on. That is the difference between art direction and a dark rectangle.
+ *
+ * Everything is blue-black (#030b18), never neutral: a grey scrim over a
+ * deep-blue grade reads as haze, and haze is what makes video heroes look
+ * stock. The mid-stops of the vertical ramp sit at 0.10 rather than 0 for
+ * the same reason — a whisper of blue through the middle unifies the
+ * slightly warm grey of the sheds with the brand ground.
+ *
+ * Measured on the composited frame — video, both ramps and `overlayCopy`
+ * flattened into one canvas, sampled inside the inked rect of each line
+ * (a Range over the text node, not the block's box, which is 640px wide
+ * and mostly empty) at 2.4s, 4.5s, 6.8s and 9.3s. Worst pixel, not
+ * average, and against each line's own alpha rather than pure white:
+ *
+ *   Built for            5.80 – 6.89   (floor 3.0, large text)
+ *   the elements         3.41 – 3.82
+ *   Engineered for       3.77 – 4.22
+ *   reliability          4.20 – 4.63
+ *   Composite            5.10 – 5.97
+ *   insulation           4.12 – 4.85
+ *   Taban Niroo          5.16 – 6.09
+ *   support paragraph    5.13 – 9.01   (floor 4.5, body text)
+ *
+ * Averages over the same rects run 7 – 15, so every figure above is the
+ * single worst specular pixel behind one glyph edge, not what a reader
+ * sees. Two numbers in that table were failures found by measuring and
+ * fixed rather than argued away — see the notes on `.lineSoft`, on
+ * `.support`, and on the scene-3 line break in the component.
+ *
+ * The ramp stops being useful past ~x=0.6W. That is the real constraint
+ * on this layout: no line in the sequence may run wider, which is a
+ * typographic budget, not a suggestion.
+ *
+ * `overlayCopy` is driven from the scroll loop and rises only while a line
+ * is on screen — the product is at its clearest in the silences between
+ * them, which is the whole reason the silences are there.
+ */
+.overlayBase {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      95deg,
+      rgb(3 11 24 / 0.66) 0%,
+      rgb(3 11 24 / 0.46) 26%,
+      rgb(3 11 24 / 0.2) 48%,
+      rgb(3 11 24 / 0) 70%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(4 14 28 / 0.52) 0%,
+      rgb(4 14 28 / 0.1) 22%,
+      rgb(4 14 28 / 0.1) 62%,
+      rgb(2 8 18 / 0.42) 92%,
+      rgb(2 8 18 / 0.58) 100%
+    );
+}
+
+@media (max-width: 767px) {
+  /* Mobile copy is bottom-anchored, so the side ramp has nothing to do
+     and the bottom one carries the whole contrast floor on its own. */
+  .overlayBase {
+    background: linear-gradient(
+      180deg,
+      rgb(4 14 28 / 0.46) 0%,
+      rgb(4 14 28 / 0.1) 20%,
+      rgb(3 11 23 / 0.38) 48%,
+      rgb(2 8 18 / 0.78) 80%,
+      rgb(2 8 18 / 0.88) 100%
+    );
+  }
+}
+
+.overlayCopy {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 78% 82% at 20% 50%,
+    rgb(2 9 20 / 0.34) 0%,
+    rgb(2 9 20 / 0.18) 54%,
+    rgb(2 9 20 / 0) 80%
+  );
+}
+
+@media (max-width: 767px) {
+  .overlayCopy {
+    background: linear-gradient(
+      0deg,
+      rgb(2 8 18 / 0.42) 0%,
+      rgb(2 8 18 / 0.2) 44%,
+      rgb(2 8 18 / 0) 74%
+    );
+  }
+}
+
+/* ─── Text layers ─────────────────────────────────────────────────────── */
+
+.sceneStack {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/**
+ * Every scene occupies the same box so the cross-fades happen in place —
+ * this is one sequence, not four stacked blocks that happen to follow
+ * each other. `visibility` (set from the loop) is what actually takes a
+ * faded scene out of hit-testing and the accessibility tree; opacity
+ * alone would leave it there, the same reasoning as `sceneLayerStyle`
+ * in `lib/use-scroll-scene.ts`.
+ */
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-inline: clamp(1.5rem, 7vw, 8rem);
+  padding-block: 6rem;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.sceneInner {
+  width: 100%;
+  max-width: 40rem;
+}
+
+@media (max-width: 767px) {
+  .scene {
+    /* Bottom third: keeps type off the sheds and the water detail. */
+    align-items: flex-end;
+    padding-inline: 1.5rem;
+    padding-bottom: max(4.5rem, calc(3.5rem + env(safe-area-inset-bottom)));
+    padding-top: 6rem;
+  }
+
+  .sceneInner {
+    max-width: 24rem;
+  }
+}
+
+.headline {
+  margin: 0;
+  font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(2.375rem, 6.4vw, 5.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.headline .line {
+  display: block;
+}
+
+/**
+ * Second line of a two-line headline sits a hair quieter — the pair reads
+ * as one sentence spoken, not as two stacked slogans.
+ *
+ * 0.90, not the 0.82 this started at. Measured on the composited frame,
+ * 0.82 white over the worst pixel under "the elements" lands at 2.8:1 —
+ * just under the 3.0 large-text floor. This is the whole budget the
+ * gesture gets on footage this bright.
+ */
+.headline .lineSoft {
+  display: block;
+  color: rgb(255 255 255 / 0.9);
+}
+
+.support {
+  margin: var(--hig-5) 0 0;
+  max-width: 32ch;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  /**
+   * 0.88, and it went 0.72 → 0.78 → 0.88 for a reason worth recording:
+   * breaking the scene-3 headline onto two lines dropped this paragraph
+   * ~64px, off the shadowed shed and onto the lit one, and it measured
+   * 3.99 there — under the 4.5 floor body text has to clear. It is still
+   * a visible step down from the headline's full white, which is all the
+   * dimming was ever for.
+   */
+  color: rgb(255 255 255 / 0.88);
+}
+
+/**
+ * The brand lockup is the one place tracking opens up, and only to 0.05em —
+ * enough to read as a mark rather than a word, short of the 0.2em that
+ * turns a wordmark into a fashion caption.
+ */
+.brandmark {
+  margin: 0;
+  font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(2rem, 4.8vw, 4rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.ctaRow {
+  margin-top: var(--hig-8);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.002em;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(255 255 255 / 0.32);
+  padding-bottom: 0.3rem;
+  transition: border-color 260ms var(--ease-standard, ease-out);
+}
+
+.cta:hover {
+  border-bottom-color: rgb(255 255 255 / 0.9);
+}
+
+.cta:focus-visible {
+  outline: 2px solid rgb(255 255 255 / 0.85);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+.ctaArrow {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 260ms var(--ease-standard, ease-out);
+}
+
+.cta:hover .ctaArrow {
+  transform: translateX(3px);
+}
+
+/* ─── Scroll affordance ───────────────────────────────────────────────── */
+
+/**
+ * The first tenth of the runway is deliberately wordless, which on a
+ * pinned stage is indistinguishable from a page that has stopped
+ * working. One 28px hairline says "there is more below" and then gets
+ * out of the way — it fades out for good once the film starts moving.
+ *
+ * It hangs off the copy column rather than the centre of the frame: the
+ * centre is the lit face of the insulator, where a 1px white line is
+ * invisible, and aligning it with the type is what keeps it reading as
+ * part of the layout instead of as furniture.
+ */
+.cue {
+  position: absolute;
+  bottom: max(2.25rem, env(safe-area-inset-bottom));
+  left: clamp(1.5rem, 7vw, 8rem);
+  z-index: 3;
+  width: 1px;
+  height: 1.75rem;
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0) 0%,
+    rgb(255 255 255 / 0.55) 40%,
+    rgb(255 255 255 / 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* ─── Reduced motion / static fallback ────────────────────────────────── */
+
+/**
+ * No runway, no scrubbing, no pin: one viewport, one held frame, and all
+ * four lines of copy in reading order. The hierarchy survives — the
+ * sequence is what is dropped, which is exactly what the preference asks
+ * for.
+ */
+.staticStage {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background-color: #061021;
+}
+
+.staticCopy {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 46rem;
+  padding-inline: clamp(1.5rem, 7vw, 8rem);
+  padding-bottom: max(4rem, calc(3rem + env(safe-area-inset-bottom)));
+  padding-top: 8rem;
+}
+
+.staticCopy .headline {
+  font-size: clamp(2.125rem, 5.2vw, 3.75rem);
+}
+
+.staticLine {
+  margin: var(--hig-4) 0 0;
+  font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.004em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.staticBrand {
+  margin-top: var(--hig-8);
+  padding-top: var(--hig-6);
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.staticBrand .brandmark {
+  font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+}

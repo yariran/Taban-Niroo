@@ -2,7 +2,8 @@ import { SiteHeader } from "@/components/site-header";
 import { HomeSnapProvider } from "@/components/home-snap-provider";
 import { HomeSectionSnap } from "@/components/home-section-snap";
 import { ChapterRail } from "@/components/chapter-rail";
-import { HeroSection } from "@/components/sections/hero-section";
+import { CinematicHeroSection } from "@/components/sections/cinematic-hero-section";
+import { NewReleaseShowcaseSection } from "@/components/sections/new-release-showcase-section";
 import { ProofBandSection } from "@/components/sections/proof-band-section";
 import { PhilosophySection } from "@/components/sections/philosophy-section";
 import { FeaturedProductsSection } from "@/components/sections/featured-products-section";
@@ -65,11 +66,19 @@ export default async function Home({
       <HomeSnapProvider>
         <main id="main-content">
           {/* ── ACT I ─────────────────────────────────────────────── */}
+          {/*
+            The opening is a pinned product film driven by scroll — see
+            `components/sections/cinematic-hero-section.tsx`. It replaces the
+            previous three-scene hero, whose scene C was the new-release
+            showcase; that section is unchanged and simply stands on its own
+            below now, in the same page position it always occupied.
+          */}
           <HomeSectionSnap isFirst hideBoundary chapterId="hero">
-            <HeroSection
-              cms={content.home.hero}
-              newRelease={content.home.newRelease}
-            />
+            <CinematicHeroSection />
+          </HomeSectionSnap>
+
+          <HomeSectionSnap hideBoundary>
+            <NewReleaseShowcaseSection cms={content.home.newRelease} />
           </HomeSectionSnap>
 
           {/* Proof before narrative — the credibility numbers land in the

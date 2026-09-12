@@ -102,6 +102,62 @@
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-entrance: cubic-bezier(0.22, 0.98, 0.22, 1);
   --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─────────────────────────────────────────────────────────────────────
+     HIG layer — Apple's design language, as tokens.
+
+     Three rules from the Human Interface Guidelines drive everything here:
+
+       1. Spacing comes off a base-4/8 grid. Nothing in between.
+       2. Hierarchy is carried by WEIGHT, not by size. Large type goes
+          LIGHTER, not heavier — that inversion is most of what makes a
+          surface read as Apple rather than as a poster.
+       3. At most two tracking values, and only on uppercase labels.
+          Display sizes get optical negative tracking instead.
+
+     Restraint is the point: fewer sizes, fewer weights, fewer greys.
+     ───────────────────────────────────────────────────────────────────── */
+
+  /* Spacing — the only step values any HIG surface may use. */
+  --hig-1: 0.25rem;   /*  4 */
+  --hig-2: 0.5rem;    /*  8 */
+  --hig-3: 0.75rem;   /* 12 */
+  --hig-4: 1rem;      /* 16 */
+  --hig-5: 1.25rem;   /* 20 */
+  --hig-6: 1.5rem;    /* 24 */
+  --hig-8: 2rem;      /* 32 */
+  --hig-10: 2.5rem;   /* 40 */
+  --hig-12: 3rem;     /* 48 */
+
+  /* NOTE — the type scale and the scrim colours are deliberately NOT
+     tokens. Both were, and both broke in Safari:
+
+       · `font-size: var(--x)` where --x holds a clamp() with vw units
+         fails to resolve in Safari, and the declaration is dropped. The
+         headline fell back to the UA's h2 default (~24px) and the whole
+         hero collapsed into overlapping lines.
+       · `rgb(0 0 0 / var(--x))` inside a gradient minifies to
+         `rgb(0 0 0 / var(--x))0%` — the space before the stop position is
+         stripped. Blink forgives that; Safari drops the gradient, so the
+         scrim vanished and the photo lost its contrast floor entirely.
+
+     Custom properties are reliable for scalars consumed whole (a length, a
+     radius, a tracking value). They are fragile as whole-value carriers for
+     font-size and as fragments inside colour functions. The five type roles
+     and the scrim now carry their literals in the rule itself; everything
+     below stayed a token because it is a plain length that Safari resolves
+     without complaint. */
+
+  /* Tracking — two values, per the rule. Display tracking is optical
+     correction for large type, not decoration, so it lives apart. */
+  --hig-track-label: 0.08em;
+  --hig-track-nav: 0.16em;
+  --hig-track-display: -0.028em;
+
+  /* Corner radii — Apple's continuous-curve family, scaled by surface size. */
+  --hig-radius-control: 0.625rem; /* 10 — buttons, fields */
+  --hig-radius-card: 1.125rem;    /* 18 — cards, tiles */
+  --hig-radius-sheet: 1.375rem;   /* 22 — sheets, large panels */
 }
 
 .dark {
@@ -240,28 +296,10 @@
       ui-sans-serif, system-ui, sans-serif !important;
   }
 
-  html[lang="fa"] .font-sans,
-  html[lang="fa"] .font-serif,
-  html[lang="fa"] .font-display {
-    font-family: var(--font-vazirmatn), var(--font-estedad), var(--font-inter),
-      ui-sans-serif, system-ui, sans-serif !important;
-  }
-
   .font-hero-slogan,
   .font-headline,
   .font-hero {
     font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif !important;
-  }
-
-  html[lang="fa"] .font-hero-slogan,
-  html[lang="fa"] .font-headline,
-  html[lang="fa"] .font-hero {
-    font-family: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
-      system-ui, sans-serif !important;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: none;
-    line-height: 1.3;
   }
 
   /**
@@ -280,13 +318,6 @@
     text-transform: none;
   }
 
-  html[lang="fa"] .type-cinema {
-    font-family: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
-      system-ui, sans-serif;
-    letter-spacing: 0;
-    line-height: 1.5;
-  }
-
   /** Keep true monospace for specs, IEC codes, and catalogue refs. */
   .font-mono {
     font-family:
@@ -295,24 +326,183 @@
   }
 
   /**
-   * Phase 5 — Persian typography overrides.
-   * Swap families via CSS variables; neutralize case/tracking that break
-   * connected Arabic script. Compensates lost uppercase eyebrows with
-   * weight + existing gold (brand-burgundy) + optional hairline.
+   * Persian typography — single :root[lang="fa"] group (replaces the former
+   * competing html[lang="fa"] + :root[lang="fa"] blocks). See HANDOFF-fa.md.
    */
-  :root[lang="fa"] {
-    --font-sans: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
+
+  :root[lang="fa"] .font-sans,
+  :root[lang="fa"] .font-serif,
+  :root[lang="fa"] .font-display {
+    font-family: var(--font-vazirmatn), var(--font-estedad), var(--font-inter),
+      ui-sans-serif, system-ui, sans-serif !important;
+  }
+
+  :root[lang="fa"] .font-hero-slogan,
+  :root[lang="fa"] .font-headline,
+  :root[lang="fa"] .font-hero {
+    font-family: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
+      system-ui, sans-serif !important;
+  }
+
+  :root[lang="fa"] .type-cinema {
+    font-family: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
       system-ui, sans-serif;
-    --font-serif: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
+  }
+
+  /**
+   * HIG type roles.
+   *
+   * Latin prefers the real San Francisco — on Apple hardware
+   * `-apple-system` resolves to SF Pro, which is the actual typeface the
+   * guidelines are drawn against; Inter carries everything else. Persian
+   * stays on Vazirmatn, whose variable axis gives us the light display
+   * weight the scale depends on. Estedad is NOT used at display size: it
+   * has no 300, so a light headline would silently snap to 400 and the
+   * weight hierarchy would collapse.
+   *
+   * Always sentence case except `.type-hig-label`.
+   */
+  .type-hig-display,
+  .type-hig-title,
+  .type-hig-lede,
+  .type-hig-body,
+  .type-hig-label {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+      var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "kern" 1;
+    text-transform: none;
+  }
+
+  :root[lang="fa"] .type-hig-display,
+  :root[lang="fa"] .type-hig-title,
+  :root[lang="fa"] .type-hig-lede,
+  :root[lang="fa"] .type-hig-body,
+  :root[lang="fa"] .type-hig-label {
+    font-family: var(--font-vazirmatn), -apple-system, ui-sans-serif,
       system-ui, sans-serif;
-    --font-display: var(--font-vazirmatn), var(--font-estedad), ui-sans-serif,
-      system-ui, sans-serif;
-    --font-hero: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
-      system-ui, sans-serif;
-    --font-headline: var(--font-estedad), var(--font-vazirmatn), ui-sans-serif,
-      system-ui, sans-serif;
-    --font-hero-slogan: var(--font-estedad), var(--font-vazirmatn),
-      ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Five roles. Adding a sixth is a design decision, not a convenience —
+     the ladder is deliberately short. Sizes and weights are literal here
+     rather than tokenised; see the note in `:root`. */
+  .type-hig-display {
+    font-size: clamp(2.75rem, 7vw, 5.25rem);
+    font-weight: 300; /* light BECAUSE it is large */
+    letter-spacing: var(--hig-track-display);
+    line-height: 1.05;
+  }
+
+  .type-hig-title {
+    font-size: clamp(1.75rem, 3.6vw, 3rem);
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    line-height: 1.12;
+  }
+
+  .type-hig-lede {
+    font-size: clamp(1.125rem, 1.7vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: -0.008em;
+    line-height: 1.45;
+  }
+
+  .type-hig-body {
+    font-size: 1.0625rem; /* 17px — the iOS body size */
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .type-hig-label {
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 500;
+    letter-spacing: var(--hig-track-label);
+    text-transform: uppercase;
+  }
+
+  /* Persian needs a little more leading than SF — the descenders and the
+     dot-heavy baseline crowd at HIG's Latin line-heights. */
+  :root[lang="fa"] .type-hig-display {
+    line-height: 1.18;
+    letter-spacing: 0;
+  }
+
+  :root[lang="fa"] .type-hig-title {
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  :root[lang="fa"] .type-hig-lede {
+    line-height: 1.7;
+    letter-spacing: 0;
+  }
+
+  :root[lang="fa"] .type-hig-body {
+    line-height: 1.8;
+  }
+
+  /* Persian has no case, so uppercase/tracking do nothing but damage. */
+  :root[lang="fa"] .type-hig-label {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.75rem;
+  }
+
+  /**
+   * The single scrim for type over photography. One element, one ramp —
+   * this replaces the four stacked gradient layers the hero used to
+   * carry, which is exactly the "decoration that must earn its place"
+   * the guidelines warn about.
+   */
+  /**
+   * Centre pool + edge ramp, in one declaration.
+   *
+   * The pool exists because the copy is centred and the default hero photo
+   * puts a pure-white cloud burst directly behind it — the worst case a
+   * photograph can present, so no CMS swap can be harder than what this is
+   * tuned against. Pool and ramp compose where the copy sits, and the pair
+   * was measured on the composited pixels rather than guessed: the lede
+   * lands at 6.9:1 against a 4.5 floor, the display headline at 7.7:1
+   * against 3.0.
+   *
+   * Falling to 0.24 at the edges is what keeps the frame from going muddy —
+   * a flat pool over the whole image would buy the same contrast and lose
+   * the photograph, which is the opposite of the trade worth making.
+   */
+  .hig-scrim {
+    background:
+      radial-gradient(
+        ellipse 76% 64% at 50% 52%,
+        rgb(0 0 0 / 0.5) 0%,
+        rgb(0 0 0 / 0.44) 58%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 0.38) 0%,
+        rgb(0 0 0 / 0.24) 38%,
+        rgb(0 0 0 / 0.55) 100%
+      );
+  }
+
+  /* Catalogue Latin inside FA pages stays Inter. nowrap is required so
+     mixed LTR codes (IEC 61109, DPL 33-1180 PI) do not split mid-token. */
+  :root[lang="fa"] .tech-ref {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif !important;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  :root[lang="fa"] .tech-ref--wrap {
+    white-space: normal;
+  }
+
+  :root[lang="fa"] .font-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace !important;
+    letter-spacing: normal;
+    text-transform: none;
   }
 
   :root[lang="fa"] .font-hero-slogan,
@@ -320,37 +510,72 @@
   :root[lang="fa"] .font-hero {
     text-transform: none;
     letter-spacing: 0;
-    line-height: 1.3;
+  }
+
+  :root[lang="fa"] .uppercase:not(.tech-ref):not(.font-mono) {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  :root[lang="fa"] .tracking-widest:not(.tech-ref):not(.font-mono),
+  :root[lang="fa"] .tracking-wider:not(.tech-ref):not(.font-mono),
+  :root[lang="fa"] .tracking-wide:not(.tech-ref):not(.font-mono),
+  :root[lang="fa"] .tracking-\[0\.28em\]:not(.tech-ref),
+  :root[lang="fa"] .tracking-\[0\.22em\]:not(.tech-ref),
+  :root[lang="fa"] .tracking-\[0\.2em\]:not(.tech-ref),
+  :root[lang="fa"] .tracking-\[0\.18em\]:not(.tech-ref),
+  :root[lang="fa"] .tracking-\[0\.16em\]:not(.tech-ref),
+  :root[lang="fa"] .tracking-\[0\.14em\]:not(.tech-ref) {
+    letter-spacing: 0;
+  }
+
+  :root[lang="fa"] {
+    --fa-display-scale: 0.80;
+    --fa-heading-scale: 0.85;
+    --fa-body-scale: 1.05;
+  }
+
+  :root[lang="fa"] .font-hero-slogan,
+  :root[lang="fa"] .font-hero {
+    line-height: 1.25;
+  }
+
+  :root[lang="fa"] .font-headline {
+    line-height: 1.35;
   }
 
   :root[lang="fa"] .type-cinema {
     letter-spacing: 0;
     line-height: 1.5;
+    font-weight: 400;
   }
 
-  /* Eyebrows / step labels — tracking breaks joins; keep gold + weight. */
-  :root[lang="fa"] .uppercase {
-    text-transform: none;
+  :root[lang="fa"] .text-base {
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  :root[lang="fa"] .text-lg {
+    font-size: 1.18rem;
+    line-height: 1.75;
+  }
+
+  :root[lang="fa"] .text-xl {
+    font-size: 1.3rem;
+    line-height: 1.7;
+  }
+
+  :root[lang="fa"] .text-xs:not(.tech-ref):not(.font-mono) {
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+
+  :root[lang="fa"] .text-\[10px\]:not(.tech-ref),
+  :root[lang="fa"] .text-\[11px\]:not(.tech-ref) {
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0;
-  }
-
-  :root[lang="fa"] .tracking-widest,
-  :root[lang="fa"] .tracking-wider,
-  :root[lang="fa"] .tracking-wide,
-  :root[lang="fa"] .tracking-\[0\.28em\],
-  :root[lang="fa"] .tracking-\[0\.22em\],
-  :root[lang="fa"] .tracking-\[0\.2em\],
-  :root[lang="fa"] .tracking-\[0\.18em\],
-  :root[lang="fa"] .tracking-\[0\.16em\],
-  :root[lang="fa"] .tracking-\[0\.14em\] {
-    letter-spacing: 0;
-  }
-
-  /* Eyebrow gold signal — short hairline under brand-burgundy labels. */
-  :root[lang="fa"] .text-brand-burgundy.uppercase,
-  :root[lang="fa"] .text-brand-burgundy.text-xs {
-    font-weight: 600;
   }
 
   :root[lang="fa"] .fa-eyebrow {
@@ -373,13 +598,9 @@
     opacity: 0.85;
   }
 
-  /* Mono tech refs stay Latin — never swap to Persian fonts. */
-  :root[lang="fa"] .font-mono {
-    font-family:
-      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace !important;
-    letter-spacing: normal;
-    text-transform: none;
+  :root[lang="fa"] .tabular-nums,
+  :root[lang="fa"] .tech-ref {
+    font-variant-numeric: tabular-nums lining-nums;
   }
 
   .text-brand-heading {

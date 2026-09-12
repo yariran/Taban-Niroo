@@ -2,9 +2,12 @@
 
 import { BlurReveal } from "@/components/ui/blur-reveal";
 import { RevealWords, RevealUp } from "@/components/ui/reveal-words";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
+import { cn } from "@/lib/utils";
 
 /**
  * Act I — the opening frame of the R&D page.
@@ -18,6 +21,7 @@ import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
  * same copy, same heading level, no video, no focus-pull.
  */
 export function RnDCinemaOpening({ cms }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const reduceMotion = usePrefersReducedMotion();
 
   const eyebrow = cmsText(cms, "eyebrow", "Blog – R&D");
@@ -36,7 +40,12 @@ export function RnDCinemaOpening({ cms }: { cms?: ContentBlock } = {}) {
           <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
             {eyebrow}
           </p>
-          <h1 className="mt-4 font-hero-slogan text-brand-heading text-3xl font-bold uppercase tracking-tight md:text-4xl lg:text-5xl">
+          <h1
+            className={cn(
+              "mt-4 font-hero-slogan text-brand-heading font-bold uppercase tracking-tight",
+              pageHeadingScale(locale),
+            )}
+          >
             <RevealWords as="span" className="block">
               {title1}
             </RevealWords>

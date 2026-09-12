@@ -44,11 +44,21 @@ export function Header({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [overDarkHero, setOverDarkHero] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
 
-  const onDarkHero = isHome && !isScrolled;
+  /**
+   * `isScrolled` alone used to decide this, on the assumption that 60px of
+   * scroll means the dark opening frame has gone. The home hero is now a
+   * pinned film that holds the viewport for a full extra screen, so the
+   * header would flip to its light surface while still sitting on a dark
+   * plate. The hero owns the truth and publishes it as
+   * `<html data-tn-dark-hero>`; this reads it. Nothing else about the
+   * header changes, and pages without a dark hero never set the flag.
+   */
+  const onDarkHero = isHome && (!isScrolled || overDarkHero);
 
   const closeMobileMenu = useCallback(() => {
     setIsMenuOpen(false);
@@ -69,6 +79,23 @@ export function Header({
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  /** One attribute, observed — no second scroll listener for the same fact. */
+  useEffect(() => {
+    if (!isHome) {
+      setOverDarkHero(false);
+      return;
+    }
+    const root = document.documentElement;
+    const read = () => setOverDarkHero(root.dataset.tnDarkHero === "true");
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-tn-dark-hero"],
+    });
+    return () => observer.disconnect();
+  }, [isHome]);
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -162,7 +189,7 @@ export function Header({
           })}
         </nav>
 
-        <div className="hidden items-center justify-end gap-2 md:flex">
+        <div className="hidden items-center justify-end gap-4 md:flex lg:gap-5">
           <LanguageSwitcher onDarkHero={onDarkHero} />
           <ThemeToggle
             variant="ghost"
@@ -171,7 +198,7 @@ export function Header({
               "rounded-full transition-[width,height] duration-500",
               isScrolled ? "size-7" : "size-8",
               onDarkHero
-                ? "text-white hover:bg-white/15"
+                ? "border-transparent bg-transparent text-white hover:bg-white/15"
                 : "text-foreground hover:bg-foreground/10",
             )}
           />
@@ -184,7 +211,7 @@ export function Header({
                 ? "h-7 px-2.5 text-[11px]"
                 : "pill-elevate h-7 px-3 text-[12px] sm:h-8 sm:px-3.5",
               onDarkHero
-                ? "bg-white text-brand-navy-deep hover:bg-brand-cream"
+                ? "bg-white text-[#0A0B0D] hover:bg-white/90"
                 : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
             )}
           >
@@ -197,7 +224,7 @@ export function Header({
           </LocaleLink>
         </div>
 
-        <div className="col-start-3 flex items-center justify-end gap-1 md:hidden">
+        <div className="col-start-3 flex items-center justify-end gap-2.5 md:hidden">
           <LanguageSwitcher onDarkHero={onDarkHero} />
           <ThemeToggle
             variant="ghost"
@@ -205,7 +232,7 @@ export function Header({
             className={cn(
               "touch-target size-10 rounded-full",
               onDarkHero
-                ? "text-white hover:bg-white/15"
+                ? "border-transparent bg-transparent text-white hover:bg-white/15"
                 : "text-foreground hover:bg-foreground/10",
             )}
           />

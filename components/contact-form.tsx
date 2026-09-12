@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 type SubmitState =
   | { status: "idle" }
@@ -34,14 +35,18 @@ export function ContactForm({
   productRef,
   productName,
 }: ContactFormProps = {}) {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const [state, setState] = useState<SubmitState>({ status: "idle" });
   const formMounted = useRef<number>(0);
 
   const defaultMessage = useMemo(() => {
     if (!productRef && !productName) return "";
     const label = productName?.trim() || productRef;
-    return `I would like a quotation / technical datasheet for: ${label}.\n\nProject / voltage class:\nQuantity (approx.):\nNotes:\n`;
-  }, [productRef, productName]);
+    return locale === "fa"
+      ? `درخواست استعلام / دیتاشیت برای: ${label}.\n\nپروژه / کلاس ولتاژ:\nتعداد تقریبی:\nتوضیحات:\n`
+      : `I would like a quotation / technical datasheet for: ${label}.\n\nProject / voltage class:\nQuantity (approx.):\nNotes:\n`;
+  }, [productRef, productName, locale]);
 
   useEffect(() => {
     formMounted.current = Date.now();
@@ -76,7 +81,7 @@ export function ContactForm({
       if (!res.ok) {
         setState({
           status: "error",
-          message: data.error ?? "Something went wrong. Please try again.",
+          message: data.error ?? dict.contact.error,
         });
         return;
       }
@@ -89,7 +94,7 @@ export function ContactForm({
     } catch {
       setState({
         status: "error",
-        message: "Network error. Check your connection and try again.",
+        message: dict.contact.error,
       });
     }
   }
@@ -105,22 +110,7 @@ export function ContactForm({
         aria-live="polite"
       >
         {state.status === "success" && (
-          <p className="text-foreground">
-            Thank you — your message has been received.
-            {!state.delivered && (
-              <>
-                {" "}
-                Our team also monitors{" "}
-                <a
-                  className="underline underline-offset-2 hover:text-foreground"
-                  href="mailto:info@taban-niroo.com"
-                >
-                  info@taban-niroo.com
-                </a>
-                .
-              </>
-            )}
-          </p>
+          <p className="text-foreground">{dict.contact.success}</p>
         )}
         {state.status === "error" && (
           <p className="text-destructive">{state.message}</p>
@@ -129,7 +119,7 @@ export function ContactForm({
 
       {refLabel ? (
         <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm text-foreground">
-          Enquiry linked to{" "}
+          {locale === "fa" ? "مرتبط با " : "Enquiry linked to "}
           <span className="font-medium">{refLabel}</span>
         </p>
       ) : null}
@@ -155,20 +145,19 @@ export function ContactForm({
 
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground" htmlFor="name">
-          Name
+          {dict.contact.name}
         </label>
         <Input
           id="name"
           name="name"
           required
           autoComplete="name"
-          placeholder="Your full name"
           disabled={loading}
         />
       </div>
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground" htmlFor="email">
-          Email
+          {dict.contact.email}
         </label>
         <Input
           id="email"
@@ -176,7 +165,6 @@ export function ContactForm({
           type="email"
           required
           autoComplete="email"
-          placeholder="you@company.com"
           disabled={loading}
         />
       </div>
@@ -185,13 +173,12 @@ export function ContactForm({
           className="text-sm font-medium text-foreground"
           htmlFor="company"
         >
-          Company
+          {dict.contact.company}
         </label>
         <Input
           id="company"
           name="company"
           autoComplete="organization"
-          placeholder="Organization name"
           disabled={loading}
         />
       </div>
@@ -200,14 +187,13 @@ export function ContactForm({
           className="text-sm font-medium text-foreground"
           htmlFor="message"
         >
-          Message
+          {dict.contact.message}
         </label>
         <Textarea
           id="message"
           name="message"
           required
           minLength={10}
-          placeholder="Briefly describe your project, application, or enquiry."
           rows={5}
           disabled={loading}
           defaultValue={defaultMessage}
@@ -220,17 +206,32 @@ export function ContactForm({
           className="min-h-11 w-full rounded-full px-6 sm:w-auto"
           disabled={loading}
         >
-          {loading ? "Sending…" : "Send message"}
+          {loading ? dict.contact.sending : dict.contact.send}
         </Button>
         <p className="text-[11px] leading-relaxed text-muted-foreground">
-          By sending, you agree to our{" "}
-          <Link
-            href="/privacy"
-            className="underline underline-offset-2 hover:text-foreground"
-          >
-            privacy notice
-          </Link>
-          .
+          {locale === "fa" ? (
+            <>
+              با ارسال، با{" "}
+              <LocaleLink
+                href="/privacy"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                {dict.footer.privacy}
+              </LocaleLink>{" "}
+              موافقت می‌کنید.
+            </>
+          ) : (
+            <>
+              By sending, you agree to our{" "}
+              <LocaleLink
+                href="/privacy"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                privacy notice
+              </LocaleLink>
+              .
+            </>
+          )}
         </p>
       </div>
     </form>
