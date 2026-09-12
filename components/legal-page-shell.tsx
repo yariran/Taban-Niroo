@@ -80,7 +80,7 @@ export function LegalPageShell({
       <section className="bg-background pb-20 md:pb-28">
         <div className="mx-auto w-full max-w-3xl px-6 md:px-12 lg:px-0">
           <RevealUp>
-            <div className="prose prose-zinc max-w-none text-foreground/85 [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-2 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1.5 [&_li]:leading-relaxed [&_p]:my-4 [&_p]:leading-relaxed [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-5 dark:prose-invert">
+            <div className="prose prose-zinc max-w-none text-foreground/85 [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-2 [&_h2]:mb-3 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_li]:my-1.5 [&_li]:leading-relaxed [&_p]:my-4 [&_p]:leading-relaxed [&_ul]:my-4 [&_ul]:list-disc [&_ul]:ps-5 dark:prose-invert">
               {children}
             </div>
           </RevealUp>

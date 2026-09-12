@@ -66,7 +66,7 @@ export function Magnetic({
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       className={cn(
-        "inline-flex transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform",
+        "inline-flex transition-transform duration-300 ease-[var(--ease-standard)] will-change-transform",
         className
       )}
     >

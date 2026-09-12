@@ -5,6 +5,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button, buttonVariants } from "@/components/ui/button";
 import type { VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 type ThemeToggleProps = {
   className?: string;
@@ -47,10 +48,11 @@ export function ThemeToggle({
       type="button"
       variant={variant}
       size={compact ? "icon-sm" : "icon"}
-      className={[
-        "shrink-0 rounded-full border-border/80 bg-background/60 backdrop-blur-sm",
-        className ?? "",
-      ].join(" ")}
+      className={cn(
+        "shrink-0 rounded-full",
+        variant === "outline" && "border-border/80 bg-background/60 backdrop-blur-sm",
+        className,
+      )}
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={label}
       aria-pressed={isDark}

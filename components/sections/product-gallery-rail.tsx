@@ -39,7 +39,7 @@ export function ProductGalleryRail({
               item.src ? (
                 <div
                   key={item.id}
-                  className="flex h-[40vh] flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-4 ring-1 ring-border/50 sm:h-[48vh] sm:p-6 md:h-[56vh] md:p-8 dark:ring-white/[0.06]"
+                  className="product-plate flex h-[40vh] flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl p-4 ring-1 ring-border/50 sm:h-[48vh] sm:p-6 md:h-[56vh] md:p-8 dark:ring-white/[0.06]"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

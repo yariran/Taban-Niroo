@@ -1,0 +1,225 @@
+/**
+ * Scoped stylesheet for the `/style-preview` route.
+ *
+ * This is a DESIGN SANDBOX, not production styling. It exists so the
+ * Terminal Industries visual language can be judged against real Taban
+ * Niroo content before anything in `app/globals.css` is touched.
+ *
+ * Everything is namespaced under `.tp` and nothing here leaks: the route
+ * layout is the only thing that imports this file. Delete the
+ * `app/style-preview/` directory and the site is exactly as it was.
+ *
+ * The `!important` declarations are not sloppiness — `globals.css` pins
+ * `body/button/input/select/textarea` and the `.font-mono` utility to the
+ * site's own families with `!important`, so a scoped override has to
+ * match that weight to win inside this route only.
+ */
+
+.tp {
+  /* ── Ground ────────────────────────────────────────────────────────
+     Terminal runs a near-neutral system: true black scenes alternating
+     with an off-white paper. No mid-greys as page grounds — the contrast
+     jump between chapters is what gives the scroll its rhythm. */
+  --tp-black: #08090a;
+  --tp-ink: #101214;
+  --tp-ink-2: #191c1f;
+  --tp-paper: #f3f4f4;
+  --tp-paper-2: #e9eaea;
+  --tp-paper-3: #dcdedd;
+
+  /* ── Accent ───────────────────────────────────────────────────────
+     Terminal's is an acid green (#ABFF02). Held to the brief, this keeps
+     Taban Niroo's existing gold and uses it the same way: exactly one
+     accent, spent only on the primary CTA and on numeric payoffs. */
+  --tp-gold: #e3b34e;
+  --tp-gold-hi: #f0c673;
+  /* Gold on paper is ~1.9:1 — labels on light grounds use the deep tone. */
+  --tp-gold-deep: #7d5c17;
+
+  --tp-line-dark: rgb(255 255 255 / 0.14);
+  --tp-line-light: rgb(8 9 10 / 0.12);
+
+  --tp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  background: var(--tp-black);
+  color: var(--tp-paper);
+  isolation: isolate;
+}
+
+/* ── Typography ────────────────────────────────────────────────────────
+   The single most Terminal-specific move: a two-voice system where the
+   headline is set TIGHT (negative tracking, near-zero leading) and the
+   micro-label is set WIDE (uppercase mono, +0.18em). The tension between
+   those two is what reads as "technical" — more than the palette does.
+
+   Terminal ships Suisse Intl for display; Inter is the closest thing
+   already self-hosted here, and at these tracking values it holds up. */
+
+.tp .tp-display {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+/* Body copy sits at a gentler tracking than the display face. */
+.tp .tp-body {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 400;
+  letter-spacing: -0.011em;
+  line-height: 1.55;
+}
+
+.tp .tp-mono {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  line-height: 1;
+}
+
+/* Numerals in specs and readouts: mono, but not shouted. */
+.tp .tp-num {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace !important;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.tp button,
+.tp input,
+.tp select,
+.tp textarea {
+  font-family: inherit !important;
+}
+
+/* ── Controls ──────────────────────────────────────────────────────────
+   Terminal's buttons are small, squarish (6px), mono-uppercase, and sized
+   by their label rather than by a grid — they read as machine controls. */
+
+.tp .tp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 6px;
+  padding: 0.6rem 0.95rem;
+  font-size: 10px;
+  line-height: 1.15;
+  transition:
+    background-color 0.25s var(--tp-ease),
+    color 0.25s var(--tp-ease),
+    transform 0.25s var(--tp-ease),
+    border-color 0.25s var(--tp-ease);
+}
+
+.tp .tp-btn:active {
+  transform: translateY(1px);
+}
+
+.tp .tp-btn-gold {
+  background: var(--tp-gold);
+  color: #1a1206;
+}
+
+.tp .tp-btn-gold:hover {
+  background: var(--tp-gold-hi);
+}
+
+.tp .tp-btn-light {
+  background: var(--tp-paper);
+  color: var(--tp-black);
+}
+
+.tp .tp-btn-light:hover {
+  background: #fff;
+}
+
+.tp .tp-btn-ghost {
+  border: 1px solid var(--tp-line-dark);
+  color: var(--tp-paper);
+}
+
+.tp .tp-btn-ghost:hover {
+  border-color: rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.06);
+}
+
+/* ── Scroll reveal ────────────────────────────────────────────────────
+   One entrance, reused everywhere. Terminal never mixes reveal styles
+   within a page; repetition is what makes the motion read as a system
+   rather than as decoration. */
+
+.tp [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s var(--tp-ease),
+    transform 0.7s var(--tp-ease);
+  transition-delay: var(--tp-delay, 0ms);
+}
+
+.tp [data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Hairline rules used as section dividers on both grounds. */
+.tp .tp-rule-dark {
+  border-color: var(--tp-line-dark);
+}
+
+.tp .tp-rule-light {
+  border-color: var(--tp-line-light);
+}
+
+/* Range input, restyled to match the control language. */
+.tp .tp-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--tp-paper-3);
+  outline: none;
+}
+
+.tp .tp-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--tp-black);
+  cursor: pointer;
+  transition: background-color 0.2s var(--tp-ease);
+}
+
+.tp .tp-range::-webkit-slider-thumb:hover {
+  background: var(--tp-gold-deep);
+}
+
+.tp .tp-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 2px;
+  background: var(--tp-black);
+  cursor: pointer;
+}
+
+.tp .tp-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--tp-gold-deep);
+  outline-offset: 2px;
+}

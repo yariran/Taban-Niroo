@@ -269,7 +269,7 @@ export function ProductModal({
             </a>
             <a
               href={`/contact?ref=${encodeURIComponent(product.id)}`}
-              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-brand-navy px-4 py-2 text-xs font-medium uppercase tracking-wider text-white transition-colors hover:bg-brand-burgundy sm:flex-initial"
+              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium uppercase tracking-wider text-primary-foreground transition-colors hover:bg-brand-burgundy sm:flex-initial"
             >
               <Mail size={14} aria-hidden />
               Request datasheet
@@ -344,7 +344,7 @@ function PickerCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative flex h-full flex-col items-start gap-5 overflow-hidden rounded-2xl border border-border/70 bg-background p-6 text-left transition-all duration-300",
+        "group relative flex h-full flex-col items-start gap-5 overflow-hidden rounded-2xl border border-border/70 bg-background p-6 text-start transition-all duration-300",
         "hover:-translate-y-0.5 hover:border-foreground hover:shadow-elevate",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground",
       )}
@@ -362,7 +362,7 @@ function PickerCard({
         {label}
       </span>
 
-      <span className="relative flex size-14 items-center justify-center rounded-full border border-border/70 bg-muted/40 text-foreground transition-colors group-hover:border-brand-navy group-hover:bg-brand-navy group-hover:text-white">
+      <span className="relative flex size-14 items-center justify-center rounded-full border border-border/70 bg-muted/40 text-foreground transition-colors group-hover:border-brand-navy group-hover:bg-primary group-hover:text-primary-foreground">
         {icon}
       </span>
 
@@ -510,7 +510,7 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
                       className={cn(
                         techTableBodyCellClass,
                         i !== TECH_BODY_COLUMNS.length - 1 &&
-                          "border-r border-border/70",
+                          "border-e border-border/70",
                         !isLast && "border-b border-border/70",
                       )}
                     >
@@ -562,7 +562,7 @@ function TableView({
             </p>
           </div>
           {product.standard && (
-            <p className="max-w-[18rem] text-right text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="max-w-[18rem] text-end text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {product.standard}
             </p>
           )}
@@ -614,7 +614,7 @@ function DrawingView({
             </p>
             <a
               href={`/contact?ref=${encodeURIComponent(product.id)}`}
-              className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-navy px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand-burgundy"
+              className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-primary-foreground transition-colors hover:bg-brand-burgundy"
             >
               <Mail size={14} aria-hidden />
               Request drawing

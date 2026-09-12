@@ -3,8 +3,11 @@
 import Image from "next/image";
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 const TIMELINE_IMAGE = "/images/home/history-timeline-v4.jpg";
 
@@ -100,6 +103,7 @@ function TimelineIllustration({
 }
 
 export function TimelineSection({ cms }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "History timeline");
   const title = cmsText(
     cms,
@@ -144,7 +148,10 @@ export function TimelineSection({ cms }: { cms?: ContentBlock } = {}) {
             delayMs={120}
             stepMs={65}
             durationMs={1050}
-            className="font-hero-slogan text-brand-heading mt-4 max-w-3xl text-3xl font-semibold uppercase tracking-tight md:text-4xl lg:text-5xl"
+            className={cn(
+              "font-hero-slogan text-brand-heading mt-4 max-w-3xl font-semibold uppercase tracking-tight",
+              pageHeadingScale(locale),
+            )}
           >
             {title}
           </RevealText>

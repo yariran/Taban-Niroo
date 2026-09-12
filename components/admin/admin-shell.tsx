@@ -21,7 +21,7 @@ export function AdminShell({
 }) {
   return (
     <div className="flex min-h-screen">
-      <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-l border-[#d8dee6] bg-[#0f1720] text-white">
+      <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col border-s border-[#d8dee6] bg-[#0f1720] text-white">
         <div className="border-b border-white/10 px-4 py-5">
           <p className="text-xs text-white/50">مدیریت محتوا</p>
           <p className="mt-1 text-sm font-semibold tracking-wide">تابان نیرو</p>

@@ -1,27 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 const STORAGE_KEY = "tn:consent:v1";
 
-/**
- * Lightweight cookie / analytics consent banner.
- *
- * The site only ships Vercel's first-party Web Analytics, so a heavy
- * GDPR consent manager is overkill — but the banner is still required
- * for transparency and to give visitors the chance to opt out before
- * any analytics ping fires. The banner persists choices in localStorage
- * (per-browser) so it never re-appears for returning visitors.
- *
- * UX choices on purpose:
- *  • Slides up from the bottom 600 ms after first paint so it doesn't
- *    fight the hero entrance.
- *  • Requires an explicit Accept or Decline — never auto-accepts on scroll.
- *  • Honours `prefers-reduced-motion` (disables slide).
- *  • Renders nothing during SSR so it never causes layout shift.
- */
 export function CookieConsent() {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const [visible, setVisible] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -58,7 +45,6 @@ export function CookieConsent() {
     try {
       stored = window.localStorage.getItem(STORAGE_KEY);
     } catch {
-      // Private browsing — fail open: don't show banner.
       return;
     }
     if (stored) return;
@@ -85,18 +71,14 @@ export function CookieConsent() {
       <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border/80 bg-background/95 px-5 py-4 text-foreground shadow-elevate backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 dark:border-white/[0.08] dark:supports-[backdrop-filter]:bg-background/70 sm:px-6 sm:py-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <div className="text-[13px] leading-relaxed text-foreground/85 sm:text-sm">
-            <p className="font-medium text-foreground">
-              We use cookies for first-party analytics.
-            </p>
+            <p className="font-medium text-foreground">{dict.cookie.body}</p>
             <p className="mt-1 text-muted-foreground">
-              Anonymous page-view stats only — no profiling.{" "}
-              <Link
+              <LocaleLink
                 href="/privacy"
                 className="underline underline-offset-2 transition-colors hover:text-foreground"
               >
-                Read the privacy notice
-              </Link>
-              .
+                {dict.footer.privacy}
+              </LocaleLink>
             </p>
           </div>
           <div className="flex flex-shrink-0 items-center gap-2">
@@ -105,14 +87,14 @@ export function CookieConsent() {
               onClick={decline}
               className="touch-target inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-background/50 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/60 dark:border-white/[0.08]"
             >
-              Decline
+              {dict.cookie.decline}
             </button>
             <button
               type="button"
               onClick={accept}
-              className="touch-target inline-flex min-h-11 items-center justify-center rounded-full bg-brand-navy px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-burgundy"
+              className="touch-target inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
             >
-              Accept
+              {dict.cookie.accept}
             </button>
           </div>
         </div>

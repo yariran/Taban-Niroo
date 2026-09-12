@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
+import { AdminLocaleToggle } from "@/components/admin/admin-locale-toggle";
+import type { Locale } from "@/lib/i18n";
+import { joinLocalized, splitLocalized } from "@/lib/i18n/localize";
 import {
   FAMILY_ORDER,
   type Product,
@@ -14,20 +17,54 @@ import {
 const inputClass =
   "mt-1.5 w-full rounded-md border border-[#cfd6de] bg-white px-3 py-2 text-sm";
 
-const emptyProduct = (): Product => ({
-  id: "",
-  name: "",
-  family: FAMILY_ORDER[0],
-  subFamily: "",
-  catalogueRef: "",
-  summary: "",
-  applications: "",
-  voltageClass: "",
-  standard: "",
-  image: null,
-  order: 0,
-  variants: [],
-});
+type TextPair = { en: string; fa: string };
+type LocalizedDrafts = {
+  subFamily: TextPair;
+  summary: TextPair;
+  applications: TextPair;
+};
+
+/** Specs + meta + Latin name; bilingual copy lives in `LocalizedDrafts`. */
+type ProductShell = Omit<
+  Product,
+  "subFamily" | "summary" | "applications"
+>;
+
+function draftsFrom(p?: Product): LocalizedDrafts {
+  return {
+    subFamily: splitLocalized(p?.subFamily),
+    summary: splitLocalized(p?.summary),
+    applications: splitLocalized(p?.applications),
+  };
+}
+
+function shellFrom(p?: Product): ProductShell {
+  if (!p) {
+    return {
+      id: "",
+      name: "",
+      family: FAMILY_ORDER[0],
+      catalogueRef: "",
+      voltageClass: "",
+      standard: "",
+      image: null,
+      order: 0,
+      variants: [],
+    };
+  }
+  return {
+    id: p.id,
+    name: p.name,
+    family: p.family,
+    catalogueRef: p.catalogueRef,
+    voltageClass: p.voltageClass,
+    standard: p.standard,
+    image: p.image,
+    order: p.order,
+    hidden: p.hidden,
+    variants: p.variants,
+  };
+}
 
 const TECH_FIELDS: { key: keyof ProductTechnicalRow; label: string }[] = [
   { key: "shedNo", label: "Shed No." },
@@ -54,13 +91,32 @@ export function ProductEditor({
   isNew: boolean;
 }) {
   const router = useRouter();
-  const [product, setProduct] = useState<Product>(initial ?? emptyProduct());
+  const [locale, setLocale] = useState<Locale>("en");
+  const [product, setProduct] = useState<ProductShell>(() => shellFrom(initial));
+  const [drafts, setDrafts] = useState<LocalizedDrafts>(() =>
+    draftsFrom(initial),
+  );
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  function update<K extends keyof Product>(key: K, value: Product[K]) {
+  const fieldDir = locale === "fa" ? "rtl" : "ltr";
+
+  function update<K extends keyof ProductShell>(
+    key: K,
+    value: ProductShell[K],
+  ) {
     setProduct((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function updateText<K extends keyof LocalizedDrafts>(
+    key: K,
+    value: string,
+  ) {
+    setDrafts((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], [locale]: value },
+    }));
   }
 
   function updateVariant(index: number, patch: Partial<ProductVariant>) {
@@ -117,11 +173,22 @@ export function ProductEditor({
     setBusy(true);
     setError(null);
     setStatus(null);
+    if (!product.name.trim()) {
+      setError("نام (لاتین) الزامی است");
+      setBusy(false);
+      return;
+    }
     try {
       const payload: Product = {
         ...product,
         id: product.id.trim(),
         name: product.name.trim(),
+        subFamily: joinLocalized(drafts.subFamily.en, drafts.subFamily.fa),
+        summary: joinLocalized(drafts.summary.en, drafts.summary.fa),
+        applications: joinLocalized(
+          drafts.applications.en,
+          drafts.applications.fa,
+        ),
         image: product.image || null,
         variants: product.variants?.length ? product.variants : undefined,
       };
@@ -167,13 +234,16 @@ export function ProductEditor({
             {isNew ? "افزودن محصول" : "ویرایش محصول"}
           </h1>
         </div>
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-[#0f1720] px-4 py-2 text-sm text-white disabled:opacity-50"
-        >
-          {busy ? "در حال ذخیره…" : "ذخیره"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <AdminLocaleToggle value={locale} onChange={setLocale} disabled={busy} />
+          <button
+            type="submit"
+            disabled={busy}
+            className="rounded-md bg-[#0f1720] px-4 py-2 text-sm text-white disabled:opacity-50"
+          >
+            {busy ? "در حال ذخیره…" : "ذخیره"}
+          </button>
+        </div>
       </div>
 
       {(status || error) && (
@@ -181,6 +251,12 @@ export function ProductEditor({
           {error ?? status}
         </p>
       )}
+
+      <p className="text-xs text-[#5a6570]">
+        نام محصول همیشه لاتین است. زیرخانواده / خلاصه / کاربردها به‌ازای زبان
+        ویرایش می‌شوند. مشخصات فنی (کد، ولتاژ، ابعاد) مشترک‌اند. فارسی خالی → روی
+        سایت انگلیسی نمایش داده می‌شود.
+      </p>
 
       <section className="space-y-4 rounded-xl border border-[#d8dee6] bg-white p-5">
         <h2 className="font-medium">اطلاعات پایه</h2>
@@ -194,7 +270,7 @@ export function ProductEditor({
               dir="ltr"
             />
           </Field>
-          <Field label="نام">
+          <Field label="نام (Latin)">
             <input
               required
               value={product.name}
@@ -219,12 +295,16 @@ export function ProductEditor({
               ))}
             </select>
           </Field>
-          <Field label="زیرخانواده">
+          <Field
+            label={
+              locale === "fa" ? "زیرخانواده (فارسی)" : "زیرخانواده (English)"
+            }
+          >
             <input
-              value={product.subFamily}
-              onChange={(e) => update("subFamily", e.target.value)}
+              value={drafts.subFamily[locale]}
+              onChange={(e) => updateText("subFamily", e.target.value)}
               className={inputClass}
-              dir="ltr"
+              dir={fieldDir}
             />
           </Field>
           <Field label="مرجع کاتالوگ">
@@ -261,22 +341,28 @@ export function ProductEditor({
             />
           </Field>
         </div>
-        <Field label="خلاصه">
+        <Field
+          label={locale === "fa" ? "خلاصه (فارسی)" : "خلاصه (English)"}
+        >
           <textarea
             rows={3}
-            value={product.summary}
-            onChange={(e) => update("summary", e.target.value)}
+            value={drafts.summary[locale]}
+            onChange={(e) => updateText("summary", e.target.value)}
             className={inputClass}
-            dir="ltr"
+            dir={fieldDir}
           />
         </Field>
-        <Field label="کاربردها">
+        <Field
+          label={
+            locale === "fa" ? "کاربردها (فارسی)" : "کاربردها (English)"
+          }
+        >
           <textarea
             rows={2}
-            value={product.applications}
-            onChange={(e) => update("applications", e.target.value)}
+            value={drafts.applications[locale]}
+            onChange={(e) => updateText("applications", e.target.value)}
             className={inputClass}
-            dir="ltr"
+            dir={fieldDir}
           />
         </Field>
         <Field label="تصویر محصول">

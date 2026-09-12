@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { LocaleLink } from "@/components/locale-link";
 import { cn } from "@/lib/utils";
 import {
   FAMILY_ANCHOR,
@@ -42,9 +42,14 @@ import {
 type Props = {
   isActive: boolean;
   onDarkHero: boolean;
+  label?: string;
 };
 
-export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
+export function ProductsMegaMenu({
+  isActive,
+  onDarkHero,
+  label = "Products",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [catalogue, setCatalogue] = useState<Product[]>(() =>
     listProducts(PRODUCTS),
@@ -163,7 +168,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
               : "text-foreground/70 hover:text-foreground",
         )}
       >
-        Products
+        {label}
         <ChevronDown
           size={12}
           aria-hidden
@@ -195,7 +200,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
         className={cn(
           "fixed left-1/2 top-[calc(0.75rem+3rem+0.5rem)] z-[55] w-[min(1080px,calc(100vw-32px))] -translate-x-1/2 rounded-2xl border border-border/70 bg-background/95 shadow-elevate backdrop-blur-xl",
           "supports-[backdrop-filter]:bg-background/85",
-          "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-[opacity,transform] duration-300 ease-[var(--ease-standard)]",
           "dark:border-white/[0.08]",
           open
             ? "pointer-events-auto -translate-x-1/2 translate-y-0 opacity-100"
@@ -207,14 +212,14 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
               Product range
             </p>
-            <Link
+            <LocaleLink
               href="/products"
               onClick={() => setOpen(false)}
               className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:text-foreground/70"
             >
               See all
               <ArrowRight size={12} aria-hidden />
-            </Link>
+            </LocaleLink>
           </div>
 
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -222,7 +227,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
               const count = grouped[family].length;
               return (
                 <li key={family}>
-                  <Link
+                  <LocaleLink
                     data-mm-firstlink={idx === 0 ? "true" : undefined}
                     href={`/products#${FAMILY_ANCHOR[family]}`}
                     onClick={() => setOpen(false)}
@@ -256,7 +261,7 @@ export function ProductsMegaMenu({ isActive, onDarkHero }: Props) {
                         />
                       </span>
                     </div>
-                  </Link>
+                  </LocaleLink>
                 </li>
               );
             })}

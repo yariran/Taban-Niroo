@@ -1,8 +1,11 @@
 "use client";
 
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
+import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { cn } from "@/lib/utils";
 
 /**
  * Vision, Values & Mission — the "why" chapter of the Company page.
@@ -62,6 +65,7 @@ const VALUES: readonly Value[] = [
 ];
 
 export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Vision, Values & Mission");
   const title = cmsText(
     cms,
@@ -100,7 +104,10 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
           <h2 id="vision-heading" className="mt-4 max-w-3xl">
             <RevealText
               as="span"
-              className="block font-hero-slogan text-brand-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight md:text-4xl lg:text-5xl"
+              className={cn(
+                "block font-hero-slogan text-brand-heading font-bold uppercase leading-[1.05] tracking-tight",
+                pageHeadingScale(locale),
+              )}
             >
               {title}
             </RevealText>
@@ -134,7 +141,11 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
                 key={value.number}
                 className="grid gap-2 border-t border-border py-6 md:grid-cols-[4rem_minmax(0,14rem)_minmax(0,1fr)] md:items-baseline md:gap-8 md:py-7"
               >
-                <span className="font-mono text-xs text-muted-foreground/70 tabular">
+                {/* Undiluted: `/70` measured 3.06:1 light / 4.13:1 dark on
+                    12px, both under the 4.5 floor. `--muted-foreground` is
+                    already the de-emphasis tier — thinning it further just
+                    invented a second, failing one. */}
+                <span className="font-mono text-xs text-muted-foreground tabular">
                   {value.number}
                 </span>
                 <h3 className="text-base font-medium text-brand-heading md:text-lg">

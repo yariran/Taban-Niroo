@@ -53,6 +53,7 @@ export async function POST(request: Request) {
     status,
     publishedAt: status === "published" ? now : null,
     updatedAt: now,
+    locale: raw.locale === "fa" ? "fa" : "en",
   };
 
   const { posts } = await readBlogManifest();

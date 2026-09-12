@@ -37,7 +37,7 @@ export function FadeImage({
       },
       {
         threshold: 0.01,
-        rootMargin: "480px 0px",
+        rootMargin: "160px 0px",
       },
     );
 

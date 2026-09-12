@@ -5,9 +5,11 @@ import { HomeSectionSnap } from "@/components/home-section-snap";
 import type { ContentBlock } from "@/lib/cms-content-types";
 
 /**
- * Below-the-fold home sections — code-split so the first paint only
- * pays for Hero → Featured. Each chunk loads as the user approaches
- * (or immediately after hydration for SSR HTML).
+ * Below-the-fold home sections — code-split so the first paint only pays
+ * for Hero → Featured. Each chunk loads as the user approaches it.
+ *
+ * The Plant chunk is gallery-only now (no manufacturing mp4). Keeping
+ * these on `next/dynamic` still keeps Act II–III JS off the first paint.
  */
 
 function SectionSkeleton({ minH = "min-h-[50vh]" }: { minH?: string }) {
@@ -22,6 +24,14 @@ const EngineeringDetailSection = dynamic(
   { loading: () => <SectionSkeleton /> },
 );
 
+const MaterialsScrollytellingSection = dynamic(
+  () =>
+    import("@/components/sections/materials-scrollytelling-section").then(
+      (m) => m.MaterialsScrollytellingSection,
+    ),
+  { loading: () => <SectionSkeleton minH="min-h-[80vh]" /> },
+);
+
 const TechnologySection = dynamic(
   () =>
     import("@/components/sections/technology-section").then(
@@ -30,12 +40,10 @@ const TechnologySection = dynamic(
   { loading: () => <SectionSkeleton /> },
 );
 
-const GallerySection = dynamic(
+const PlantSection = dynamic(
   () =>
-    import("@/components/sections/gallery-section").then(
-      (m) => m.GallerySection,
-    ),
-  { loading: () => <SectionSkeleton minH="min-h-[40vh]" /> },
+    import("@/components/sections/plant-section").then((m) => m.PlantSection),
+  { loading: () => <SectionSkeleton minH="min-h-[45vh]" /> },
 );
 
 const CollectionSection = dynamic(
@@ -46,36 +54,12 @@ const CollectionSection = dynamic(
   { loading: () => <SectionSkeleton /> },
 );
 
-const TimelineSection = dynamic(
-  () =>
-    import("@/components/sections/timeline-section").then(
-      (m) => m.TimelineSection,
-    ),
-  { loading: () => <SectionSkeleton /> },
-);
-
-const EditorialSection = dynamic(
-  () =>
-    import("@/components/sections/editorial-section").then(
-      (m) => m.EditorialSection,
-    ),
-  { loading: () => <SectionSkeleton minH="min-h-[45vh]" /> },
-);
-
 const WhyTabanSection = dynamic(
   () =>
     import("@/components/sections/why-taban-section").then(
       (m) => m.WhyTabanSection,
     ),
   { loading: () => <SectionSkeleton /> },
-);
-
-const TestimonialsSection = dynamic(
-  () =>
-    import("@/components/sections/testimonials-section").then(
-      (m) => m.TestimonialsSection,
-    ),
-  { loading: () => <SectionSkeleton minH="min-h-[35vh]" /> },
 );
 
 const CEOSection = dynamic(
@@ -86,9 +70,10 @@ const CEOSection = dynamic(
 
 type HomeDeferredProps = {
   engineering?: ContentBlock;
+  materials?: ContentBlock;
   technology?: ContentBlock;
+  gallery?: ContentBlock;
   collection?: ContentBlock;
-  timeline?: ContentBlock;
   whyTaban?: ContentBlock;
   testimonials?: ContentBlock;
   ceo?: ContentBlock;
@@ -96,100 +81,46 @@ type HomeDeferredProps = {
 
 export function HomeDeferred({
   engineering,
+  materials,
   technology,
+  gallery,
   collection,
-  timeline,
   whyTaban,
   testimonials,
   ceo,
 }: HomeDeferredProps) {
   return (
     <>
-      <HomeSectionSnap
-        variant="dolly"
-        index={4}
-        total={12}
-        chapter="Engineering DNA"
-        parallax
-      >
+      {/* ── ACT II tail ─────────────────────────────────────────── */}
+      <HomeSectionSnap chapterId="engineering">
         <EngineeringDetailSection cms={engineering} />
       </HomeSectionSnap>
 
-      <HomeSectionSnap
-        variant="zoom"
-        index={5}
-        total={12}
-        chapter="Technology"
-      >
+      {/* The three layers Engineering names, told against a held cutaway.
+          Sits between the argument and the standards that certify it. */}
+      <HomeSectionSnap chapterId="materials">
+        <MaterialsScrollytellingSection cms={materials} />
+      </HomeSectionSnap>
+
+      <HomeSectionSnap chapterId="technology">
         <TechnologySection cms={technology} />
       </HomeSectionSnap>
 
-      <HomeSectionSnap
-        compact
-        hideBoundary
-        index={6}
-        total={12}
-        chapter="Gallery"
-      >
-        <GallerySection />
+      {/* ── ACT III — the evidence ──────────────────────────────── */}
+      <HomeSectionSnap chapterId="plant">
+        <PlantSection cms={gallery} />
       </HomeSectionSnap>
 
-      <HomeSectionSnap
-        variant="iris"
-        index={7}
-        total={12}
-        chapter="Collection"
-        compact
-        hideBoundary
-        className="h-[100svh] max-h-[100svh]"
-      >
+      <HomeSectionSnap chapterId="installations">
         <CollectionSection cms={collection} />
       </HomeSectionSnap>
 
-      <HomeSectionSnap
-        variant="tilt-top"
-        index={8}
-        total={12}
-        chapter="History"
-      >
-        <TimelineSection cms={timeline} />
-      </HomeSectionSnap>
-
-      <HomeSectionSnap
-        variant="focus-pull"
-        index={9}
-        total={12}
-        chapter="On the factory floor"
-      >
-        <EditorialSection />
-      </HomeSectionSnap>
-
-      <HomeSectionSnap
-        variant="veil"
-        index={10}
-        total={12}
-        chapter="Why Taban Niroo"
-        parallax
-      >
+      <HomeSectionSnap chapterId="why-taban">
         <WhyTabanSection cms={whyTaban} />
       </HomeSectionSnap>
 
-      <HomeSectionSnap
-        variant="fade-up"
-        index={11}
-        total={12}
-        chapter="Testimonials"
-      >
-        <TestimonialsSection cms={testimonials} />
-      </HomeSectionSnap>
-
-      <HomeSectionSnap
-        variant="rise"
-        index={12}
-        total={12}
-        chapter="From the CEO"
-      >
-        <CEOSection cms={ceo} />
+      <HomeSectionSnap chapterId="ceo">
+        <CEOSection cms={ceo} closing={testimonials} withClosing />
       </HomeSectionSnap>
     </>
   );

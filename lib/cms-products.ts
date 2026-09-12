@@ -3,9 +3,26 @@ import {
   hasTechnicalTable,
   isProductListed,
   listProducts,
+  localizeProduct,
   type Product,
+  type ResolvedProduct,
 } from "@/lib/products";
 import { readCmsJson, writeCmsJson } from "@/lib/cms-store";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n/get-dictionary";
+import { tEn, type LocalizedString } from "@/lib/i18n/localize";
+
+/**
+ * Legacy CMS blobs may store `name` as `{ en, fa }`. Product titles are
+ * Latin-only now — keep the English string.
+ */
+function normalizeProduct(product: Product): Product {
+  const name = tEn(product.name as unknown as LocalizedString, "").trim();
+  if (typeof product.name === "string" && product.name === name) {
+    return product;
+  }
+  return { ...product, name };
+}
 
 export type ProductsManifest = {
   version: 1;
@@ -26,41 +43,58 @@ export async function readProductsManifest(): Promise<ProductsManifest> {
 export async function writeProductsManifest(
   products: Product[],
 ): Promise<ProductsManifest> {
+  const normalized = products.map(normalizeProduct);
   const manifest: ProductsManifest = {
     version: 1,
     updatedAt: new Date().toISOString(),
-    products,
+    products: normalized,
   };
   await writeCmsJson(PATHNAME, manifest);
   return manifest;
 }
 
-/** Full catalogue including hidden drafts — admin / CMS writes. */
+/** Full catalogue including hidden drafts — admin / CMS writes (raw localized fields). */
 export async function getProducts(): Promise<Product[]> {
   try {
     const manifest = await readProductsManifest();
-    if (manifest.products.length > 0) return manifest.products;
+    if (manifest.products.length > 0) {
+      return manifest.products.map(normalizeProduct);
+    }
   } catch (err) {
     console.error("[cms-products] getProducts", err);
   }
   return [...PRODUCTS];
 }
 
-/** Public catalogue — hidden / empty-datasheet products omitted. */
-export async function getPublicProducts(): Promise<Product[]> {
-  return listProducts(await getProducts());
+async function resolveLocale(locale?: Locale): Promise<Locale> {
+  if (locale && isLocale(locale)) return locale;
+  try {
+    return await getLocale();
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
+
+/** Public catalogue — hidden omitted; text resolved for locale. */
+export async function getPublicProducts(
+  locale?: Locale,
+): Promise<ResolvedProduct[]> {
+  const loc = await resolveLocale(locale);
+  return listProducts(await getProducts()).map((p) => localizeProduct(p, loc));
 }
 
 export async function getProductBySlugAsync(
   slug: string,
-): Promise<Product | undefined> {
+  locale?: Locale,
+): Promise<ResolvedProduct | undefined> {
+  const loc = await resolveLocale(locale);
   const products = await getProducts();
   const product = products.find((p) => p.id === slug);
   if (!product || !isProductListed(product)) return undefined;
-  return product;
+  return localizeProduct(product, loc);
 }
 
-/** Admin / internal: resolve by slug even when hidden. */
+/** Admin / internal: resolve by slug even when hidden (raw). */
 export async function getProductBySlugAdminAsync(
   slug: string,
 ): Promise<Product | undefined> {
@@ -69,14 +103,18 @@ export async function getProductBySlugAdminAsync(
 }
 
 export async function getAllProductSlugsAsync(): Promise<string[]> {
-  return (await getPublicProducts()).map((p) => p.id);
+  return listProducts(await getProducts()).map((p) => p.id);
 }
 
 export async function getRelatedProductsAsync(
   slug: string,
   limit = 3,
-): Promise<Product[]> {
-  const products = await getPublicProducts();
+  locale?: Locale,
+): Promise<ResolvedProduct[]> {
+  const loc = await resolveLocale(locale);
+  const products = listProducts(await getProducts()).map((p) =>
+    localizeProduct(p, loc),
+  );
   const target = products.find((p) => p.id === slug);
   if (!target) return [];
   return products
@@ -88,4 +126,4 @@ export async function seedProductsFromCode(): Promise<ProductsManifest> {
   return writeProductsManifest([...PRODUCTS]);
 }
 
-export { hasTechnicalTable, isProductListed, listProducts };
+export { hasTechnicalTable, isProductListed, listProducts, localizeProduct };

@@ -1,7 +1,8 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 export const CMS_COOKIE = "tn_cms_auth";
-export const CMS_SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 14; // 14 days
+/** 72 hours — shorter window after credential theft; bump CMS_SESSION_VERSION to revoke all. */
+export const CMS_SESSION_MAX_AGE_SEC = 60 * 60 * 72;
 
 /** Default username when CMS_ADMIN_USERNAME is unset. */
 const DEFAULT_USERNAME = "admin";

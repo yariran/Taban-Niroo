@@ -1,97 +1,81 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/site-url";
-import { SITE_CONTENT_REVISION } from "@/lib/seo";
+import { SITE_CONTENT_REVISION, hreflangAlternates } from "@/lib/seo";
 import { getAllProductSlugsAsync } from "@/lib/cms-products";
-import { getPublishedPosts } from "@/lib/cms-blog";
+import { getAllPublishedPosts } from "@/lib/cms-blog";
+import { LOCALES, withLocale } from "@/lib/i18n";
 
 /**
- * Dynamic XML sitemap.
- *
- * Static routes are listed explicitly so we can give each one a
- * meaningful `priority` / `changeFrequency`. Product detail pages and
- * published blog posts come from the CMS (with code fallbacks).
+ * Dynamic XML sitemap — static/product routes for both locales with
+ * hreflang alternates; blog posts only under their own `locale`.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
   const revised = SITE_CONTENT_REVISION;
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${base}/`,
-      lastModified: revised,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${base}/about`,
-      lastModified: revised,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${base}/products`,
-      lastModified: revised,
-      changeFrequency: "weekly",
-      priority: 0.95,
-    },
-    {
-      url: `${base}/projects`,
-      lastModified: revised,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${base}/contact`,
-      lastModified: revised,
-      changeFrequency: "yearly",
-      priority: 0.7,
-    },
-    {
-      url: `${base}/privacy`,
-      lastModified: revised,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/terms`,
-      lastModified: revised,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/imprint`,
-      lastModified: revised,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+  const bareStatic = [
+    { path: "/", priority: 1, changeFrequency: "weekly" as const },
+    { path: "/about", priority: 0.8, changeFrequency: "monthly" as const },
+    { path: "/products", priority: 0.95, changeFrequency: "weekly" as const },
+    { path: "/projects", priority: 0.7, changeFrequency: "monthly" as const },
+    { path: "/contact", priority: 0.7, changeFrequency: "yearly" as const },
+    { path: "/privacy", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/terms", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/imprint", priority: 0.3, changeFrequency: "yearly" as const },
+    { path: "/blog", priority: 0.6, changeFrequency: "weekly" as const },
   ];
 
   const [slugs, posts] = await Promise.all([
     getAllProductSlugsAsync(),
-    getPublishedPosts(),
+    getAllPublishedPosts(),
   ]);
 
-  const productRoutes: MetadataRoute.Sitemap = slugs.map((slug) => ({
-    url: `${base}/products/${slug}`,
-    lastModified: revised,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const entries: MetadataRoute.Sitemap = [];
 
-  const blogRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${base}/blog`,
-      lastModified: revised,
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    },
-    ...posts.map((post) => ({
-      url: `${base}/blog/${post.slug}`,
+  for (const locale of LOCALES) {
+    for (const route of bareStatic) {
+      const languages = hreflangAlternates(route.path);
+      entries.push({
+        url: `${base}${withLocale(route.path, locale)}`,
+        lastModified: revised,
+        changeFrequency: route.changeFrequency,
+        priority: route.priority,
+        alternates: {
+          languages: {
+            en: `${base}${languages.en}`,
+            "fa-IR": `${base}${languages["fa-IR"]}`,
+            "x-default": `${base}${languages["x-default"]}`,
+          },
+        },
+      });
+    }
+    for (const slug of slugs) {
+      const bare = `/products/${slug}`;
+      const languages = hreflangAlternates(bare);
+      entries.push({
+        url: `${base}${withLocale(bare, locale)}`,
+        lastModified: revised,
+        changeFrequency: "monthly",
+        priority: 0.7,
+        alternates: {
+          languages: {
+            en: `${base}${languages.en}`,
+            "fa-IR": `${base}${languages["fa-IR"]}`,
+            "x-default": `${base}${languages["x-default"]}`,
+          },
+        },
+      });
+    }
+  }
+
+  for (const post of posts) {
+    entries.push({
+      url: `${base}${withLocale(`/blog/${post.slug}`, post.locale)}`,
       lastModified: new Date(post.updatedAt),
-      changeFrequency: "monthly" as const,
+      changeFrequency: "monthly",
       priority: 0.55,
-    })),
-  ];
+    });
+  }
 
-  return [...staticRoutes, ...productRoutes, ...blogRoutes];
+  return entries;
 }

@@ -12,8 +12,13 @@ import {
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
+import { useBeat } from "@/components/ui/beat";
+import { EVIDENCE } from "@/lib/motion-roles";
 
-const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+const EASE = "var(--ease-standard)";
+
+/** Children past this index share the last delay — see `EVIDENCE` in lib/motion-roles.ts. */
+const STAGGER_CAP = EVIDENCE.staggerCap;
 
 type RevealTextProps = {
   children: string;
@@ -40,8 +45,12 @@ export function RevealText({
   splitLines = false,
 }: RevealTextProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [shown, setShown] = useState(false);
+  const [selfShown, setSelfShown] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+
+  /** See the note on `RevealBlock` — the section clock wins when present. */
+  const beat = useBeat();
+  const shown = beat ? beat.entered : selfShown;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -52,8 +61,9 @@ export function RevealText({
   }, []);
 
   useEffect(() => {
+    if (beat) return;
     if (reduceMotion) {
-      setShown(true);
+      setSelfShown(true);
       return;
     }
     const node = ref.current;
@@ -61,7 +71,7 @@ export function RevealText({
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
+          setSelfShown(true);
           obs.disconnect();
         }
       },
@@ -69,7 +79,7 @@ export function RevealText({
     );
     obs.observe(node);
     return () => obs.disconnect();
-  }, [reduceMotion]);
+  }, [reduceMotion, beat]);
 
   const parts =
     splitLines && children.includes("|")
@@ -95,12 +105,27 @@ export function RevealText({
               opacity: shown ? 1 : 0,
               transition: `transform ${durationMs}ms ${EASE} ${delayMs + i * stepMs}ms, opacity ${durationMs}ms ${EASE} ${delayMs + i * stepMs}ms`,
               willChange: "transform, opacity",
-              ...(useLines ? {} : { paddingRight: "0.22em" }),
             };
         return (
           <span
             key={`${part}-${i}`}
-            className={cn(useLines ? "block overflow-hidden" : "inline-block overflow-hidden align-baseline")}
+            /*
+              The word gap lives HERE, on the static wrapper, not in the
+              motion style object below.
+
+              Splitting on `\s+` throws the spaces away, and they used to be
+              restored as `paddingRight` inside the animated inline style —
+              which is `{}` under `prefers-reduced-motion`. Every heading
+              rendered through this component therefore ran its words
+              together for reduced-motion readers ("Composite&Hybrid.").
+              Spacing is layout, not choreography, so it belongs on the
+              element that is always painted.
+            */
+            className={cn(
+              useLines
+                ? "block overflow-hidden"
+                : "inline-block overflow-hidden align-baseline pe-[0.22em]",
+            )}
           >
             <span style={style}>{part}</span>
           </span>
@@ -117,7 +142,11 @@ type RevealBlockProps = {
   durationMs?: number;
   distance?: number;
   stagger?: number;
-  as?: "div" | "ul" | "ol" | "section" | "article" | "header";
+  /**
+   * `dl` matters for KPI rows: the staggered children must be the metrics
+   * themselves, so this component has to BE the list, not wrap it.
+   */
+  as?: "div" | "ul" | "ol" | "dl" | "section" | "article" | "header";
 };
 
 /**
@@ -134,8 +163,17 @@ export function RevealBlock({
   as = "div",
 }: RevealBlockProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [shown, setShown] = useState(false);
+  const [selfShown, setSelfShown] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+
+  /**
+   * Inside a `<Beat>` the section owns the clock and this component must
+   * NOT observe itself — that is what let a headline fire hundreds of
+   * pixels before the group it belongs to. Outside one (all inner routes)
+   * the local observer is still the only trigger available.
+   */
+  const beat = useBeat();
+  const shown = beat ? beat.entered : selfShown;
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -146,8 +184,9 @@ export function RevealBlock({
   }, []);
 
   useEffect(() => {
+    if (beat) return;
     if (reduceMotion) {
-      setShown(true);
+      setSelfShown(true);
       return;
     }
     const node = ref.current;
@@ -155,7 +194,7 @@ export function RevealBlock({
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
+          setSelfShown(true);
           obs.disconnect();
         }
       },
@@ -163,10 +202,26 @@ export function RevealBlock({
     );
     obs.observe(node);
     return () => obs.disconnect();
-  }, [reduceMotion]);
+  }, [reduceMotion, beat]);
 
   const Tag = as as "div";
   const items = Children.toArray(children);
+
+  /**
+   * Drop `will-change` once the phrase has landed. Holding a compositing
+   * layer per revealed node for the lifetime of the page is the classic
+   * silent regression here — see the same teardown in `blur-reveal.tsx`.
+   */
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    if (!shown || reduceMotion) return;
+    const cap = Math.min(Math.max(items.length - 1, 0), STAGGER_CAP);
+    const t = window.setTimeout(
+      () => setSettled(true),
+      delayMs + cap * stagger + durationMs + 60,
+    );
+    return () => window.clearTimeout(t);
+  }, [shown, reduceMotion, items.length, delayMs, stagger, durationMs]);
 
   return (
     <Tag
@@ -175,6 +230,12 @@ export function RevealBlock({
       data-reveal-block={shown ? "in" : "pre"}
     >
       {items.map((child, i) => {
+        /**
+         * Cap the stagger index. Uncapped, a nine-item list ran an
+         * extra ~500ms of tail past its own duration and drifted out of
+         * phase with the rest of the section's beat.
+         */
+        const step = Math.min(i, STAGGER_CAP) * stagger;
         const style: CSSProperties = reduceMotion
           ? {}
           : {
@@ -182,8 +243,8 @@ export function RevealBlock({
                 ? "translate3d(0,0,0)"
                 : `translate3d(0,${distance}px,0)`,
               opacity: shown ? 1 : 0,
-              transition: `transform ${durationMs}ms ${EASE} ${delayMs + i * stagger}ms, opacity ${durationMs}ms ${EASE} ${delayMs + i * stagger}ms`,
-              willChange: "transform, opacity",
+              transition: `transform ${durationMs}ms ${EASE} ${delayMs + step}ms, opacity ${durationMs}ms ${EASE} ${delayMs + step}ms`,
+              willChange: settled ? undefined : "transform, opacity",
             };
 
         // Merge onto element children so grid col-span / layout classes stay put.

@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -15,6 +14,8 @@ import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { NewReleaseShowcaseSection } from "@/components/sections/new-release-showcase-section";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 const DEFAULT_HERO_WORDS = ["INSPIRE", "INNOVATE", "INTEGRATE"] as const;
 const WORD_STAGGER_S = 0.18;
@@ -60,6 +61,8 @@ export function HeroSection({
   const [progress, setProgress] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
   const staticLayout = reduceMotion;
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
 
   const heroImage = cmsImage(cms, SITE_IMAGES.hero) ?? SITE_IMAGES.hero;
   const heroWords = [
@@ -163,83 +166,128 @@ export function HeroSection({
           />
         )}
       </div>
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/70"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_100%,rgb(0,0,0,0.5),transparent_62%)]"
-        aria-hidden
-      />
+      {/*
+        ONE scrim.
 
+        This was four stacked gradients — a vertical ramp, a radial pool, and
+        an lg-only horizontal band — each added to rescue a different patch of
+        a photo that the type happened to be sitting on. Centring the stack
+        removed the reason for all but one: the copy now lands on the
+        vertical centre, where the ramp already measures past AA, instead of
+        on the cloud burst that the horizontal band existed to darken.
+
+        The ramp itself lives in `--hig-scrim-*` so the contrast floor is
+        stated once and still holds when the photo is swapped through the CMS.
+      */}
+      <div className="hig-scrim pointer-events-none absolute inset-0" aria-hidden />
+
+      {/*
+        Centred stack — the HIG hero posture.
+
+        The stack used to hang bottom-left across columns 1-8, which left the
+        top two-thirds of the frame empty and pinned the type against the
+        gutter. Centring on both axes is what Apple actually does with a
+        full-bleed photograph, and it earns the contrast for free: the middle
+        of the frame is the calmest part of almost any image, so the copy
+        stops fighting the subject instead of being rescued by extra scrims.
+      */}
       <div
         className={cn(
-          "absolute inset-0 flex flex-col justify-end",
-          "pb-[max(3.5rem,env(safe-area-inset-bottom))] pt-28",
-          "sm:pb-16 md:pb-20 lg:pb-24",
+          "absolute inset-0 flex flex-col items-center justify-center",
+          "px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-24 sm:px-6 md:px-8",
         )}
       >
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-start px-5 sm:px-6 md:px-8 lg:px-10">
-          <div className="flex flex-col gap-1 md:gap-1.5">
-            {heroWords.map((word, index) => {
-              return (
-                <span
-                  key={`${word}-${index}`}
-                  className={cn(
-                    "font-hero-slogan relative isolate block text-start uppercase",
-                    "text-[clamp(2.4rem,7vw,5.5rem)] font-bold leading-[0.95] tracking-[-0.02em]",
-                    "text-[#F3EEE6] drop-shadow-[0_2px_18px_rgba(0,0,0,0.45)]",
-                    !staticLayout && "opacity-0",
-                  )}
-                  style={{
-                    animation: staticLayout
-                      ? undefined
-                      : `hero-word-fade 0.9s cubic-bezier(0.22, 0.98, 0.22, 1) ${index * WORD_STAGGER_S}s both`,
-                  }}
-                >
-                  {word}
-                </span>
-              );
-            })}
-          </div>
+        <div className="flex w-full max-w-3xl flex-col items-center text-center">
+          {/*
+            One word per line, still — but set light, not bold.
+
+            Large-and-light is the inversion the guidelines are built on:
+            weight carries hierarchy so size doesn't have to shout. Oswald
+            bold uppercase was doing the opposite, and uppercase is dead
+            weight in Persian, which has no case to begin with.
+          */}
+          <h2 className="flex flex-col">
+            {heroWords.map((word, index) => (
+              <span
+                key={`${word}-${index}`}
+                className={cn(
+                  "type-hig-display block text-brand-cream",
+                  !staticLayout && "opacity-0",
+                )}
+                style={{
+                  animation: staticLayout
+                    ? undefined
+                    : `hero-word-fade 0.9s var(--ease-entrance) ${index * WORD_STAGGER_S}s both`,
+                }}
+              >
+                {word}
+              </span>
+            ))}
+          </h2>
 
           <p
             className={cn(
-              "mt-8 max-w-sm text-[14px] leading-[1.65] text-white/70 drop-shadow-[0_1px_12px_rgba(0,0,0,0.45)] md:mt-10 md:max-w-md md:text-[15px]",
+              /* Full cream, not cream/85 — the scrim under it is now set
+                 from a measured contrast floor, so dimming the type here
+                 would spend that margin for nothing. */
+              "type-hig-lede mt-[var(--hig-6)] max-w-xl text-brand-cream",
               !staticLayout && "opacity-0",
             )}
             style={{
               animation: staticLayout
                 ? undefined
-                : `hero-word-fade 0.9s cubic-bezier(0.22, 0.98, 0.22, 1) ${(heroWords.length + 1) * WORD_STAGGER_S}s both`,
+                : `hero-word-fade 0.9s var(--ease-entrance) ${(heroWords.length + 1) * WORD_STAGGER_S}s both`,
             }}
           >
             {heroBody}
           </p>
 
+          {/*
+            Filled pill + plain chevron link.
+
+            Both used to be 11px uppercase at 0.18em tracking, which reads as
+            a fashion lookbook rather than a control. HIG calls for body-size
+            sentence case, and for exactly one button to look pressable —
+            two equally weighted outlines make the reader choose twice.
+          */}
           <div
             className={cn(
-              "mt-10 flex flex-wrap items-center gap-3 md:mt-12",
+              "mt-[var(--hig-8)] flex flex-wrap items-center justify-center gap-[var(--hig-4)]",
               !staticLayout && "opacity-0",
             )}
             style={{
               animation: staticLayout
                 ? undefined
-                : `hero-word-fade 0.9s cubic-bezier(0.22, 0.98, 0.22, 1) ${(heroWords.length + 2) * WORD_STAGGER_S}s both`,
+                : `hero-word-fade 0.9s var(--ease-entrance) ${(heroWords.length + 2) * WORD_STAGGER_S}s both`,
             }}
           >
-            <Link
+            <LocaleLink
               href="/products"
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 text-[11px] font-medium uppercase tracking-[0.18em] text-black transition-colors hover:bg-white/90"
+              className="type-hig-body inline-flex min-h-11 items-center justify-center rounded-full bg-white px-[var(--hig-6)] py-[var(--hig-3)] font-medium transition-colors duration-200 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0B0D]"
+              style={{ color: "#0A0B0D", WebkitTextFillColor: "#0A0B0D" }}
             >
-              View products
-            </Link>
-            <Link
+              {dict.home.explore}
+            </LocaleLink>
+            <LocaleLink
               href="/contact"
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/35 bg-transparent px-6 text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-colors hover:border-white/65 hover:bg-white/10"
+              className="type-hig-body group inline-flex min-h-11 items-center justify-center gap-[var(--hig-1)] rounded-full px-[var(--hig-4)] py-[var(--hig-3)] font-medium text-white transition-colors duration-200 hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0B0D]"
+              style={{ color: "#FFFFFF", WebkitTextFillColor: "#FFFFFF" }}
             >
-              Request enquiry
-            </Link>
+              {dict.home.contact}
+              {/* Points along the reading direction in both scripts. */}
+              <svg
+                viewBox="0 0 16 16"
+                className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M6 3.5 10.5 8 6 12.5" />
+              </svg>
+            </LocaleLink>
           </div>
         </div>
       </div>
@@ -249,7 +297,9 @@ export function HeroSection({
   const sceneB = (
     <div
       className={cn(
-        "flex h-full w-full flex-col items-center justify-center overflow-hidden bg-background px-6",
+        /* `items-stretch`, not `items-center`: the inner block owns its own
+           max-width and gutters so it lines up with scene A's grid. */
+        "flex h-full w-full flex-col items-stretch justify-center overflow-hidden bg-background px-5 sm:px-6 md:px-8 lg:px-10",
         staticLayout
           ? "relative min-h-[min(70dvh,32rem)] py-20 md:py-24"
           : "absolute inset-0",
@@ -258,28 +308,42 @@ export function HeroSection({
         staticLayout ? undefined : sceneLayerStyle(opacityB, 2)
       }
     >
-      <div
-        className="mb-8 h-px w-14 md:mb-10"
-        style={{
-          opacity: staticLayout ? 0.4 : 0.65,
-          background:
-            "linear-gradient(90deg, transparent, rgb(var(--accent-volt) / 0.75), transparent)",
-        }}
-        aria-hidden
-      />
-      <p className="max-w-3xl text-center font-hero-slogan text-brand-heading text-[clamp(1.65rem,4.5vw,3.25rem)] font-semibold uppercase leading-[1.12] tracking-tight">
-        {tagline}
-      </p>
-      <p
-        className="mx-auto mt-6 max-w-xl text-center text-sm leading-relaxed text-muted-foreground md:mt-8 md:text-base"
-        style={
-          staticLayout
-            ? undefined
-            : { opacity: copyB }
-        }
-      >
-        High-voltage composite insulators for power transmission.
-      </p>
+      {/*
+        Same words, off the centre axis.
+
+        This scene used to be a symmetric stack — hairline, centred uppercase
+        tagline, centred grey line — which is the exact template the fold is
+        trying to escape, and it spent a whole viewport saying nothing
+        measurable. The type now hangs off a full-width rule with the tagline
+        in columns 1-8 and the support line dropped into 9-12, so the eye
+        travels rather than settles.
+      */}
+      <div className="mx-auto w-full max-w-6xl">
+        <div
+          className="h-px w-full"
+          style={{
+            opacity: staticLayout ? 0.35 : 0.55,
+            background:
+              "linear-gradient(90deg, rgb(var(--accent-volt) / 0.75), transparent 65%)",
+          }}
+          aria-hidden
+        />
+        <div className="mt-8 grid grid-cols-12 items-end gap-x-6 gap-y-6 md:mt-10">
+          <p className="type-hig-title col-span-12 text-brand-heading lg:col-span-8">
+            {tagline}
+          </p>
+          {/* Hardcoded English, same as the proof band's lede — `dir="ltr"`
+              so the sentence stops rendering with its full stop on the
+              wrong side inside the RTL page. It still needs translating. */}
+          <p
+            dir="ltr"
+            className="type-hig-body col-span-12 text-muted-foreground lg:col-span-3 lg:col-start-10"
+            style={staticLayout ? undefined : { opacity: copyB }}
+          >
+            High-voltage composite insulators for power transmission.
+          </p>
+        </div>
+      </div>
     </div>
   );
 

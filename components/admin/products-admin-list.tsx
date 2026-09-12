@@ -111,7 +111,7 @@ export function ProductsAdminList({
 
       <div className="overflow-hidden rounded-xl border border-[#d8dee6] bg-white">
         <table className="w-full text-sm">
-          <thead className="bg-[#f4f6f8] text-right text-xs text-[#5a6570]">
+          <thead className="bg-[#f4f6f8] text-end text-xs text-[#5a6570]">
             <tr>
               <th className="px-4 py-3 font-medium">نام</th>
               <th className="px-4 py-3 font-medium">خانواده</th>

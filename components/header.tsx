@@ -2,21 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductsMegaMenu } from "@/components/products-mega-menu";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { LocaleLink, useBarePath } from "@/components/locale-link";
 import { cn } from "@/lib/utils";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 import { trapFocusKeydown } from "@/lib/focus-trap";
-
-const NAV_ITEMS = [
-  ["Company", "/about", false] as const,
-  ["Products", "/products", true] as const,
-  ["Projects & Partners", "/projects", false] as const,
-  ["Blog – R&D", "/blog", false] as const,
-] as const;
 
 const navLinkClass = (onDarkHero: boolean, isActive: boolean) =>
   cn(
@@ -31,19 +24,41 @@ const navLinkClass = (onDarkHero: boolean, isActive: boolean) =>
         : "text-foreground/70 hover:text-brand-burgundy",
   );
 
-export function Header() {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
+export type HeaderNavItem = {
+  label: string;
+  href: string;
+  hasMega: boolean;
+};
+
+export function Header({
+  brand,
+  contactLabel,
+  navItems,
+}: {
+  brand: string;
+  contactLabel: string;
+  navItems: HeaderNavItem[];
+}) {
+  const barePath = useBarePath();
+  const isHome = barePath === "/";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [overDarkHero, setOverDarkHero] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
 
-  const navItems = NAV_ITEMS;
-  /** Home hero is dark: white text. All other routes (or scrolled home) use dark text. */
-  const onDarkHero = isHome && !isScrolled;
+  /**
+   * `isScrolled` alone used to decide this, on the assumption that 60px of
+   * scroll means the dark opening frame has gone. The home hero is now a
+   * pinned film that holds the viewport for a full extra screen, so the
+   * header would flip to its light surface while still sitting on a dark
+   * plate. The hero owns the truth and publishes it as
+   * `<html data-tn-dark-hero>`; this reads it. Nothing else about the
+   * header changes, and pages without a dark hero never set the flag.
+   */
+  const onDarkHero = isHome && (!isScrolled || overDarkHero);
 
   const closeMobileMenu = useCallback(() => {
     setIsMenuOpen(false);
@@ -64,6 +79,23 @@ export function Header() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  /** One attribute, observed — no second scroll listener for the same fact. */
+  useEffect(() => {
+    if (!isHome) {
+      setOverDarkHero(false);
+      return;
+    }
+    const root = document.documentElement;
+    const read = () => setOverDarkHero(root.dataset.tnDarkHero === "true");
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-tn-dark-hero"],
+    });
+    return () => observer.disconnect();
+  }, [isHome]);
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -93,7 +125,7 @@ export function Header() {
       className={cn(
         "pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center",
         "pt-[max(1rem,calc(0.75rem+var(--sat)))] px-4 sm:px-6 lg:px-8",
-        "transition-[padding] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "transition-[padding] duration-500 ease-[var(--ease-standard)]",
         isScrolled && "pt-[max(0.65rem,calc(0.45rem+var(--sat)))] px-3 sm:px-5",
       )}
     >
@@ -102,15 +134,14 @@ export function Header() {
           "glass-header-pill pointer-events-auto",
           "grid w-full max-w-[64rem] grid-cols-[1fr_auto_1fr] items-center",
           "rounded-full border px-3.5 sm:px-4 lg:px-5",
-          "transition-[height,max-width,padding,border-color,box-shadow,background-color,backdrop-filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "transition-[height,max-width,padding,border-color,box-shadow,background-color,backdrop-filter] duration-500 ease-[var(--ease-standard)]",
           isScrolled
             ? "glass-header-pill--compact h-9 max-w-[52rem] px-3 sm:px-3.5 lg:px-4"
             : "h-10 sm:h-11",
           onDarkHero ? "glass-header-pill--hero" : "glass-header-pill--default",
         )}
       >
-        {/* Brand — left */}
-        <Link
+        <LocaleLink
           href="/"
           className={cn(
             "justify-self-start shrink-0 font-semibold uppercase tracking-[0.2em]",
@@ -119,10 +150,9 @@ export function Header() {
             onDarkHero ? "text-white" : "text-brand-navy",
           )}
         >
-          Taban Niroo
-        </Link>
+          {brand}
+        </LocaleLink>
 
-        {/* Nav — centered */}
         <nav
           aria-label="Primary"
           className={cn(
@@ -131,9 +161,9 @@ export function Header() {
             isScrolled ? "gap-4 lg:gap-5" : "gap-5 lg:gap-7",
           )}
         >
-          {navItems.map(([label, href, hasMega]) => {
+          {navItems.map(({ label, href, hasMega }) => {
             const isActive =
-              pathname === href || pathname.startsWith(`${href}/`);
+              barePath === href || barePath.startsWith(`${href}/`);
 
             if (hasMega) {
               return (
@@ -141,25 +171,26 @@ export function Header() {
                   key={href}
                   isActive={isActive}
                   onDarkHero={onDarkHero}
+                  label={label}
                 />
               );
             }
 
             return (
-              <Link
+              <LocaleLink
                 key={href}
                 href={href}
                 aria-current={isActive ? "page" : undefined}
                 className={navLinkClass(onDarkHero, isActive)}
               >
                 {label}
-              </Link>
+              </LocaleLink>
             );
           })}
         </nav>
 
-        {/* Actions — right (desktop) */}
-        <div className="hidden items-center justify-end gap-1.5 md:flex">
+        <div className="hidden items-center justify-end gap-4 md:flex lg:gap-5">
+          <LanguageSwitcher onDarkHero={onDarkHero} />
           <ThemeToggle
             variant="ghost"
             compact
@@ -167,11 +198,11 @@ export function Header() {
               "rounded-full transition-[width,height] duration-500",
               isScrolled ? "size-7" : "size-8",
               onDarkHero
-                ? "text-white hover:bg-white/15"
+                ? "border-transparent bg-transparent text-white hover:bg-white/15"
                 : "text-foreground hover:bg-foreground/10",
             )}
           />
-          <Link
+          <LocaleLink
             href="/contact"
             className={cn(
               "group inline-flex items-center gap-1.5 rounded-full font-medium leading-none",
@@ -180,28 +211,28 @@ export function Header() {
                 ? "h-7 px-2.5 text-[11px]"
                 : "pill-elevate h-7 px-3 text-[12px] sm:h-8 sm:px-3.5",
               onDarkHero
-                ? "bg-white text-brand-navy hover:bg-brand-cream"
-                : "bg-brand-navy text-white hover:bg-brand-burgundy",
+                ? "bg-white text-[#0A0B0D] hover:bg-white/90"
+                : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
             )}
           >
-            Contact
+            {contactLabel}
             <ArrowRight
               size={isScrolled ? 11 : 12}
               aria-hidden
               className="transition-transform group-hover:translate-x-0.5"
             />
-          </Link>
+          </LocaleLink>
         </div>
 
-        {/* Phone: theme + hamburger on the right */}
-        <div className="col-start-3 flex items-center justify-end gap-1 md:hidden">
+        <div className="col-start-3 flex items-center justify-end gap-2.5 md:hidden">
+          <LanguageSwitcher onDarkHero={onDarkHero} />
           <ThemeToggle
             variant="ghost"
             compact
             className={cn(
               "touch-target size-10 rounded-full",
               onDarkHero
-                ? "text-white hover:bg-white/15"
+                ? "border-transparent bg-transparent text-white hover:bg-white/15"
                 : "text-foreground hover:bg-foreground/10",
             )}
           />
@@ -247,9 +278,9 @@ export function Header() {
                 "flex flex-col overflow-y-auto overscroll-contain rounded-t-[1.35rem] border-t px-4 pt-2",
                 "pb-[max(1rem,var(--sab))]",
                 "[-webkit-overflow-scrolling:touch]",
-                "pl-[max(1rem,var(--sal))] pr-[max(1rem,var(--sar))]",
+                "ps-[max(1rem,env(safe-area-inset-inline-start,0px))] pe-[max(1rem,env(safe-area-inset-inline-end,0px))]",
                 onDarkHero
-                  ? "glass-mobile-menu--hero border-white/10 bg-zinc-950 text-white"
+                  ? "glass-mobile-menu--hero border-white/10 text-white"
                   : "glass-mobile-menu--default border-border bg-background text-foreground",
               )}
               role="dialog"
@@ -264,12 +295,12 @@ export function Header() {
                 )}
                 aria-label="Mobile primary"
               >
-                {navItems.map(([label, href], index) => {
+                {navItems.map(({ label, href }, index) => {
                   const isActive =
-                    pathname === href || pathname.startsWith(`${href}/`);
+                    barePath === href || barePath.startsWith(`${href}/`);
 
                   return (
-                    <Link
+                    <LocaleLink
                       key={href}
                       ref={index === 0 ? firstMobileLinkRef : undefined}
                       href={href}
@@ -287,30 +318,44 @@ export function Header() {
                       onClick={closeMobileMenu}
                     >
                       <span>{label}</span>
-                    </Link>
+                    </LocaleLink>
                   );
                 })}
               </nav>
 
               <div
                 className={cn(
-                  "mt-3 border-t pt-3",
+                  "mt-3 flex flex-col gap-3 border-t pt-3",
                   onDarkHero ? "border-white/10" : "border-border/50",
                 )}
               >
-                <Link
+                <div className="flex items-center justify-between gap-3 px-0.5">
+                  <span
+                    className={cn(
+                      "text-[11px] font-medium tracking-[0.14em] uppercase",
+                      onDarkHero ? "text-white/55" : "text-muted-foreground",
+                    )}
+                  >
+                    Language
+                  </span>
+                  <LanguageSwitcher
+                    onDarkHero={onDarkHero}
+                    onNavigate={closeMobileMenu}
+                  />
+                </div>
+                <LocaleLink
                   href="/contact"
                   onClick={closeMobileMenu}
                   className={cn(
                     "touch-target flex min-h-11 items-center justify-center gap-2 rounded-full text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
                     onDarkHero
                       ? "border border-white/20 bg-white/10 text-white hover:bg-white/16"
-                      : "bg-brand-navy text-white hover:bg-brand-burgundy",
+                      : "bg-primary text-primary-foreground hover:bg-brand-burgundy",
                   )}
                 >
-                  Contact
+                  {contactLabel}
                   <ArrowRight size={12} aria-hidden />
-                </Link>
+                </LocaleLink>
               </div>
             </div>
           </>,

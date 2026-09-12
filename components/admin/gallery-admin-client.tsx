@@ -293,7 +293,7 @@ export function GalleryAdminClient({
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           multiple
-          className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-foreground file:px-4 file:py-2 file:text-xs file:font-medium file:text-background"
+          className="block w-full text-sm text-muted-foreground file:me-3 file:rounded-full file:border-0 file:bg-foreground file:px-4 file:py-2 file:text-xs file:font-medium file:text-background"
         />
         <label className="block text-xs uppercase tracking-wider text-muted-foreground">
           Default alt text (optional)

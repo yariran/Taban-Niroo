@@ -121,11 +121,22 @@ export function IndustrialWorldMap({
             transition={reduceMotion ? { duration: 0 } : MAP_MOTION.spring}
             style={{ transformOrigin: zoomOrigin }}
           >
+            {/*
+              `role="group"`, not `role="img"`.
+
+              `img` declares the whole subtree to be a single flat
+              graphic, which makes every focusable control inside it an
+              error — axe reported `nested-interactive`,
+              `no-focusable-content` and `aria-prohibited-attr` (serious)
+              because the country shapes and the info card are real
+              buttons. This map is an interactive control surface, so it
+              is labelled as a group and its children stay reachable.
+            */}
             <svg
               className="block h-full w-full"
               viewBox={`0 0 ${MAP_VIEWBOX.width} ${MAP_VIEWBOX.height}`}
               preserveAspectRatio="xMidYMid meet"
-              role="img"
+              role="group"
               aria-label="Interactive world map showing selected project markets"
             >
               <defs>
@@ -136,15 +147,15 @@ export function IndustrialWorldMap({
                   cy={activeShape?.centroid[1] ?? MAP_VIEWBOX.height / 2}
                   r="92"
                 >
-                  <stop offset="0%" stopColor="#f0b27a" />
-                  <stop offset="24%" stopColor="#e07a2f" />
-                  <stop offset="64%" stopColor="#7a1f2b" />
-                  <stop offset="100%" stopColor="#3a1018" />
+                  <stop offset="0%" stopColor="#f0c673" />
+                  <stop offset="24%" stopColor="#e3b34e" />
+                  <stop offset="64%" stopColor="#c99a34" />
+                  <stop offset="100%" stopColor="#4a3610" />
                 </radialGradient>
                 <radialGradient id={ambientGradientId}>
-                  <stop offset="0%" stopColor="#e07a2f" stopOpacity="0.34" />
-                  <stop offset="42%" stopColor="#7a1f2b" stopOpacity="0.16" />
-                  <stop offset="100%" stopColor="#e07a2f" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#e3b34e" stopOpacity="0.34" />
+                  <stop offset="42%" stopColor="#c99a34" stopOpacity="0.16" />
+                  <stop offset="100%" stopColor="#e3b34e" stopOpacity="0" />
                 </radialGradient>
                 <radialGradient
                   id={homeHeatGradientId}
@@ -153,16 +164,16 @@ export function IndustrialWorldMap({
                   cy={homeShape?.centroid[1] ?? MAP_VIEWBOX.height / 2}
                   r="70"
                 >
-                  <stop offset="0%" stopColor="#f3eee6" />
-                  <stop offset="28%" stopColor="#e07a2f" />
-                  <stop offset="68%" stopColor="#7a1f2b" />
-                  <stop offset="100%" stopColor="#3a1018" />
+                  <stop offset="0%" stopColor="#f4f5f6" />
+                  <stop offset="28%" stopColor="#e3b34e" />
+                  <stop offset="68%" stopColor="#c99a34" />
+                  <stop offset="100%" stopColor="#4a3610" />
                 </radialGradient>
                 <radialGradient id={homeAmbientGradientId}>
-                  <stop offset="0%" stopColor="#f3eee6" stopOpacity="0.28" />
-                  <stop offset="35%" stopColor="#e07a2f" stopOpacity="0.32" />
-                  <stop offset="70%" stopColor="#7a1f2b" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#e07a2f" stopOpacity="0" />
+                  <stop offset="0%" stopColor="#f4f5f6" stopOpacity="0.28" />
+                  <stop offset="35%" stopColor="#e3b34e" stopOpacity="0.32" />
+                  <stop offset="70%" stopColor="#c99a34" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="#e3b34e" stopOpacity="0" />
                 </radialGradient>
               </defs>
 

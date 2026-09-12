@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { AdminLocaleToggle } from "@/components/admin/admin-locale-toggle";
 import type { BlogPost, BlogPostStatus } from "@/lib/cms-blog";
+import type { Locale } from "@/lib/i18n";
 
 const inputClass =
   "mt-1.5 w-full rounded-md border border-[#cfd6de] bg-white px-3 py-2 text-sm";
@@ -24,8 +26,11 @@ export function BlogEditor({
   const [status, setStatus] = useState<BlogPostStatus>(
     initial?.status ?? "draft",
   );
+  const [locale, setLocale] = useState<Locale>(initial?.locale ?? "en");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fieldDir = locale === "fa" ? "rtl" : "ltr";
 
   async function uploadCover(file: File) {
     setBusy(true);
@@ -59,6 +64,7 @@ export function BlogEditor({
       body,
       coverImage: coverImage || null,
       status,
+      locale,
     };
     try {
       const res = isNew
@@ -97,14 +103,25 @@ export function BlogEditor({
             {isNew ? "مطلب جدید" : "ویرایش مطلب"}
           </h1>
         </div>
-        <button
-          type="submit"
-          disabled={busy}
-          className="rounded-md bg-[#0f1720] px-4 py-2 text-sm text-white disabled:opacity-50"
-        >
-          {busy ? "…" : "ذخیره"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <AdminLocaleToggle
+            value={locale}
+            onChange={setLocale}
+            disabled={busy}
+          />
+          <button
+            type="submit"
+            disabled={busy}
+            className="rounded-md bg-[#0f1720] px-4 py-2 text-sm text-white disabled:opacity-50"
+          >
+            {busy ? "…" : "ذخیره"}
+          </button>
+        </div>
       </div>
+      <p className="text-xs text-[#5a6570]">
+        هر مطلب فقط در یک زبان منتشر می‌شود (
+        {locale === "fa" ? "فارسی → /fa/blog/…" : "English → /en/blog/…"}).
+      </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       <label className="block text-sm text-[#5a6570]">
@@ -114,7 +131,7 @@ export function BlogEditor({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className={inputClass}
-          dir="ltr"
+          dir={fieldDir}
         />
       </label>
       <label className="block text-sm text-[#5a6570]">
@@ -145,7 +162,7 @@ export function BlogEditor({
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
           className={inputClass}
-          dir="ltr"
+          dir={fieldDir}
         />
       </label>
       <label className="block text-sm text-[#5a6570]">
@@ -155,7 +172,7 @@ export function BlogEditor({
           value={body}
           onChange={(e) => setBody(e.target.value)}
           className={inputClass}
-          dir="ltr"
+          dir={fieldDir}
         />
       </label>
       <label className="block text-sm text-[#5a6570]">

@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+  LOCALES,
+  localeOg,
+  withLocale,
+  type Locale,
+} from "@/lib/i18n";
+import { pageSeoCopy, type PageSeoKey } from "@/lib/seo-copy";
 
 /**
  * Shared SEO helpers — keep revision dates honest; bump when content
  * on static routes materially changes.
  */
-export const SITE_CONTENT_REVISION = new Date("2026-07-26T00:00:00.000Z");
+export const SITE_CONTENT_REVISION = new Date("2026-09-08T00:00:00.000Z");
 
 export const ORGANIZATION_SAME_AS = [
   "https://www.taban-niroo.com",
@@ -20,11 +27,17 @@ export function absoluteUrl(pathOrUrl: string, base = getSiteUrl()): string {
   return `${base}${trimmed.startsWith("/") ? trimmed : `/${trimmed}`}`;
 }
 
+/** Brand mark in titles — English catalogue voice vs Persian search brand. */
+export function brandMark(locale: Locale): string {
+  return locale === "fa" ? "تابان نیرو" : "Taban Niroo";
+}
+
 type PageSocialInput = {
   title: string;
   description: string;
-  /** Path only, e.g. `/about`. */
+  /** Bare path only, e.g. `/about` (no locale prefix). */
   path: string;
+  locale?: Locale;
   imageUrl?: string;
   imageAlt?: string;
   type?: "website" | "article";
@@ -34,6 +47,18 @@ type PageSocialInput = {
 };
 
 /**
+ * hreflang map: `en`, `fa-IR`, `x-default` (default → English tree).
+ */
+export function hreflangAlternates(barePath: string): Record<string, string> {
+  const path = barePath || "/";
+  return {
+    en: withLocale(path, "en"),
+    "fa-IR": withLocale(path, "fa"),
+    "x-default": withLocale(path, "en"),
+  };
+}
+
+/**
  * Full social + canonical metadata so Next.js shallow-merge cannot leak
  * the homepage Open Graph title/url onto child routes.
  */
@@ -41,6 +66,7 @@ export function pageSocial({
   title,
   description,
   path,
+  locale = "en",
   imageUrl,
   imageAlt,
   type = "website",
@@ -48,27 +74,33 @@ export function pageSocial({
   modifiedTime,
   noIndex,
 }: PageSocialInput): Metadata {
-  const ogTitle = title.includes("Taban Niroo")
-    ? title
-    : `${title} | Taban Niroo`;
+  const brand = brandMark(locale);
+  const ogTitle = title.includes(brand) ? title : `${title} | ${brand}`;
   const images = imageUrl
     ? [{ url: imageUrl, alt: imageAlt ?? title }]
     : undefined;
 
+  const localized = withLocale(path || "/", locale);
+  const languages = hreflangAlternates(path || "/");
+
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: localized,
+      languages,
+    },
     robots: noIndex
       ? { index: false, follow: true }
       : { index: true, follow: true },
     openGraph: {
       title: ogTitle,
       description,
-      url: path,
+      url: localized,
       type,
-      siteName: "Taban Niroo",
-      locale: "en_US",
+      siteName: brand,
+      locale: localeOg(locale),
+      alternateLocale: LOCALES.filter((l) => l !== locale).map(localeOg),
       ...(images ? { images } : {}),
       ...(publishedTime ? { publishedTime } : {}),
       ...(modifiedTime ? { modifiedTime } : {}),
@@ -81,3 +113,22 @@ export function pageSocial({
     },
   };
 }
+
+/** Locale-aware page metadata from the independent SEO copy table. */
+export function pageSocialFor(
+  key: PageSeoKey,
+  locale: Locale,
+  extras?: Omit<Partial<PageSocialInput>, "title" | "description" | "path" | "locale">,
+): Metadata {
+  const copy = pageSeoCopy(key, locale);
+  return pageSocial({
+    title: copy.title,
+    description: copy.description,
+    path: copy.path,
+    locale,
+    ...extras,
+  });
+}
+
+export type { PageSeoKey };
+export { pageSeoCopy } from "@/lib/seo-copy";

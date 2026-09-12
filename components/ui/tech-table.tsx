@@ -9,7 +9,7 @@ export const techTableHeadCellClass =
 
 export const techTableHeadStickyClass = cn(
   techTableHeadCellClass,
-  "sticky left-0 z-20 px-4 text-left",
+  "sticky start-0 z-20 px-4 text-start",
 );
 
 export const techTableBodyCellClass =
@@ -17,5 +17,5 @@ export const techTableBodyCellClass =
 
 export const techTableBodyStickyClass = cn(
   techTableBodyCellClass,
-  "sticky left-0 z-10 bg-background px-4 text-left font-mono text-[12px] text-foreground",
+  "sticky start-0 z-10 bg-background px-4 text-start font-mono text-[12px] text-foreground",
 );

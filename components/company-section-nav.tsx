@@ -75,7 +75,7 @@ export function CompanyChapterIndex({ className }: { className?: string }) {
                   aria-hidden
                   className={cn(
                     "pointer-events-none absolute inset-x-0 -bottom-px h-px origin-left bg-brand-orange",
-                    "transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    "transition-transform duration-300 ease-[var(--ease-standard)]",
                     isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
                   )}
                 />
