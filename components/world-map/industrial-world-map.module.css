@@ -49,12 +49,22 @@
   will-change: transform, opacity;
 }
 
+/*
+ * One gradient, stopped late.
+ *
+ * This carried two extra radials: a gold wash pinned to `58% 42%` of the
+ * *container* while Iran's centroid projects to `54% 36%`, which is why
+ * the glow read as a smear over the Arabian Sea rather than a marked
+ * country; and a grey disc ending at `transparent 44%`. Both ended early
+ * enough to band visibly in 8-bit on a near-black ground — the faint
+ * concentric arcs over Europe. Iran's halo is now drawn inside the SVG,
+ * where it is anchored to the real centroid.
+ */
 .mapViewport {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 58% 42%, rgb(201 154 52 / 12%), transparent 36%),
-    radial-gradient(circle at 52% 42%, rgb(36 39 44 / 45%), transparent 44%),
+    radial-gradient(circle at 52% 42%, rgb(36 39 44 / 32%), transparent 72%),
     linear-gradient(180deg, rgb(18 19 22 / 98%), rgb(10 11 13 / 98%));
 }
 
@@ -83,43 +93,53 @@
   vector-effect: non-scaling-stroke;
 }
 
+/*
+ * Markets were #26292F against #1B1D21 land — a contrast ratio of 1.16:1,
+ * below the 3:1 floor for non-text UI and, in practice, invisible. The
+ * fill is now gold-tinted at ~1.97:1 and carries a gold hairline, because
+ * edge definition reads at small sizes where a fill shift does not.
+ */
 .countryInteractiveBase {
-  fill: #26292f;
+  fill: #564b33;
+  stroke: #e3b34e;
+  stroke-width: 0.65;
+  stroke-opacity: 0.42;
 }
 
+/*
+ * Halo discipline: this country previously stacked four glow systems —
+ * three drop-shadows out to 28px here, a `homeHeat` fill, an in-SVG bloom
+ * circle of r=110 (≈18× Iran's own 2,128 unit² area) and a container
+ * gradient. Two shadows, tight, is the whole budget now.
+ */
 .countryHomeBase {
   fill: #6b4e14;
   stroke: #e3b34e;
   stroke-width: 1.1;
-  stroke-opacity: 0.9;
+  stroke-opacity: 0.92;
   filter:
-    drop-shadow(0 0 4px rgb(227 179 78 / 0.85))
-    drop-shadow(0 0 14px rgb(201 154 52 / 0.7))
-    drop-shadow(0 0 28px rgb(227 179 78 / 0.35));
+    drop-shadow(0 0 3px rgb(227 179 78 / 0.7))
+    drop-shadow(0 0 11px rgb(201 154 52 / 0.45));
 }
 
 .hoverLayer {
   fill: #9aa0a8;
-  pointer-events: all;
-  cursor: pointer;
+  pointer-events: none;
 }
 
 .homeHeat {
   pointer-events: none;
   filter:
-    drop-shadow(0 0 3px rgb(244 245 246 / 0.55))
-    drop-shadow(0 0 10px rgb(227 179 78 / 0.9))
-    drop-shadow(0 0 22px rgb(201 154 52 / 0.75))
-    drop-shadow(0 0 40px rgb(227 179 78 / 0.4));
+    drop-shadow(0 0 4px rgb(227 179 78 / 0.7))
+    drop-shadow(0 0 14px rgb(201 154 52 / 0.45));
 }
 
+/* Same budget as the home country: two shadows, nothing past ~12px. */
 .activeHeat {
   pointer-events: none;
   filter:
-    drop-shadow(0 0 3px rgb(227 179 78 / 0.95))
-    drop-shadow(0 0 9px rgb(201 154 52 / 0.75))
-    drop-shadow(0 0 20px rgb(201 154 52 / 0.45))
-    drop-shadow(0 0 38px rgb(227 179 78 / 0.28));
+    drop-shadow(0 0 3px rgb(227 179 78 / 0.8))
+    drop-shadow(0 0 12px rgb(201 154 52 / 0.5));
 }
 
 .activeBorder {
@@ -144,6 +164,56 @@
     drop-shadow(0 0 12px rgb(227 179 78 / 0.65));
 }
 
+.markerRing {
+  fill: rgb(10 11 13 / 0.55);
+  stroke: #e3b34e;
+  stroke-width: 1.15;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgb(227 179 78 / 0.45));
+}
+
+.markerRingHome {
+  stroke: #f4f5f6;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 6px rgb(244 245 246 / 0.5));
+}
+
+.markerCore {
+  fill: #e3b34e;
+  pointer-events: none;
+}
+
+.markerCoreHome {
+  fill: #f4f5f6;
+}
+
+/*
+ * `paint-order: stroke fill` draws the dark stroke first, so the label
+ * keeps a halo over land, coastline and ocean alike without a plate
+ * behind it.
+ */
+.markerLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: #f4f5f6;
+  stroke: #0a0b0d;
+  stroke-width: 3.2;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hitSurface {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: all;
+  cursor: pointer;
+}
+
 .hitTarget {
   fill: transparent;
   stroke: transparent;
@@ -159,26 +229,74 @@
   filter: drop-shadow(0 0 7px rgb(227 179 78 / 0.85));
 }
 
+/*
+ * Detail panel — instrument readout, not a dialog.
+ *
+ * The previous card was a 16px-radius gradient tile holding two bordered
+ * metric boxes and a row of pill tags, over a scrim that dimmed the whole
+ * map. Three nested container treatments for three numbers. What replaces
+ * it is flat: square corners, one hairline, a single gold rule marking the
+ * leading edge, and figures set in tabular numerals so Projects and Since
+ * align in a column.
+ */
 .panel {
-  background:
-    linear-gradient(145deg, rgb(24 26 30 / 0.97), rgb(12 13 16 / 0.98));
-  border: 1px solid rgb(227 179 78 / 0.18);
-  box-shadow:
-    0 28px 80px rgb(0 0 0 / 0.45),
-    inset 0 1px 0 rgb(255 255 255 / 0.06);
-  backdrop-filter: blur(18px);
+  background: rgb(13 14 17 / 0.94);
+  border: 1px solid rgb(255 255 255 / 0.09);
+  border-inline-start: 2px solid #e3b34e;
+  border-radius: 3px;
+  box-shadow: 0 18px 44px -14px rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(10px);
 }
 
 .shortCard {
-  width: min(100%, 22rem);
+  width: min(100%, 20.5rem);
 }
 
-.metric {
-  background: rgb(255 255 255 / 0.03);
-  border: 1px solid rgb(255 255 255 / 0.06);
+.panelRule {
+  border-top: 1px solid rgb(255 255 255 / 0.08);
 }
 
+/* Hairline between the two figures, in place of two bordered boxes. */
+.statSplit {
+  border-inline-start: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.statValue {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Gold tick per product, replacing the pill row. */
+.productItem::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 1px;
+  margin-block-start: 0.55rem;
+  background: #e3b34e;
+  opacity: 0.85;
+  flex: none;
+}
+
+.closeGlyph {
+  color: rgb(203 213 225 / 0.7);
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
+  border: 1px solid transparent;
+}
+
+.closeGlyph:hover,
+.closeGlyph:focus-visible {
+  color: #f4f5f6;
+  border-color: rgb(227 179 78 / 0.45);
+  outline: none;
+}
+
+/*
+ * Click-away surface only. It used to paint rgb(10 11 13 / 0.48) with a
+ * blur, so selecting a market dimmed the map you were reading.
+ */
 .cardScrim {
-  background: rgb(10 11 13 / 0.48);
-  backdrop-filter: blur(2px);
+  background: transparent;
 }

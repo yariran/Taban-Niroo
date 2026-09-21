@@ -13,7 +13,6 @@ jobs:
   quality:
     name: Lint · Test · Build · E2E · Perf
     runs-on: ubuntu-latest
-  
 
     steps:
       - name: Checkout

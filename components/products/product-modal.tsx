@@ -123,12 +123,7 @@ const TECH_FULL_ELECTRICAL = [
   "wetWithstand",
 ] as const satisfies ReadonlyArray<keyof TechnicalRow>;
 
-const TECH_SIMPLE_ELECTRICAL = [
-  "impulseWithstand",
-  "wetWithstand",
-] as const satisfies ReadonlyArray<keyof TechnicalRow>;
-
-/** 330 / 400 / 500 kV — Lightning + Switching (empty for now) + Power. */
+/** All non-MV-24/36 products: Lightning + Switching + Power. */
 const TECH_HV_ELECTRICAL = [
   "impulseWithstand",
   "switchingWithstand",
@@ -140,20 +135,11 @@ const FULL_ELECTRICAL_SUBHEADER_IDS = new Set([
   "suspension-tension-24-36",
 ]);
 
-const SWITCHING_COLUMN_PRODUCT_IDS = new Set([
-  "suspension-tension-330",
-  "suspension-tension-400",
-  "suspension-tension-500",
-]);
-
 function techBodyColumns(productId: string): readonly (keyof TechnicalRow)[] {
   if (FULL_ELECTRICAL_SUBHEADER_IDS.has(productId)) {
     return [...TECH_CORE_COLUMNS, ...TECH_FULL_ELECTRICAL, "weight"];
   }
-  if (SWITCHING_COLUMN_PRODUCT_IDS.has(productId)) {
-    return [...TECH_CORE_COLUMNS, ...TECH_HV_ELECTRICAL, "weight"];
-  }
-  return [...TECH_CORE_COLUMNS, ...TECH_SIMPLE_ELECTRICAL, "weight"];
+  return [...TECH_CORE_COLUMNS, ...TECH_HV_ELECTRICAL, "weight"];
 }
 export function ProductModal({
   open,
@@ -460,7 +446,7 @@ function buildTechRows(product: ProductSpec): DatasheetRow[] {
 function TechnicalDataTable({ product }: { product: ProductSpec }) {
   const rows = buildTechRows(product);
   const fullElectrical = FULL_ELECTRICAL_SUBHEADER_IDS.has(product.id);
-  const hasSwitching = SWITCHING_COLUMN_PRODUCT_IDS.has(product.id);
+  const hasSwitching = !fullElectrical;
   const bodyColumns = techBodyColumns(product.id);
   const rowSpan = fullElectrical ? 2 : 1;
 

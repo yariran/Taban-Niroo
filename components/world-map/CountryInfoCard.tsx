@@ -14,37 +14,37 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
   return (
     <AnimatePresence>
       {country ? (
-        <>
-          <m.button
-            key="scrim"
-            type="button"
-            aria-label="Close country details"
-            className={`${styles.cardScrim} absolute inset-0 z-40 cursor-pointer border-0`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.25 }}
-            onClick={onClose}
-          />
-          <m.article
-            key={country.name}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={`country-card-${country.name}`}
-            className={`${styles.panel} ${styles.shortCard} absolute inset-x-4 bottom-3 z-50 mx-auto rounded-2xl p-4 sm:inset-x-auto sm:bottom-4 sm:end-6 sm:mx-0 sm:p-5`}
-            initial={{ opacity: 0, y: reduceMotion ? 0 : 40, scale: reduceMotion ? 1 : 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: reduceMotion ? 0 : 28, scale: reduceMotion ? 1 : 0.97 }}
-            transition={{ duration: reduceMotion ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="mb-4 flex items-start justify-between gap-4">
+        /*
+          A region, not `role="dialog" aria-modal="true"`. It was marked
+          modal while focus was never moved into it and never restored — a
+          trap announced with no trap built. It is an inline readout for
+          the map behind it, so it is announced politely instead.
+
+          There is no scrim any more either. The old one was a full-map
+          `<button>` at z-40, which meant that with a card open every
+          country underneath it was unreachable: selecting a second market
+          took two clicks, and the first one only dimmed the map. Clicking
+          away is handled on the SVG itself now, so markets switch
+          directly.
+        */
+        <m.article
+          key={country.name}
+          aria-live="polite"
+          aria-labelledby={`country-card-${country.name}`}
+          className={`${styles.panel} ${styles.shortCard} absolute inset-x-4 bottom-3 z-50 mx-auto p-4 sm:inset-x-auto sm:bottom-4 sm:end-6 sm:mx-0 sm:p-5`}
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+          transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
+        >
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-orange/80">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-orange">
                   {country.name === "Iran" ? "Headquarters" : "Active market"}
                 </p>
                 <h3
                   id={`country-card-${country.name}`}
-                  className="text-2xl font-semibold tracking-tight text-slate-50"
+                  className="mt-1.5 text-xl font-semibold uppercase tracking-tight text-slate-50"
                 >
                   {country.name}
                 </h3>
@@ -52,48 +52,48 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs uppercase tracking-[0.14em] text-slate-300 transition hover:border-white/20 hover:text-white"
+                aria-label={`Close ${country.name} details`}
+                className={`${styles.closeGlyph} -me-1 -mt-1 grid h-7 w-7 flex-none place-items-center rounded-sm text-base leading-none`}
               >
-                Close
+                <span aria-hidden="true">×</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className={`${styles.metric} rounded-xl px-3.5 py-3`}>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">
-                  Projects
-                </p>
-                <p className="mt-1 text-2xl font-semibold text-white">
+            <div className={`${styles.panelRule} mt-4 grid grid-cols-2 pt-4`}>
+              <div className="pe-4">
+                <p className={`${styles.statValue} text-[1.75rem] font-semibold leading-none text-white`}>
                   {country.projects}
                 </p>
-              </div>
-              <div className={`${styles.metric} rounded-xl px-3.5 py-3`}>
-                <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">
-                  Since
+                <p className="mt-1.5 text-[10px] uppercase tracking-[0.16em] text-slate-400">
+                  Projects
                 </p>
-                <p className="mt-1 text-2xl font-semibold text-white">
+              </div>
+              <div className={`${styles.statSplit} ps-4`}>
+                <p className={`${styles.statValue} text-[1.75rem] font-semibold leading-none text-white`}>
                   {country.firstCooperation}
+                </p>
+                <p className="mt-1.5 text-[10px] uppercase tracking-[0.16em] text-slate-400">
+                  Since
                 </p>
               </div>
             </div>
 
-            <div className="mt-4 border-t border-white/[0.07] pt-4">
+            <div className={`${styles.panelRule} mt-4 pt-4`}>
               <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">
                 Products
               </p>
-              <div className="mt-2.5 flex flex-wrap gap-1.5">
+              <ul className="mt-2.5 space-y-1.5">
                 {country.products.map((product) => (
-                  <span
+                  <li
                     key={product}
-                    className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-slate-200"
+                    className={`${styles.productItem} flex gap-2.5 text-[13px] leading-snug text-slate-200`}
                   >
                     {product}
-                  </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </m.article>
-        </>
       ) : null}
     </AnimatePresence>
   );
