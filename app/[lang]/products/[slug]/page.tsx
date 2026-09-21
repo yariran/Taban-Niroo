@@ -520,11 +520,7 @@ const TECH_FULL_ELECTRICAL = [
   "wetWithstand",
 ] as const;
 
-const TECH_SIMPLE_ELECTRICAL = [
-  "impulseWithstand",
-  "wetWithstand",
-] as const;
-
+/** All non-MV-24/36 products: Lightning + Switching + Power. */
 const TECH_HV_ELECTRICAL = [
   "impulseWithstand",
   "switchingWithstand",
@@ -536,26 +532,17 @@ const FULL_ELECTRICAL_SUBHEADER_IDS = new Set([
   "suspension-tension-24-36",
 ]);
 
-const SWITCHING_COLUMN_PRODUCT_IDS = new Set([
-  "suspension-tension-330",
-  "suspension-tension-400",
-  "suspension-tension-500",
-]);
-
 function techBodyColumns(productId: string) {
   if (FULL_ELECTRICAL_SUBHEADER_IDS.has(productId)) {
     return [...TECH_CORE_COLUMNS, ...TECH_FULL_ELECTRICAL, "weight"] as const;
   }
-  if (SWITCHING_COLUMN_PRODUCT_IDS.has(productId)) {
-    return [...TECH_CORE_COLUMNS, ...TECH_HV_ELECTRICAL, "weight"] as const;
-  }
-  return [...TECH_CORE_COLUMNS, ...TECH_SIMPLE_ELECTRICAL, "weight"] as const;
+  return [...TECH_CORE_COLUMNS, ...TECH_HV_ELECTRICAL, "weight"] as const;
 }
 
 function ProductTechnicalTable({ product }: { product: Product }) {
   const rows = product.variants ?? [];
   const fullElectrical = FULL_ELECTRICAL_SUBHEADER_IDS.has(product.id);
-  const hasSwitching = SWITCHING_COLUMN_PRODUCT_IDS.has(product.id);
+  const hasSwitching = !fullElectrical;
   const bodyColumns = techBodyColumns(product.id);
   const rowSpan = fullElectrical ? 2 : 1;
 

@@ -3,10 +3,10 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
+  type MouseEvent as ReactMouseEvent,
 } from "react";
 import { LazyMotion, m, useReducedMotion } from "motion/react";
 
@@ -28,21 +28,44 @@ const loadMotionFeatures = () =>
 type IndustrialWorldMapProps = {
   /** Hide internal title block when the parent section already provides one. */
   embedded?: boolean;
+  /**
+   * Namespace for this instance's SVG gradient ids. Only needs passing if
+   * a second map is ever mounted on the same document.
+   */
+  idPrefix?: string;
 };
 
 export function IndustrialWorldMap({
   embedded = false,
+  idPrefix = "tn-world-map",
 }: IndustrialWorldMapProps) {
   const [activeCountryKey, setActiveCountryKey] =
     useState<InteractiveCountryKey | null>(null);
   const reduceMotion = useReducedMotion();
   const rootRef = useRef<HTMLElement | null>(null);
 
-  const reactId = useId().replaceAll(":", "");
-  const heatGradientId = `${reactId}-country-heat`;
-  const ambientGradientId = `${reactId}-ambient-bloom`;
-  const homeHeatGradientId = `${reactId}-home-heat`;
-  const homeAmbientGradientId = `${reactId}-home-ambient`;
+  /*
+    Fixed ids, not `useId()`.
+
+    These four ids are referenced by `fill="url(#…)"` on paths rendered in
+    the same pass, so server and client have to agree on them. `useId`
+    encodes the component's position in the React tree, and this component
+    sits behind a `next/dynamic` boundary — so the server and the client
+    resolve it from different tree shapes and disagree. React reports the
+    mismatch as an attribute it "won't patch up", which leaves the SSR
+    markup pointing `fill` at a gradient id that no longer exists.
+
+    The note in `collection-section.tsx` records the same failure being
+    traced to a `<Beat>` wrapper and worked around by not adding one. That
+    left the constraint in place: any edit that shifts this subtree brings
+    the bug back, which is exactly what happened while reworking the
+    markers. A constant cannot drift, and `idPrefix` keeps the escape
+    hatch if a second instance is ever mounted.
+  */
+  const heatGradientId = `${idPrefix}-country-heat`;
+  const ambientGradientId = `${idPrefix}-ambient-bloom`;
+  const homeHeatGradientId = `${idPrefix}-home-heat`;
+  const homeAmbientGradientId = `${idPrefix}-home-ambient`;
 
   const activeShape = activeCountryKey
     ? INTERACTIVE_SHAPES.get(activeCountryKey) ?? null
@@ -64,6 +87,22 @@ export function IndustrialWorldMap({
   const clearCountry = useCallback(() => {
     setActiveCountryKey(null);
   }, []);
+
+  /*
+    Click-away lives on the map, not on an overlay. The info card used to
+    ship a full-bleed scrim above the countries, so with a card open the
+    markets behind it were unreachable and switching markets cost two
+    clicks. Anything carrying `data-market` is a hit target and handles
+    its own selection; everything else — ocean, unmarked land — clears.
+  */
+  const onMapClick = useCallback(
+    (event: ReactMouseEvent<SVGSVGElement>) => {
+      const target = event.target as Element | null;
+      if (target?.closest("[data-market]")) return;
+      clearCountry();
+    },
+    [clearCountry],
+  );
 
   useEffect(() => {
     if (!activeCountryKey) return;
@@ -138,6 +177,7 @@ export function IndustrialWorldMap({
               preserveAspectRatio="xMidYMid meet"
               role="group"
               aria-label="Interactive world map showing selected project markets"
+              onClick={onMapClick}
             >
               <defs>
                 <radialGradient
@@ -157,6 +197,12 @@ export function IndustrialWorldMap({
                   <stop offset="42%" stopColor="#c99a34" stopOpacity="0.16" />
                   <stop offset="100%" stopColor="#e3b34e" stopOpacity="0" />
                 </radialGradient>
+                {/*
+                  No white core. Starting this ramp at #f4f5f6 blew the
+                  centre of the country out to paper-white, which reads as
+                  an overexposed photograph rather than a marked market.
+                  The ramp now stays inside the gold.
+                */}
                 <radialGradient
                   id={homeHeatGradientId}
                   gradientUnits="userSpaceOnUse"
@@ -164,32 +210,37 @@ export function IndustrialWorldMap({
                   cy={homeShape?.centroid[1] ?? MAP_VIEWBOX.height / 2}
                   r="70"
                 >
-                  <stop offset="0%" stopColor="#f4f5f6" />
-                  <stop offset="28%" stopColor="#e3b34e" />
+                  <stop offset="0%" stopColor="#f0c673" />
+                  <stop offset="30%" stopColor="#e3b34e" />
                   <stop offset="68%" stopColor="#c99a34" />
                   <stop offset="100%" stopColor="#4a3610" />
                 </radialGradient>
                 <radialGradient id={homeAmbientGradientId}>
-                  <stop offset="0%" stopColor="#f4f5f6" stopOpacity="0.28" />
-                  <stop offset="35%" stopColor="#e3b34e" stopOpacity="0.32" />
-                  <stop offset="70%" stopColor="#c99a34" stopOpacity="0.18" />
+                  <stop offset="0%" stopColor="#e3b34e" stopOpacity="0.26" />
+                  <stop offset="45%" stopColor="#c99a34" stopOpacity="0.13" />
                   <stop offset="100%" stopColor="#e3b34e" stopOpacity="0" />
                 </radialGradient>
               </defs>
 
+              {/*
+                r=110 enclosed ~38,000 unit² around a country measuring
+                2,128 — an eighteen-fold halo, which is what turned into
+                the unanchored smear over the Arabian Sea. 44 keeps the
+                bloom inside Iran's own 68×60 footprint plus a margin.
+              */}
               {homeShape ? (
                 <m.circle
                   className={styles.homeBloom}
                   cx={homeShape.centroid[0]}
                   cy={homeShape.centroid[1]}
-                  r="110"
+                  r="44"
                   fill={`url(#${homeAmbientGradientId})`}
                   animate={
                     reduceMotion
-                      ? { opacity: 0.8, scale: 1 }
+                      ? { opacity: 0.7, scale: 1 }
                       : {
-                          opacity: [0.45, 0.9, 0.55],
-                          scale: [0.85, 1.2, 1],
+                          opacity: [0.35, 0.62, 0.4],
+                          scale: [0.94, 1.08, 1],
                         }
                   }
                   transition={{
@@ -211,15 +262,15 @@ export function IndustrialWorldMap({
                   className={styles.ambientBloom}
                   cx={activeShape.centroid[0]}
                   cy={activeShape.centroid[1]}
-                  r="92"
+                  r="40"
                   fill={`url(#${ambientGradientId})`}
-                  initial={{ opacity: 0, scale: 0.55 }}
+                  initial={{ opacity: 0, scale: 0.7 }}
                   animate={
                     reduceMotion
-                      ? { opacity: 0.75, scale: 1 }
+                      ? { opacity: 0.7, scale: 1 }
                       : {
-                          opacity: [0.35, 0.78, 0.48],
-                          scale: [0.72, 1.18, 1.02],
+                          opacity: [0.32, 0.66, 0.44],
+                          scale: [0.86, 1.1, 1],
                         }
                   }
                   transition={{
@@ -251,9 +302,18 @@ export function IndustrialWorldMap({
             </svg>
           </m.div>
 
-          <p className="pointer-events-none absolute bottom-3 left-1/2 z-20 hidden -translate-x-1/2 text-[10px] uppercase tracking-[0.22em] text-slate-400/70 sm:block">
-            Select a highlighted market
-          </p>
+          {/*
+            Was `text-slate-400/70` at 10px — ~4.2:1 on this ground,
+            under the 4.5:1 floor for text this size — and it stayed up
+            while a panel was open, instructing the reader to do the thing
+            they had just done. Now it retires on selection.
+          */}
+          {!activeCountryKey ? (
+            <p className="pointer-events-none absolute bottom-3 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-300 sm:flex">
+              <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-brand-orange" />
+              Select a highlighted market
+            </p>
+          ) : null}
 
           <CountryInfoCard country={activeCountry} onClose={clearCountry} />
         </div>

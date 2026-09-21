@@ -24,31 +24,36 @@ export const FULL_ELECTRICAL_BODY_KEYS = [
   "wetWithstand",
 ] as const satisfies readonly TechBodyKey[];
 
-/** Simplified: Lightning (Positive value) + Power (Wet value). */
+/** Simplified: Lightning (Positive value) + Power (Wet value).
+ *  Retained for header electrical-key detection; live tables use
+ *  `HV_ELECTRICAL_BODY_KEYS` for every non-MV-24/36 product. */
 export const SIMPLE_ELECTRICAL_BODY_KEYS = [
   "impulseWithstand",
   "wetWithstand",
 ] as const satisfies readonly TechBodyKey[];
 
-/** 330 / 400 / 500 kV — include empty Switching Impulse column. */
+/** Simplified electrical columns for every product except the two MV
+ *  datasheets above: Lightning + Switching Impulse + Power (Wet).
+ *  Switching cells may be empty until catalogue values are filled in. */
 export const HV_ELECTRICAL_BODY_KEYS = [
   "impulseWithstand",
   "switchingWithstand",
   "wetWithstand",
 ] as const satisfies readonly TechBodyKey[];
 
-export const SWITCHING_COLUMN_PRODUCT_IDS = new Set([
-  "suspension-tension-330",
-  "suspension-tension-400",
-  "suspension-tension-500",
-]);
+/** @deprecated Prefer `usesSwitchingImpulseColumn` — kept for older imports. */
+export const SWITCHING_COLUMN_PRODUCT_IDS = new Set<string>();
+
+/** Switching Impulse column on every product except the two full-subheader MV sheets. */
+export function usesSwitchingImpulseColumn(productId: string): boolean {
+  return !usesFullElectricalSubheaders(productId);
+}
 
 export function getElectricalBodyKeys(
   productId: string,
 ): readonly TechBodyKey[] {
   if (usesFullElectricalSubheaders(productId)) return FULL_ELECTRICAL_BODY_KEYS;
-  if (SWITCHING_COLUMN_PRODUCT_IDS.has(productId)) return HV_ELECTRICAL_BODY_KEYS;
-  return SIMPLE_ELECTRICAL_BODY_KEYS;
+  return HV_ELECTRICAL_BODY_KEYS;
 }
 
 /** @deprecated Use FULL_ELECTRICAL_BODY_KEYS / getElectricalBodyKeys */
