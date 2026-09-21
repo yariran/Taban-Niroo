@@ -120,8 +120,17 @@ function OfficeCol({
   lines: readonly string[];
   phone: { display: string; href: string };
   fax: string;
-  email?: { display: string; href: string } | null;
+  email?:
+    | { display: string; href: string }
+    | readonly { display: string; href: string }[]
+    | null;
 }) {
+  const emails = email
+    ? Array.isArray(email)
+      ? email
+      : [email]
+    : [];
+
   return (
     <div>
       <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-brand-orange/90">
@@ -134,14 +143,18 @@ function OfficeCol({
           </span>
         ))}
         <a href={phone.href} className="block tabular-nums text-white/80 transition-colors hover:text-brand-orange">
-          {phone.display}
+          Landline: {phone.display}
         </a>
-        <span className="block tabular-nums">Fax {fax}</span>
-        {email && (
-          <a href={email.href} className="block text-white/80 transition-colors hover:text-brand-orange">
-            {email.display}
+        <span className="block tabular-nums">Fax: {fax}</span>
+        {emails.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            className="block text-white/80 transition-colors hover:text-brand-orange"
+          >
+            {item.display}
           </a>
-        )}
+        ))}
       </address>
     </div>
   );
@@ -204,15 +217,19 @@ export function FooterSection({
             label="Shiraz"
             lines={["Taban Niroo Bldg", "Shiraz SEZ, Iran"]}
             phone={{ display: "+98 713 717 5115-7", href: "tel:+987137175115" }}
-            fax="+98 21 2629 3990"
+            fax="+98 21 2264 4237"
+            email={{ display: "info@taban-niroo.com", href: "mailto:info@taban-niroo.com" }}
           />
 
           <OfficeCol
             label="Tehran"
             lines={["No 64, Saeedi Ave", "Africa St"]}
             phone={{ display: "+98 21 8821 6952", href: "tel:+982188216952" }}
-            fax="+98 21 2629 3990"
-            email={{ display: "info@taban-niroo.com", href: "mailto:info@taban-niroo.com" }}
+            fax="+98 21 2264 4237"
+            email={[
+              { display: "info@taban-niroo.com", href: "mailto:info@taban-niroo.com" },
+              { display: "sales@taban-niroo.com", href: "mailto:sales@taban-niroo.com" },
+            ]}
           />
         </div>
 

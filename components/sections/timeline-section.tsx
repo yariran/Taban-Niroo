@@ -46,11 +46,7 @@ const MILESTONES = [
     title: "HV Insulators",
     description: "Design and production of high-voltage insulators.",
   },
-  {
-    year: "2017",
-    title: "Cable Accessories",
-    description: "Design and production of cable accessories.",
-  },
+  // Cable Accessories (2017) — restored with HIDDEN_FAMILIES when the family is public again.
   {
     year: "2019",
     title: "Post Insulators",

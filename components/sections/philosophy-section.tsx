@@ -24,6 +24,7 @@ import {
  */
 export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const reduceMotion = usePrefersReducedMotion();
   const locale = useLocale();
   const isRtl = locale === "fa";
@@ -45,10 +46,21 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
     if (!sectionRef.current) return;
 
     const rect = sectionRef.current.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
     const sectionHeight = sectionRef.current.offsetHeight;
+    /**
+     * The pinned stage's height, not `window.innerHeight`.
+     *
+     * Track and stage are both sized in `svh`; `innerHeight` is the
+     * current viewport, which on a phone differs from `svh` for as long
+     * as the toolbar is sliding. Measuring the element we actually pin
+     * keeps the denominator equal to the real travel, so the two plates
+     * finish their slide exactly when the pin releases instead of being
+     * left short of centre on mobile.
+     */
+    const stage = stageRef.current;
+    const stageHeight = stage ? stage.offsetHeight : window.innerHeight;
 
-    const scrollableRange = Math.max(sectionHeight - windowHeight, 1);
+    const scrollableRange = Math.max(sectionHeight - stageHeight, 1);
     const scrolled = -rect.top;
     const progress = Math.max(0, Math.min(1, scrolled / scrollableRange));
 
@@ -102,13 +114,14 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
       <div
         ref={sectionRef}
         className="relative"
-        style={{ height: staticLayout ? "auto" : "160vh" }}
+        style={{ height: staticLayout ? "auto" : "160svh" }}
       >
           <div
+            ref={stageRef}
             className={
               staticLayout
                 ? "flex min-h-0 items-center justify-center py-12 md:py-16 lg:py-20"
-                : "sticky top-0 flex h-[100dvh] items-center justify-center overflow-hidden"
+                : "sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden"
             }
           >
             <div className="relative w-full">
@@ -232,8 +245,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
           </p>
           <p className="mt-6 text-balance text-lg leading-relaxed text-muted-foreground md:mt-8 md:text-xl lg:text-2xl">
             High-voltage composite accessories. Long rod, post, hybrid
-            insulators. Transformer bushings. Cable accessories. IEC-tested.
-            6-1000 kV.
+            insulators. Transformer bushings. IEC-tested. 6-1000 kV.
           </p>
         </RevealBlock>
       </div>

@@ -3,8 +3,19 @@ export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALE_COOKIE = "tn_locale";
 
+/**
+ * Public Persian locale. Keep `false` to park `/fa` (redirects to EN) while
+ * the language control still shows «فارسی». Flip to `true` to re-enable.
+ */
+export const FA_LOCALE_ENABLED = false;
+
 export function isLocale(value: string): value is Locale {
   return (LOCALES as readonly string[]).includes(value);
+}
+
+export function isLocalePubliclyEnabled(locale: Locale): boolean {
+  if (locale === "fa") return FA_LOCALE_ENABLED;
+  return true;
 }
 
 export function stripLocalePrefix(pathname: string): {

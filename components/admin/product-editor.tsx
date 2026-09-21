@@ -78,6 +78,7 @@ const TECH_FIELDS: { key: keyof ProductTechnicalRow; label: string }[] = [
   { key: "minimumCreepage", label: "Min creepage" },
   { key: "impulseWithstand", label: "Impulse +" },
   { key: "impulseNegative", label: "Impulse −" },
+  { key: "switchingWithstand", label: "Switching impulse" },
   { key: "dryWithstand", label: "Dry withstand" },
   { key: "wetWithstand", label: "Wet withstand" },
   { key: "weight", label: "Weight" },

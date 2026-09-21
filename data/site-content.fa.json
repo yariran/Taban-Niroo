@@ -7,27 +7,27 @@
       "title": "مهندسی.",
       "titleLine2": "آزمون.",
       "titleLine3": "دوام.",
-      "body": "تابان نیرو بیش از ۲۵ سال است در شیراز مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ هیبریدی، بوشینگ ترانسفورماتور و سرکابل و مفصل برای شبکه‌های انتقال و توزیع تولید می‌کند.",
+      "body": "تابان نیرو بیش از ۲۵ سال است در شیراز مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ هیبریدی و بوشینگ ترانسفورماتور برای شبکه‌های انتقال و توزیع تولید می‌کند.",
       "ctaLabel": "عایق‌بندی تست‌شدهٔ IEC برای شبکه‌های ۶ تا ۱۰۰۰ کیلوولت"
     },
     "proof": {
       "eyebrow": "در یک نگاه",
       "items": [
-        { "label": "سال تولید", "value": "+25" },
-        { "label": "ثبت اختراع", "value": "3" },
+        { "label": "پروژه", "value": "+500" },
+        { "label": "سال فعالیت", "value": "+24" },
         { "label": "محدودهٔ ولتاژ", "value": "6–1000 kV" },
-        { "label": "تست نوعی", "value": "IEC" }
+        { "label": "کشور تحت پوشش", "value": "+10" }
       ]
     },
     "philosophy": {
       "eyebrow": "سبد محصول",
       "title": "کامپوزیتی و هیبریدی.",
-      "body": "Long Rod، مقرهٔ اتکایی، مقرهٔ هیبریدی، بوشینگ ترانسفورماتور، سرکابل و مفصل. تست‌شده بر اساس IEC، در محدودهٔ 6–1000 kV."
+      "body": "Long Rod، مقرهٔ اتکایی، مقرهٔ هیبریدی، بوشینگ ترانسفورماتور. تست‌شده بر اساس IEC، در محدودهٔ 6–1000 kV."
     },
     "featured": {
       "eyebrow": "محصولات منتخب",
       "title": "سبد عایق‌بندی.",
-      "body": "شش خانوادهٔ محصول برای شبکه‌های فشار متوسط و فشار قوی: Long Rod Insulators، Post Insulators، Hybrid Post Insulators، Hollow Core Bushing، Cable Accessories و Creepage Extenders."
+      "body": "پنج خانوادهٔ محصول برای شبکه‌های فشار متوسط و فشار قوی: Long Rod Insulators، Post Insulators، Hybrid Post Insulators، Hollow Core Bushing و Creepage Extenders."
     },
     "engineering": {
       "eyebrow": "DNA مهندسی",

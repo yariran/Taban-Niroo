@@ -32,7 +32,7 @@ export const PAGE_SEO: Record<
     fa: {
       title: "تابان نیرو — سازندهٔ مقرهٔ کامپوزیتی سیلیکونی",
       description:
-        "تولید مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ هیبریدی، بوشینگ ترانسفورماتور و سرکابل برای شبکه‌های فشار متوسط و فشار قوی. تست‌شده بر اساس IEC، از ۶ تا ۱۰۰۰ کیلوولت.",
+        "تولید مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ هیبریدی و بوشینگ ترانسفورماتور برای شبکه‌های فشار متوسط و فشار قوی. تست‌شده بر اساس IEC، از ۶ تا ۱۰۰۰ کیلوولت.",
     },
   },
   about: {
@@ -53,12 +53,12 @@ export const PAGE_SEO: Record<
     en: {
       title: "Products",
       description:
-        "Composite insulators, hybrid insulators, transformer bushings, and cable accessories. IEC 61109, 62217, and related standards. 6-420 kV.",
+        "Composite insulators, hybrid insulators, and transformer bushings. IEC 61109, 62217, and related standards. 6-420 kV.",
     },
     fa: {
       title: "محصولات — مقرهٔ کامپوزیتی، هیبریدی و بوشینگ",
       description:
-        "سبد کامل مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ اتکایی، مقرهٔ هیبریدی، بوشینگ و سرکابل. جست‌وجو بر اساس کلاس ولتاژ و کد DPL.",
+        "سبد کامل مقرهٔ کامپوزیتی سیلیکونی، مقرهٔ اتکایی، مقرهٔ هیبریدی و بوشینگ. جست‌وجو بر اساس کلاس ولتاژ و کد DPL.",
     },
   },
   projects: {

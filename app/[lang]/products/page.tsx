@@ -9,7 +9,7 @@ import { ProductCatalogSection } from "@/components/products/product-catalog-sec
 import { SiteFooter } from "@/components/site-footer";
 import { getPublicProducts } from "@/lib/cms-products";
 import { getSiteContent } from "@/lib/cms-content";
-import { cmsImage, cmsText } from "@/lib/cms-resolve";
+import { cmsHeadlineLines, cmsImage, cmsText } from "@/lib/cms-resolve";
 import { SITE_IMAGES } from "@/lib/site-images";
 import { RevealWords } from "@/components/ui/reveal-words";
 import { pageSocialFor } from "@/lib/seo";
@@ -47,13 +47,15 @@ export default async function ProductsPage({
   const hero = content.products?.hero;
   const standards = content.products?.standards;
   const eyebrow = cmsText(hero, "eyebrow", "Product range");
-  const title1 = cmsText(hero, "title", "The insulation");
-  const title2 = cmsText(hero, "titleLine2", "portfolio for");
-  const title3 = cmsText(hero, "titleLine3", "power networks.");
+  const titleLines = cmsHeadlineLines(hero, [
+    "The insulation",
+    "portfolio for",
+    "power networks.",
+  ]);
   const body = cmsText(
     hero,
     "body",
-    "Six engineered product families — composite insulators, hybrid technology, transformer bushings, cable accessories, overhead feeder protection and retrofit creepage solutions. Built to IEC standards and field-proven worldwide.",
+    "Five engineered product families — composite insulators, hybrid technology, transformer bushings, overhead feeder protection and retrofit creepage solutions. Built to IEC standards and field-proven worldwide.",
   );
   const cta1 = cmsText(hero, "ctaLabel", "Browse all products");
   const cta1Href = cmsText(hero, "ctaHref", "#product-explorer");
@@ -126,20 +128,26 @@ export default async function ProductsPage({
                 <span className="inline-flex h-px w-10 bg-brand-burgundy/50" />
                 <span>{eyebrow}</span>
               </div>
+              {/*
+                Lines come from `cmsHeadlineLines`, so a locale that says
+                this in two lines gets two — never its own two plus the
+                English third. The middle line keeps the quiet tint
+                whatever the count, so the lockup reads the same in both
+                languages.
+              */}
               <h1 className="font-hero-slogan text-brand-heading mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] font-bold uppercase leading-[0.92] tracking-[-0.012em]">
-                <RevealWords as="span" className="block">
-                  {title1}
-                </RevealWords>
-                <RevealWords
-                  as="span"
-                  className="block text-brand-navy/55"
-                  delay={150}
-                >
-                  {title2}
-                </RevealWords>
-                <RevealWords as="span" className="block" delay={300}>
-                  {title3}
-                </RevealWords>
+                {titleLines.map((line, index) => (
+                  <RevealWords
+                    key={line}
+                    as="span"
+                    className={
+                      index === 1 ? "block text-brand-navy/55" : "block"
+                    }
+                    delay={index * 150}
+                  >
+                    {line}
+                  </RevealWords>
+                ))}
               </h1>
               <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
                 {body}

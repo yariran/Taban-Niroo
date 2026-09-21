@@ -9,10 +9,17 @@ import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import { useLocale } from "@/components/locale-link";
 
 const STORAGE_KEY = "tn-intro-v2";
-const HOLD_MS = 1900;
-const EXIT_MS = 750;
-/** Absolute ceiling — unlock even if timers are throttled in a background tab. */
-const CEILING_MS = HOLD_MS + EXIT_MS + 2000;
+/** Kill switch — set `true` to re-enable the cinematic brand intro. */
+const INTRO_ENABLED = false;
+/** Soft floor so the brand beat can land — not an artificial long hold. */
+const MIN_MS = 850;
+/** Prefer completing near this mark when critical assets are ready. */
+const TARGET_MS = 1100;
+const EXIT_MS = 560;
+/** Absolute ceiling — unlock even if readiness stalls (e.g. background tab). */
+const CEILING_MS = 2200;
+
+const HERO_POSTER = "/images/taban-hero-poster.jpg";
 
 type Phase = "in" | "out" | "done";
 
@@ -64,6 +71,7 @@ function markSeen(): void {
  * - `window.__TN_INTRO_SKIP__ === true` (same flag, init-script form)
  */
 export function shouldSkipIntro(): boolean {
+  if (!INTRO_ENABLED) return true;
   if (typeof window === "undefined") return false;
   if (prefersReducedMotion()) return true;
   if (alreadySeen()) return true;
@@ -78,7 +86,35 @@ export function shouldSkipIntro(): boolean {
   return false;
 }
 
-/** Brand plate on first home visit (works with /en and /fa). */
+/** Probe the hero poster only — never the full hero video. */
+function loadHeroPoster(): Promise<void> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+    img.onload = done;
+    img.onerror = done;
+    img.src = HERO_POSTER;
+    if (img.complete) done();
+  });
+}
+
+function documentReadyWeight(): number {
+  if (typeof document === "undefined") return 0;
+  if (document.readyState === "complete") return 0.35;
+  if (document.readyState === "interactive") return 0.22;
+  return 0.08;
+}
+
+/**
+ * Cinematic brand intro on first home visit (works with /en and /fa).
+ * Progress tracks critical above-the-fold readiness — not the full page
+ * or the hero video file.
+ */
 export function SiteIntro() {
   const pathname = usePathname() || "/";
   const locale = useLocale();
@@ -89,12 +125,14 @@ export function SiteIntro() {
 
   // SSR defaults to "in" on home; client layout-effect corrects skips before paint.
   const [phase, setPhase] = useState<Phase>(() =>
-    !isHome || isAdmin ? "done" : "in",
+    !INTRO_ENABLED || !isHome || isAdmin ? "done" : "in",
   );
+  const [progress, setProgress] = useState(0);
 
   const lockedRef = useRef(false);
   const exitTimerRef = useRef<number | null>(null);
   const skipRef = useRef(false);
+  const progressRef = useRef(0);
 
   // Sync skip / reduced-motion before first paint so we never flash-lock.
   useLayoutEffect(() => {
@@ -130,9 +168,16 @@ export function SiteIntro() {
     }
 
     let finished = false;
+    let raf = 0;
+    let posterReady = false;
+    let fontsReady = false;
+    let exitStarted = false;
+    const startedAt = performance.now();
+
     const finish = () => {
       if (finished) return;
       finished = true;
+      if (raf) cancelAnimationFrame(raf);
       if (exitTimerRef.current != null) {
         window.clearTimeout(exitTimerRef.current);
         exitTimerRef.current = null;
@@ -142,7 +187,20 @@ export function SiteIntro() {
       setPhase("done");
     };
 
+    const beginExit = () => {
+      if (finished || exitStarted) return;
+      exitStarted = true;
+      setProgress(1);
+      progressRef.current = 1;
+      setPhase("out");
+      exitTimerRef.current = window.setTimeout(() => {
+        finish();
+      }, EXIT_MS);
+    };
+
     setPhase("in");
+    setProgress(0);
+    progressRef.current = 0;
 
     try {
       acquire();
@@ -151,20 +209,80 @@ export function SiteIntro() {
       throw err;
     }
 
-    const holdTimer = window.setTimeout(() => {
+    void loadHeroPoster().then(() => {
+      posterReady = true;
+    });
+
+    // Fonts are nice-to-have; never stall the intro on them.
+    if (document.fonts?.ready) {
+      void Promise.race([
+        document.fonts.ready.then(() => {
+          fontsReady = true;
+        }),
+        new Promise<void>((r) => {
+          window.setTimeout(r, 280);
+        }),
+      ]);
+    } else {
+      fontsReady = true;
+    }
+
+    const onReadyState = () => {
+      /* readiness re-read each frame */
+    };
+    document.addEventListener("readystatechange", onReadyState);
+
+    const tick = (now: number) => {
       if (finished) return;
-      setPhase("out");
-      exitTimerRef.current = window.setTimeout(() => {
-        finish();
-      }, EXIT_MS);
-    }, HOLD_MS);
+
+      const elapsed = now - startedAt;
+      const ready =
+        documentReadyWeight() +
+        (posterReady ? 0.45 : 0) +
+        (fontsReady ? 0.12 : 0);
+
+      // Soft time curve so progress feels alive without inventing a long wait.
+      const timeCurve = Math.min(1, elapsed / TARGET_MS);
+      let target = Math.min(0.92, ready * 0.55 + timeCurve * 0.45);
+
+      const criticalReady = posterReady && document.readyState !== "loading";
+      const pastMin = elapsed >= MIN_MS;
+
+      if (criticalReady && pastMin) {
+        target = 1;
+      } else if (elapsed >= TARGET_MS && criticalReady) {
+        target = 1;
+      }
+
+      // If poster is stuck but DOM is ready past target window, still exit.
+      if (elapsed >= TARGET_MS && document.readyState === "complete") {
+        target = 1;
+      }
+
+      const current = progressRef.current;
+      const next = current + (target - current) * 0.14;
+      progressRef.current = next;
+      setProgress(next);
+
+      if (next >= 0.995 && target >= 1) {
+        beginExit();
+        return;
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
 
     const ceilingTimer = window.setTimeout(() => {
-      finish();
+      beginExit();
+      // Hard finish if exit animation is also starved.
+      window.setTimeout(finish, EXIT_MS + 80);
     }, CEILING_MS);
 
     const onIntent = () => {
-      finish();
+      beginExit();
+      // Intent dismisses immediately after a short fade.
     };
 
     window.addEventListener("keydown", onIntent);
@@ -173,12 +291,13 @@ export function SiteIntro() {
     window.addEventListener("pointerdown", onIntent);
 
     return () => {
-      window.clearTimeout(holdTimer);
+      if (raf) cancelAnimationFrame(raf);
       window.clearTimeout(ceilingTimer);
       if (exitTimerRef.current != null) {
         window.clearTimeout(exitTimerRef.current);
         exitTimerRef.current = null;
       }
+      document.removeEventListener("readystatechange", onReadyState);
       window.removeEventListener("keydown", onIntent);
       window.removeEventListener("wheel", onIntent);
       window.removeEventListener("touchstart", onIntent);
@@ -190,46 +309,67 @@ export function SiteIntro() {
 
   if (phase === "done") return null;
 
+  // Suggested beat: brand 0–30%, bar 30–90%, tagline 90–100%.
+  const brandOpacity = Math.min(1, progress / 0.28);
+  const brandY = (1 - brandOpacity) * 10;
+  const barProgress = Math.min(1, Math.max(0, (progress - 0.28) / 0.62));
+  const taglineOpacity =
+    progress >= 0.88 ? Math.min(1, (progress - 0.88) / 0.1) : 0;
+  const taglineY = (1 - taglineOpacity) * 6;
+
   return (
     <div
       data-site-intro
       className={cn(
         "fixed inset-0 z-[200] flex items-center justify-center overflow-hidden",
         "bg-brand-navy-deep",
-        "transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "transition-[opacity,transform] duration-[560ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
         phase === "out"
-          ? "pointer-events-none -translate-y-[4%] opacity-0"
+          ? "pointer-events-none -translate-y-[3.5%] opacity-0"
           : "translate-y-0 opacity-100",
       )}
       role="presentation"
       aria-hidden={phase === "out"}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_20%_80%,rgb(var(--accent-volt)/0.14),transparent_55%)]"
-        aria-hidden
-      />
-
-      <div
-        className={cn(
-          "relative z-10 flex max-w-3xl flex-col px-6",
-          "animate-[intro-fade-up_0.8s_var(--ease-entrance)_both]",
-        )}
+        className="relative z-10 flex w-full max-w-[18rem] flex-col items-center px-6 sm:max-w-[22rem]"
+        dir="ltr"
       >
-        <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-brand-orange">
-          {dict.intro.kicker}
-        </p>
-        <p className="font-hero-slogan mt-4 text-[clamp(2.5rem,10vw,5.5rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] text-brand-cream">
+        <p
+          className="font-hero-slogan text-center text-[clamp(1.35rem,3.6vw,1.85rem)] font-semibold uppercase leading-none tracking-[0.08em] text-brand-cream"
+          style={{
+            opacity: brandOpacity,
+            transform: `translate3d(0, ${brandY}px, 0)`,
+          }}
+        >
           {dict.brand}
         </p>
+
         <div
-          className="mt-6 h-px w-40 origin-left bg-brand-orange animate-[intro-volt_1s_var(--ease-entrance)_0.35s_both]"
-          aria-hidden
-        />
-        <p className="type-cinema mt-5 max-w-sm text-[clamp(1rem,2vw,1.25rem)] text-brand-cream/75">
-          {dict.intro.line}
-        </p>
-        <p className="mt-8 font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
-          {dict.intro.spec}
+          className="mt-8 h-px w-full max-w-[11rem] overflow-hidden bg-brand-cream/15 sm:mt-9 sm:max-w-[13rem]"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress * 100)}
+          aria-label="Loading"
+        >
+          <div
+            className="h-full origin-left bg-brand-orange"
+            style={{
+              transform: `scaleX(${barProgress})`,
+              opacity: brandOpacity > 0.4 ? 1 : 0.35,
+            }}
+          />
+        </div>
+
+        <p
+          className="mt-5 font-mono text-[9px] uppercase tracking-[0.32em] text-brand-cream/55 sm:mt-6 sm:text-[10px] sm:tracking-[0.36em]"
+          style={{
+            opacity: taglineOpacity,
+            transform: `translate3d(0, ${taglineY}px, 0)`,
+          }}
+        >
+          {dict.intro.tagline}
         </p>
       </div>
     </div>

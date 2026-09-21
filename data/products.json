@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-28T13:05:23.079Z",
+  "updatedAt": "2026-09-20T23:30:52.041Z",
   "products": [
     {
       "id": "suspension-tension-24-36",
@@ -30,7 +30,7 @@
             "impulseWithstand": "140",
             "impulseNegative": "155",
             "dryWithstand": "70",
-            "wetWithstand": "50"
+            "wetWithstand": "55"
           }
         },
         {
@@ -233,17 +233,17 @@
           "code": "DPL11-420-6L",
           "voltage": "11 kV",
           "sectionLength": "370±15 mm",
-          "creepage": "440 mm",
+          "creepage": "420 mm",
           "technical": {
             "ratedVoltage": "11",
             "sml": "6",
             "sectionLength": "370±15",
-            "arcingDistance": "200",
-            "shedDiameter": "132/115",
-            "minimumCreepage": "440",
-            "impulseWithstand": "140",
-            "impulseNegative": "155",
-            "dryWithstand": "70",
+            "arcingDistance": "240",
+            "shedDiameter": "140/125",
+            "minimumCreepage": "420",
+            "impulseWithstand": "135",
+            "impulseNegative": "150",
+            "dryWithstand": "65",
             "wetWithstand": "50"
           }
         },
@@ -251,16 +251,16 @@
           "code": "DPL15-550-6L",
           "voltage": "15 kV",
           "sectionLength": "370±15 mm",
-          "creepage": "660 mm",
+          "creepage": "550 mm",
           "technical": {
             "ratedVoltage": "15",
             "sml": "6",
             "sectionLength": "370±15",
-            "arcingDistance": "250",
-            "shedDiameter": "132/115",
-            "minimumCreepage": "660",
-            "impulseWithstand": "170",
-            "impulseNegative": "180",
+            "arcingDistance": "240",
+            "shedDiameter": "140/125",
+            "minimumCreepage": "550",
+            "impulseWithstand": "135",
+            "impulseNegative": "150",
             "dryWithstand": "85",
             "wetWithstand": "70"
           }
@@ -269,162 +269,126 @@
           "code": "DPL24-620-6L",
           "voltage": "24 kV",
           "sectionLength": "480±15 mm",
-          "creepage": "710 mm",
+          "creepage": "620 mm",
           "technical": {
             "ratedVoltage": "24",
-            "sml": "70",
+            "sml": "6",
             "sectionLength": "480±15",
-            "arcingDistance": "325",
-            "shedDiameter": "100/80",
-            "minimumCreepage": "710",
-            "impulseWithstand": "240",
-            "impulseNegative": "250",
-            "dryWithstand": "110",
-            "wetWithstand": "90"
+            "arcingDistance": "260",
+            "shedDiameter": "145/125",
+            "minimumCreepage": "620",
+            "impulseWithstand": "190",
+            "impulseNegative": "205",
+            "dryWithstand": "85",
+            "wetWithstand": "70"
           }
         },
         {
           "code": "DPL24-700-6L",
           "voltage": "24 kV",
           "sectionLength": "480±15 mm",
-          "creepage": "710 mm",
+          "creepage": "700 mm",
           "technical": {
             "ratedVoltage": "24",
-            "sml": "70",
+            "sml": "6",
             "sectionLength": "480±15",
-            "arcingDistance": "325",
-            "shedDiameter": "100/80",
-            "minimumCreepage": "710",
-            "impulseWithstand": "240",
-            "impulseNegative": "250",
-            "dryWithstand": "110",
-            "wetWithstand": "90"
+            "arcingDistance": "290",
+            "shedDiameter": "142/120",
+            "minimumCreepage": "700",
+            "impulseWithstand": "190",
+            "impulseNegative": "205",
+            "dryWithstand": "85",
+            "wetWithstand": "70"
           }
         },
         {
           "code": "DPL24-800-6L",
           "voltage": "24 kV",
           "sectionLength": "480±15 mm",
-          "creepage": "770 mm",
+          "creepage": "800 mm",
           "technical": {
             "ratedVoltage": "24",
-            "sml": "70",
+            "sml": "6",
             "sectionLength": "480±15",
-            "arcingDistance": "325",
-            "shedDiameter": "105/80",
-            "minimumCreepage": "770",
-            "impulseWithstand": "240",
-            "impulseNegative": "250",
-            "dryWithstand": "110",
-            "wetWithstand": "90"
+            "arcingDistance": "295",
+            "shedDiameter": "142/120",
+            "minimumCreepage": "800",
+            "impulseWithstand": "190",
+            "impulseNegative": "205",
+            "dryWithstand": "85",
+            "wetWithstand": "70"
           }
         },
         {
           "code": "DPL36-700-6L",
           "voltage": "36 kV",
-          "sectionLength": "580±15 mm",
-          "creepage": "920 mm",
+          "sectionLength": "325±15 mm",
+          "creepage": "700 mm",
           "technical": {
             "ratedVoltage": "36",
-            "sml": "70",
-            "sectionLength": "580±15",
-            "arcingDistance": "420",
-            "shedDiameter": "110/85",
-            "minimumCreepage": "920",
-            "impulseWithstand": "275",
-            "impulseNegative": "290",
-            "dryWithstand": "130",
-            "wetWithstand": "110"
+            "sml": "6",
+            "sectionLength": "325±15",
+            "arcingDistance": "330",
+            "shedDiameter": "142/120",
+            "minimumCreepage": "700",
+            "impulseWithstand": "210",
+            "impulseNegative": "240",
+            "dryWithstand": "95",
+            "wetWithstand": "80"
           }
         },
         {
-          "code": "DPL36-1120-70TC",
+          "code": "DPL36-980-6L",
           "voltage": "36 kV",
-          "sectionLength": "580±15 mm",
+          "sectionLength": "325±15 mm",
+          "creepage": "1980 mm",
+          "technical": {
+            "ratedVoltage": "36",
+            "sml": "6",
+            "sectionLength": "325±15",
+            "arcingDistance": "335",
+            "shedDiameter": "142/120",
+            "minimumCreepage": "1980",
+            "impulseWithstand": "210",
+            "impulseNegative": "240",
+            "dryWithstand": "95",
+            "wetWithstand": "80"
+          }
+        },
+        {
+          "code": "DPL36-1120-7L",
+          "voltage": "36 kV",
+          "sectionLength": "325±15 mm",
           "creepage": "1120 mm",
           "technical": {
             "ratedVoltage": "36",
-            "sml": "70",
-            "sectionLength": "580±15",
-            "arcingDistance": "420",
-            "shedDiameter": "124/100",
+            "sml": "7",
+            "sectionLength": "325±15",
+            "arcingDistance": "345",
+            "shedDiameter": "145/130",
             "minimumCreepage": "1120",
-            "impulseWithstand": "290",
-            "impulseNegative": "300",
-            "dryWithstand": "130",
-            "wetWithstand": "110"
+            "impulseWithstand": "210",
+            "impulseNegative": "240",
+            "dryWithstand": "95",
+            "wetWithstand": "80"
           }
         },
         {
-          "code": "DPL36-1440-70TC",
+          "code": "DPL36-1440-7L",
           "voltage": "36 kV",
-          "sectionLength": "580±15 mm",
+          "sectionLength": "370±15 mm",
           "creepage": "1440 mm",
           "technical": {
             "ratedVoltage": "36",
-            "sml": "70",
-            "sectionLength": "580±15",
-            "arcingDistance": "420",
-            "shedDiameter": "132/115",
+            "sml": "7",
+            "sectionLength": "370±15",
+            "arcingDistance": "380",
+            "shedDiameter": "145/130",
             "minimumCreepage": "1440",
-            "impulseWithstand": "325",
-            "impulseNegative": "340",
-            "dryWithstand": "130",
-            "wetWithstand": "110"
-          }
-        },
-        {
-          "code": "DPL36-920-80/120BS",
-          "voltage": "36 kV",
-          "sectionLength": "580±15 mm",
-          "creepage": "920 mm",
-          "technical": {
-            "ratedVoltage": "36",
-            "sml": "80/120",
-            "sectionLength": "580±15",
-            "arcingDistance": "420",
-            "shedDiameter": "110/85",
-            "minimumCreepage": "920",
-            "impulseWithstand": "275",
-            "impulseNegative": "290",
-            "dryWithstand": "130",
-            "wetWithstand": "110"
-          }
-        },
-        {
-          "code": "DPL36-1120-80/120BS",
-          "voltage": "36 kV",
-          "sectionLength": "580±15 mm",
-          "creepage": "1120 mm",
-          "technical": {
-            "ratedVoltage": "36",
-            "sml": "80/120",
-            "sectionLength": "580±15",
-            "arcingDistance": "420",
-            "shedDiameter": "124/100",
-            "minimumCreepage": "1120",
-            "impulseWithstand": "290",
-            "impulseNegative": "300",
-            "dryWithstand": "130",
-            "wetWithstand": "110"
-          }
-        },
-        {
-          "code": "DPL36-1440-80/120BS",
-          "voltage": "36 kV",
-          "sectionLength": "580±15 mm",
-          "creepage": "1440 mm",
-          "technical": {
-            "ratedVoltage": "36",
-            "sml": "80/120",
-            "sectionLength": "580±15",
-            "arcingDistance": "420",
-            "shedDiameter": "132/115",
-            "minimumCreepage": "1440",
-            "impulseWithstand": "325",
-            "impulseNegative": "340",
-            "dryWithstand": "130",
-            "wetWithstand": "110"
+            "impulseWithstand": "210",
+            "impulseNegative": "240",
+            "dryWithstand": "95",
+            "wetWithstand": "80"
           }
         }
       ],
@@ -458,7 +422,8 @@
             "minimumCreepage": "1950",
             "impulseWithstand": "410",
             "wetWithstand": "185",
-            "weight": "5.00"
+            "impulseNegative": "440",
+            "dryWithstand": "185"
           }
         },
         {
@@ -476,7 +441,8 @@
             "minimumCreepage": "2200",
             "impulseWithstand": "410",
             "wetWithstand": "185",
-            "weight": "5.250"
+            "impulseNegative": "440",
+            "dryWithstand": "185"
           }
         },
         {
@@ -494,7 +460,8 @@
             "minimumCreepage": "2450",
             "impulseWithstand": "410",
             "wetWithstand": "185",
-            "weight": "5.500"
+            "impulseNegative": "440",
+            "dryWithstand": "185"
           }
         },
         {
@@ -512,7 +479,8 @@
             "minimumCreepage": "2700",
             "impulseWithstand": "410",
             "wetWithstand": "185",
-            "weight": "5.700"
+            "impulseNegative": "440",
+            "dryWithstand": "185"
           }
         },
         {
@@ -530,7 +498,8 @@
             "minimumCreepage": "2950",
             "impulseWithstand": "410",
             "wetWithstand": "185",
-            "weight": "5.950"
+            "impulseNegative": "440",
+            "dryWithstand": "185"
           }
         },
         {
@@ -548,7 +517,8 @@
             "minimumCreepage": "3260",
             "impulseWithstand": "550",
             "wetWithstand": "230",
-            "weight": "6.200"
+            "impulseNegative": "580",
+            "dryWithstand": "285"
           }
         },
         {
@@ -566,7 +536,8 @@
             "minimumCreepage": "3500",
             "impulseWithstand": "550",
             "wetWithstand": "230",
-            "weight": "6.450"
+            "impulseNegative": "580",
+            "dryWithstand": "285"
           }
         },
         {
@@ -584,7 +555,8 @@
             "minimumCreepage": "3740",
             "impulseWithstand": "550",
             "wetWithstand": "230",
-            "weight": "6.700"
+            "impulseNegative": "580",
+            "dryWithstand": "285"
           }
         },
         {
@@ -602,7 +574,8 @@
             "minimumCreepage": "3980",
             "impulseWithstand": "550",
             "wetWithstand": "230",
-            "weight": "6.900"
+            "impulseNegative": "580",
+            "dryWithstand": "285"
           }
         },
         {
@@ -620,7 +593,8 @@
             "minimumCreepage": "4220",
             "impulseWithstand": "550",
             "wetWithstand": "230",
-            "weight": "7.150"
+            "impulseNegative": "580",
+            "dryWithstand": "285"
           }
         }
       ],
@@ -654,7 +628,8 @@
             "minimumCreepage": "5160",
             "impulseWithstand": "660",
             "wetWithstand": "275",
-            "weight": "8.000"
+            "impulseNegative": "710",
+            "dryWithstand": "330"
           }
         },
         {
@@ -672,7 +647,8 @@
             "minimumCreepage": "5160",
             "impulseWithstand": "660",
             "wetWithstand": "275",
-            "weight": "8.300"
+            "impulseNegative": "710",
+            "dryWithstand": "330"
           }
         },
         {
@@ -690,7 +666,8 @@
             "minimumCreepage": "5430",
             "impulseWithstand": "660",
             "wetWithstand": "275",
-            "weight": "8.600"
+            "impulseNegative": "710",
+            "dryWithstand": "330"
           }
         },
         {
@@ -708,7 +685,8 @@
             "minimumCreepage": "5710",
             "impulseWithstand": "660",
             "wetWithstand": "275",
-            "weight": "9.100"
+            "impulseNegative": "710",
+            "dryWithstand": "330"
           }
         },
         {
@@ -726,7 +704,8 @@
             "minimumCreepage": "5960",
             "impulseWithstand": "660",
             "wetWithstand": "275",
-            "weight": "9.800"
+            "impulseNegative": "710",
+            "dryWithstand": "330"
           }
         },
         {
@@ -744,7 +723,8 @@
             "minimumCreepage": "5960",
             "impulseWithstand": "660",
             "wetWithstand": "275",
-            "weight": "10.900"
+            "impulseNegative": "710",
+            "dryWithstand": "330"
           }
         },
         {
@@ -762,7 +742,8 @@
             "minimumCreepage": "5430",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "8.600"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -780,7 +761,8 @@
             "minimumCreepage": "5430",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "9.700"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -798,7 +780,8 @@
             "minimumCreepage": "5710",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "9.100"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -816,7 +799,8 @@
             "minimumCreepage": "5710",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "10.100"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -834,7 +818,8 @@
             "minimumCreepage": "5960",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "9.800"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -852,7 +837,8 @@
             "minimumCreepage": "5960",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "10.900"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -870,7 +856,8 @@
             "minimumCreepage": "6240",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "10.100"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -888,7 +875,8 @@
             "minimumCreepage": "6240",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "11.200"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -906,7 +894,8 @@
             "minimumCreepage": "6500",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "10.400"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         },
         {
@@ -924,7 +913,8 @@
             "minimumCreepage": "6500",
             "impulseWithstand": "805",
             "wetWithstand": "335",
-            "weight": "11.500"
+            "impulseNegative": "860",
+            "dryWithstand": "410"
           }
         }
       ],
@@ -958,7 +948,8 @@
             "minimumCreepage": "7785",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "12"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -976,7 +967,8 @@
             "minimumCreepage": "7785",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "13"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -994,7 +986,8 @@
             "minimumCreepage": "8300",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "12.3"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -1012,7 +1005,8 @@
             "minimumCreepage": "8300",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "13.4"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -1030,7 +1024,8 @@
             "minimumCreepage": "8570",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "12.6"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -1048,7 +1043,8 @@
             "minimumCreepage": "8570",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "13.7"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -1066,7 +1062,8 @@
             "minimumCreepage": "8850",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "12.9"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -1084,7 +1081,8 @@
             "minimumCreepage": "8850",
             "impulseWithstand": "1000",
             "wetWithstand": "395",
-            "weight": "14"
+            "impulseNegative": "1100",
+            "dryWithstand": "460"
           }
         },
         {
@@ -1102,7 +1100,8 @@
             "minimumCreepage": "7785",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "12"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1120,7 +1119,8 @@
             "minimumCreepage": "7785",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "13"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1138,7 +1138,8 @@
             "minimumCreepage": "8300",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "12.3"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1156,7 +1157,8 @@
             "minimumCreepage": "8300",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "13.4"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1174,7 +1176,8 @@
             "minimumCreepage": "8570",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "12.6"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1192,7 +1195,8 @@
             "minimumCreepage": "8570",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "13.7"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1210,7 +1214,8 @@
             "minimumCreepage": "8850",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "12.9"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1228,7 +1233,8 @@
             "minimumCreepage": "8850",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "14"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1246,7 +1252,8 @@
             "minimumCreepage": "9130",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "12.9"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1264,7 +1271,8 @@
             "minimumCreepage": "9130",
             "impulseWithstand": "1050",
             "wetWithstand": "460",
-            "weight": "14"
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1281,7 +1289,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "9400",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1298,7 +1308,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "9400",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1315,7 +1327,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "9680",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1332,7 +1346,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "9680",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1349,7 +1365,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "9950",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1366,7 +1384,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "9950",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1383,7 +1403,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "10250",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         },
         {
@@ -1400,7 +1422,9 @@
             "shedDiameter": "160/125",
             "minimumCreepage": "10250",
             "impulseWithstand": "1050",
-            "wetWithstand": "460"
+            "wetWithstand": "460",
+            "impulseNegative": "1150",
+            "dryWithstand": "510"
           }
         }
       ],
@@ -1432,8 +1456,9 @@
             "arcingDistance": "2770",
             "shedDiameter": "160/125",
             "minimumCreepage": "11450",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1449,8 +1474,9 @@
             "arcingDistance": "2770",
             "shedDiameter": "160/125",
             "minimumCreepage": "11450",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1466,8 +1492,9 @@
             "arcingDistance": "2770",
             "shedDiameter": "160/125",
             "minimumCreepage": "11450",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1483,8 +1510,9 @@
             "arcingDistance": "2830",
             "shedDiameter": "160/125",
             "minimumCreepage": "11720",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1500,8 +1528,9 @@
             "arcingDistance": "2830",
             "shedDiameter": "160/125",
             "minimumCreepage": "11720",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1517,8 +1546,9 @@
             "arcingDistance": "2830",
             "shedDiameter": "160/125",
             "minimumCreepage": "11720",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1534,8 +1564,9 @@
             "arcingDistance": "2890",
             "shedDiameter": "160/125",
             "minimumCreepage": "12000",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1551,8 +1582,9 @@
             "arcingDistance": "2890",
             "shedDiameter": "160/125",
             "minimumCreepage": "12000",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1568,8 +1600,9 @@
             "arcingDistance": "2890",
             "shedDiameter": "160/125",
             "minimumCreepage": "12000",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1585,8 +1618,9 @@
             "arcingDistance": "2950",
             "shedDiameter": "160/125",
             "minimumCreepage": "12275",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1602,8 +1636,9 @@
             "arcingDistance": "2950",
             "shedDiameter": "160/125",
             "minimumCreepage": "12275",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1619,8 +1654,9 @@
             "arcingDistance": "2950",
             "shedDiameter": "160/125",
             "minimumCreepage": "12275",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1636,8 +1672,9 @@
             "arcingDistance": "3010",
             "shedDiameter": "160/125",
             "minimumCreepage": "12550",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1653,8 +1690,9 @@
             "arcingDistance": "3010",
             "shedDiameter": "160/125",
             "minimumCreepage": "12550",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1670,8 +1708,9 @@
             "arcingDistance": "3010",
             "shedDiameter": "160/125",
             "minimumCreepage": "12550",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1687,8 +1726,9 @@
             "arcingDistance": "3070",
             "shedDiameter": "160/125",
             "minimumCreepage": "12820",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1704,8 +1744,9 @@
             "arcingDistance": "3070",
             "shedDiameter": "160/125",
             "minimumCreepage": "12820",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         },
         {
@@ -1721,8 +1762,9 @@
             "arcingDistance": "3070",
             "shedDiameter": "160/125",
             "minimumCreepage": "12820",
-            "impulseWithstand": ">1500",
-            "wetWithstand": "950"
+            "impulseWithstand": "1500",
+            "wetWithstand": "950",
+            "dryWithstand": "590"
           }
         }
       ],
@@ -1753,9 +1795,11 @@
             "sectionLength": "3435±50",
             "arcingDistance": "3250",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "13800",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1770,9 +1814,11 @@
             "sectionLength": "3510±50",
             "arcingDistance": "3250",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "13800",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1787,9 +1833,11 @@
             "sectionLength": "3570±50",
             "arcingDistance": "3250",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "13800",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1804,9 +1852,11 @@
             "sectionLength": "3555±50",
             "arcingDistance": "3370",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14150",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1821,9 +1871,11 @@
             "sectionLength": "3630±50",
             "arcingDistance": "3370",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14150",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1838,9 +1890,11 @@
             "sectionLength": "3690±50",
             "arcingDistance": "3370",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14150",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1855,9 +1909,11 @@
             "sectionLength": "3615±50",
             "arcingDistance": "3430",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14420",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1872,9 +1928,11 @@
             "sectionLength": "3690±50",
             "arcingDistance": "3430",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14420",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1889,9 +1947,11 @@
             "sectionLength": "3750±50",
             "arcingDistance": "3430",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14420",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">680"
+            "impulseWithstand": "1900",
+            "dryWithstand": "680",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1906,9 +1966,11 @@
             "sectionLength": "3675±50",
             "arcingDistance": "3490",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14700",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1923,9 +1985,11 @@
             "sectionLength": "3750±50",
             "arcingDistance": "3490",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14700",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1940,9 +2004,11 @@
             "sectionLength": "3810±50",
             "arcingDistance": "3490",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14700",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1957,9 +2023,11 @@
             "sectionLength": "3735±50",
             "arcingDistance": "3550",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14950",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1974,9 +2042,11 @@
             "sectionLength": "3810±50",
             "arcingDistance": "3550",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14950",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -1991,9 +2061,11 @@
             "sectionLength": "3870±50",
             "arcingDistance": "3550",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "14950",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2008,9 +2080,11 @@
             "sectionLength": "3855±50",
             "arcingDistance": "3670",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "15470",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2025,9 +2099,11 @@
             "sectionLength": "3930±50",
             "arcingDistance": "3670",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "15470",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2042,9 +2118,11 @@
             "sectionLength": "3990±50",
             "arcingDistance": "3670",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "15470",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2059,9 +2137,11 @@
             "sectionLength": "4050±50",
             "arcingDistance": "3790",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "16000",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2076,9 +2156,11 @@
             "sectionLength": "4110±50",
             "arcingDistance": "3790",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "16000",
-            "impulseWithstand": ">1900",
-            "wetWithstand": ">720"
+            "impulseWithstand": "1900",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2093,9 +2175,11 @@
             "sectionLength": "4170±50",
             "arcingDistance": "3910",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "16450",
-            "impulseWithstand": ">2200",
-            "wetWithstand": ">800"
+            "impulseWithstand": "2000",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2110,9 +2194,11 @@
             "sectionLength": "4230±50",
             "arcingDistance": "3910",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "16450",
-            "impulseWithstand": ">2200",
-            "wetWithstand": ">800"
+            "impulseWithstand": "2000",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2127,9 +2213,11 @@
             "sectionLength": "4230±50",
             "arcingDistance": "3980",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "16900",
-            "impulseWithstand": ">2300",
-            "wetWithstand": ">800"
+            "impulseWithstand": "2000",
+            "dryWithstand": "720",
+            "wetWithstand": "1050"
           }
         },
         {
@@ -2144,9 +2232,10 @@
             "sectionLength": "4290±50",
             "arcingDistance": "3980",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "16900",
-            "impulseWithstand": ">2300",
-            "wetWithstand": ">800"
+            "impulseWithstand": "2300",
+            "dryWithstand": "800"
           }
         },
         {
@@ -2161,9 +2250,10 @@
             "sectionLength": "4290±50",
             "arcingDistance": "4040",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "17160",
-            "impulseWithstand": ">2300",
-            "wetWithstand": ">800"
+            "impulseWithstand": "2300",
+            "dryWithstand": "800"
           }
         },
         {
@@ -2178,9 +2268,10 @@
             "sectionLength": "4350±50",
             "arcingDistance": "4040",
             "shedDiameter": "160/125",
+            "shedNo": "60",
             "minimumCreepage": "17160",
-            "impulseWithstand": ">2300",
-            "wetWithstand": ">800"
+            "impulseWithstand": "2300",
+            "dryWithstand": "800"
           }
         }
       ],
@@ -2191,7 +2282,7 @@
       "name": "500 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
       "subFamily": "Suspension / Tension",
-      "catalogueRef": "DPL400 — 160/210 · 300 BS series (500 kV)",
+      "catalogueRef": "DPL500 — 160/210 · 300 BS series",
       "summary": "Composite suspension and tension insulators for 500 kV transmission lines. Ball-and-socket fittings with 160/210 kN and 300 kN mechanical load classes, IEC type-tested creepage and impulse performance.",
       "applications": "Transmission lines · Suspension & tension",
       "voltageClass": "500 kV",
@@ -2201,7 +2292,7 @@
       "hidden": false,
       "variants": [
         {
-          "code": "DPL400-17700-160/210",
+          "code": "DPL500-17700-160/210",
           "voltage": "500 kV",
           "sectionLength": "4410 mm",
           "creepage": "17700 mm",
@@ -2212,16 +2303,15 @@
             "sectionLength": "4410",
             "arcingDistance": "4150",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "17700",
-            "wetWithstand": "1550",
-            "dryWithstand": "800",
-            "impulseNegative": "2550"
+            "shedNo": "60",
+            "minimumCreepage": "17700",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-17700-300BS",
+          "code": "DPL500-17700-300BS",
           "voltage": "500 kV",
           "sectionLength": "4470 mm",
           "creepage": "17700 mm",
@@ -2232,16 +2322,15 @@
             "sectionLength": "4470",
             "arcingDistance": "4150",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "17700",
-            "wetWithstand": "1550",
-            "dryWithstand": "800",
-            "impulseNegative": "2550"
+            "shedNo": "60",
+            "minimumCreepage": "17700",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-18250-160/210",
+          "code": "DPL500-18250-160/210",
           "voltage": "500 kV",
           "sectionLength": "4530 mm",
           "creepage": "18250 mm",
@@ -2252,16 +2341,15 @@
             "sectionLength": "4530",
             "arcingDistance": "4270",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "18250",
-            "wetWithstand": "1550",
-            "dryWithstand": "800",
-            "impulseNegative": "2550"
+            "shedNo": "60",
+            "minimumCreepage": "18250",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-18250-300BS",
+          "code": "DPL500-18250-300BS",
           "voltage": "500 kV",
           "sectionLength": "4590 mm",
           "creepage": "18250 mm",
@@ -2272,16 +2360,15 @@
             "sectionLength": "4590",
             "arcingDistance": "4270",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "18250",
-            "wetWithstand": "1550",
-            "dryWithstand": "800",
-            "impulseNegative": "2550"
+            "shedNo": "60",
+            "minimumCreepage": "18250",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-18800-160/210",
+          "code": "DPL500-18800-160/210",
           "voltage": "500 kV",
           "sectionLength": "4650 mm",
           "creepage": "18800 mm",
@@ -2292,16 +2379,15 @@
             "sectionLength": "4650",
             "arcingDistance": "4390",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "18800",
-            "wetWithstand": "1550",
-            "dryWithstand": "850",
-            "impulseNegative": "2700"
+            "shedNo": "60",
+            "minimumCreepage": "18800",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-18800-300BS",
+          "code": "DPL500-18800-300BS",
           "voltage": "500 kV",
           "sectionLength": "4710 mm",
           "creepage": "18800 mm",
@@ -2312,16 +2398,15 @@
             "sectionLength": "4710",
             "arcingDistance": "4390",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "18800",
-            "wetWithstand": "1550",
-            "dryWithstand": "850",
-            "impulseNegative": "2700"
+            "shedNo": "60",
+            "minimumCreepage": "18800",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-19300-160/210",
+          "code": "DPL500-19300-160/210",
           "voltage": "500 kV",
           "sectionLength": "4770 mm",
           "creepage": "19300 mm",
@@ -2332,16 +2417,15 @@
             "sectionLength": "4770",
             "arcingDistance": "4510",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "19300",
-            "wetWithstand": "1550",
-            "dryWithstand": "850",
-            "impulseNegative": "2700"
+            "shedNo": "60",
+            "minimumCreepage": "19300",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-19300-300BS",
+          "code": "DPL500-19300-300BS",
           "voltage": "500 kV",
           "sectionLength": "4830 mm",
           "creepage": "19300 mm",
@@ -2352,16 +2436,15 @@
             "sectionLength": "4830",
             "arcingDistance": "4510",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "19300",
-            "wetWithstand": "1550",
-            "dryWithstand": "850",
-            "impulseNegative": "2700"
+            "shedNo": "60",
+            "minimumCreepage": "19300",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-19900-160/210",
+          "code": "DPL500-19900-160/210",
           "voltage": "500 kV",
           "sectionLength": "4890 mm",
           "creepage": "19900 mm",
@@ -2372,16 +2455,15 @@
             "sectionLength": "4890",
             "arcingDistance": "4630",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "19900",
-            "wetWithstand": "1650",
-            "dryWithstand": "950",
-            "impulseNegative": "2800"
+            "shedNo": "60",
+            "minimumCreepage": "19900",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-19900-300BS",
+          "code": "DPL500-19900-300BS",
           "voltage": "500 kV",
           "sectionLength": "4950 mm",
           "creepage": "19900 mm",
@@ -2392,16 +2474,15 @@
             "sectionLength": "4950",
             "arcingDistance": "4630",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "19900",
-            "wetWithstand": "1650",
-            "dryWithstand": "950",
-            "impulseNegative": "2800"
+            "shedNo": "60",
+            "minimumCreepage": "19900",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-20500-160/210",
+          "code": "DPL500-20500-160/210",
           "voltage": "500 kV",
           "sectionLength": "5010 mm",
           "creepage": "20500 mm",
@@ -2412,16 +2493,15 @@
             "sectionLength": "5010",
             "arcingDistance": "4750",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "20500",
-            "wetWithstand": "1650",
-            "dryWithstand": "950",
-            "impulseNegative": "2850"
+            "shedNo": "60",
+            "minimumCreepage": "20500",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-20500-300BS",
+          "code": "DPL500-20500-300BS",
           "voltage": "500 kV",
           "sectionLength": "5070 mm",
           "creepage": "20500 mm",
@@ -2432,16 +2512,15 @@
             "sectionLength": "5070",
             "arcingDistance": "4750",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "20500",
-            "wetWithstand": "1650",
-            "dryWithstand": "950",
-            "impulseNegative": "2850"
+            "shedNo": "60",
+            "minimumCreepage": "20500",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-21100-160/210",
+          "code": "DPL500-21100-160/210",
           "voltage": "500 kV",
           "sectionLength": "5130 mm",
           "creepage": "21100 mm",
@@ -2452,16 +2531,15 @@
             "sectionLength": "5130",
             "arcingDistance": "4870",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "21100",
-            "wetWithstand": "1650",
-            "dryWithstand": "950",
-            "impulseNegative": "2850"
+            "shedNo": "60",
+            "minimumCreepage": "21100",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-21100-300BS",
+          "code": "DPL500-21100-300BS",
           "voltage": "500 kV",
           "sectionLength": "5190 mm",
           "creepage": "21100 mm",
@@ -2472,16 +2550,15 @@
             "sectionLength": "5190",
             "arcingDistance": "4870",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "21100",
-            "wetWithstand": "1650",
-            "dryWithstand": "950",
-            "impulseNegative": "2850"
+            "shedNo": "60",
+            "minimumCreepage": "21100",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-21600-160/210",
+          "code": "DPL500-21600-160/210",
           "voltage": "500 kV",
           "sectionLength": "5190 mm",
           "creepage": "21600 mm",
@@ -2492,16 +2569,15 @@
             "sectionLength": "5190",
             "arcingDistance": "4990",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "21600",
-            "wetWithstand": "1650",
-            "dryWithstand": "1050",
-            "impulseNegative": "2950"
+            "shedNo": "60",
+            "minimumCreepage": "21600",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-21600-300BS",
+          "code": "DPL500-21600-300BS",
           "voltage": "500 kV",
           "sectionLength": "5250 mm",
           "creepage": "21600 mm",
@@ -2512,16 +2588,15 @@
             "sectionLength": "5250",
             "arcingDistance": "4990",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "21600",
-            "wetWithstand": "1650",
-            "dryWithstand": "1050",
-            "impulseNegative": "2950"
+            "shedNo": "60",
+            "minimumCreepage": "21600",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-22160-160/210",
+          "code": "DPL500-22160-160/210",
           "voltage": "500 kV",
           "sectionLength": "5310 mm",
           "creepage": "22160 mm",
@@ -2532,16 +2607,15 @@
             "sectionLength": "5310",
             "arcingDistance": "5110",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "22160",
-            "wetWithstand": "1650",
-            "dryWithstand": "1050",
-            "impulseNegative": "2950"
+            "shedNo": "60",
+            "minimumCreepage": "22160",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         },
         {
-          "code": "DPL400-22160-300BS",
+          "code": "DPL500-22160-300BS",
           "voltage": "500 kV",
           "sectionLength": "5370 mm",
           "creepage": "22160 mm",
@@ -2552,12 +2626,11 @@
             "sectionLength": "5370",
             "arcingDistance": "5110",
             "shedDiameter": "160/125",
-            "shedSpacing": "60",
-            "minimumCreepage": "60",
-            "impulseWithstand": "22160",
-            "wetWithstand": "1650",
-            "dryWithstand": "1050",
-            "impulseNegative": "2950"
+            "shedNo": "60",
+            "minimumCreepage": "22160",
+            "impulseWithstand": "2250",
+            "dryWithstand": "740",
+            "wetWithstand": "1240"
           }
         }
       ]

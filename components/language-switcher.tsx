@@ -3,12 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LOCALES, swapLocalePath, type Locale } from "@/lib/i18n";
+import {
+  LOCALES,
+  isLocalePubliclyEnabled,
+  swapLocalePath,
+  type Locale,
+} from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 /**
  * Ultra-minimal locale control — Apple-style: only the *other* language
  * as quiet text. No pill, no globe, no dual chip.
+ *
+ * When FA is parked, tapping «فارسی» swaps the label in place to «به زودی».
+ * Same typography as the idle locale link so the header chrome never shifts.
  */
 function usePathWithExtras(): string {
   const pathname = usePathname() || "/";
@@ -33,6 +41,50 @@ function usePathWithExtras(): string {
   return `${pathname}${extras.search}${extras.hash}`;
 }
 
+const labelClass = (onDarkHero: boolean, className?: string, muted = false) =>
+  cn(
+    "shrink-0 text-[11px] font-medium leading-none tracking-wide",
+    "transition-opacity duration-200",
+    "focus-visible:outline-none focus-visible:opacity-100",
+    onDarkHero
+      ? muted
+        ? "cursor-pointer text-white/70 hover:text-white"
+        : "text-white/70 hover:text-white"
+      : muted
+        ? "cursor-pointer text-muted-foreground hover:text-foreground"
+        : "text-muted-foreground hover:text-foreground",
+    className,
+  );
+
+function ParkedPersianControl({
+  onDarkHero,
+  className,
+}: {
+  onDarkHero: boolean;
+  className?: string;
+}) {
+  const [soon, setSoon] = useState(false);
+
+  useEffect(() => {
+    if (!soon) return;
+    const t = window.setTimeout(() => setSoon(false), 2400);
+    return () => window.clearTimeout(t);
+  }, [soon]);
+
+  return (
+    <button
+      type="button"
+      lang="fa"
+      className={labelClass(onDarkHero, className, true)}
+      aria-label="نسخه فارسی به زودی"
+      aria-pressed={soon}
+      onClick={() => setSoon((v) => !v)}
+    >
+      {soon ? "به زودی" : "فارسی"}
+    </button>
+  );
+}
+
 export function LanguageSwitcher({
   className,
   onDarkHero = false,
@@ -53,6 +105,13 @@ export function LanguageSwitcher({
   const label = target === "fa" ? "فارسی" : "English";
   const aria =
     target === "fa" ? "Switch to Persian" : "Switch to English";
+  const enabled = isLocalePubliclyEnabled(target);
+
+  if (!enabled) {
+    return (
+      <ParkedPersianControl onDarkHero={onDarkHero} className={className} />
+    );
+  }
 
   return (
     <Link
@@ -61,15 +120,7 @@ export function LanguageSwitcher({
       lang={target}
       onClick={onNavigate}
       aria-label={aria}
-      className={cn(
-        "shrink-0 text-[11px] font-medium leading-none tracking-wide",
-        "transition-opacity duration-200",
-        "focus-visible:outline-none focus-visible:opacity-100",
-        onDarkHero
-          ? "text-white/70 hover:text-white"
-          : "text-muted-foreground hover:text-foreground",
-        className,
-      )}
+      className={labelClass(onDarkHero, className)}
     >
       {label}
     </Link>

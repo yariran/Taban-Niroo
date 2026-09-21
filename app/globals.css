@@ -1249,75 +1249,9 @@
   }
 }
 
-/* Brand intro plate — industrial shutter, not a centered SaaS splash */
-@keyframes intro-mark-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.6rem) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes intro-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes intro-volt {
-  from {
-    transform: scaleX(0);
-    opacity: 0.4;
-  }
-  to {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-
+/* Cinematic brand intro — progress-driven in JS; hide once session-marked. */
 html[data-tn-intro="done"] [data-site-intro] {
   display: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  @keyframes intro-mark-in {
-    from {
-      opacity: 1;
-      transform: none;
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes intro-fade-up {
-    from {
-      opacity: 1;
-      transform: none;
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes intro-volt {
-    from {
-      transform: none;
-      opacity: 1;
-    }
-    to {
-      transform: none;
-      opacity: 1;
-    }
-  }
 }
 
 /**

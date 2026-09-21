@@ -20,18 +20,19 @@ export type Kpi = {
 };
 
 export const DEFAULT_KPIS: readonly Kpi[] = [
-  { label: "Projects", to: 80, prefix: "+" },
-  { label: "Years active", to: 29, prefix: "+" },
+  { label: "Projects", to: 500, prefix: "+" },
+  { label: "Years active", to: 24, prefix: "+" },
   { label: "Rated voltage", to: 1000, value: "6-1000 kV" },
-  { label: "Served countries", to: 10 },
+  { label: "Countries served", to: 10, prefix: "+" },
 ];
 
 /**
  * Reads KPI items out of a CMS block, falling back to `DEFAULT_KPIS`.
  *
  * A CMS item counts as a KPI when it has a `value`. Plain integers (with an
- * optional leading `+`) animate via `CountUp`; anything else — ranges like
- * `6-1000 kV` — renders verbatim.
+ * optional leading `+`) render as static editorial figures (e.g. `500+`);
+ * anything else — ranges like `6-1000 kV` — renders as a figure with the
+ * unit moved into the label context by the proof band.
  *
  * `legacy` exists for the `home.whyTaban` → `home.proof` split. The two
  * consumers read disjoint subsets of the same `items[]` — KPIs are the
