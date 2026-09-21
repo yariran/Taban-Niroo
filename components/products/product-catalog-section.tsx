@@ -11,7 +11,12 @@ import {
   type ProductSpec,
   type ProductVariant,
 } from "./product-modal";
-import { PRODUCTS, listProducts, resolveProductImage } from "@/lib/products";
+import {
+  PRODUCTS,
+  listFamilies,
+  listProducts,
+  resolveProductImage,
+} from "@/lib/products";
 import { TechRef } from "@/components/ui/tech-ref";
 import { LocaleLink, useLocale } from "@/components/locale-link";
 import { CATALOGUE_UI, pickLocale } from "@/lib/i18n/section-copy";
@@ -68,14 +73,7 @@ const PRODUCT_ITEMS_FALLBACK: ProductItem[] = listProducts(
   PRODUCTS,
 ) as unknown as ProductItem[];
 
-const FAMILY_ORDER = [
-  "Silicone Composite Insulators",
-  "Hybrid Insulators",
-  "Transformer Bushings",
-  "Cable Accessories",
-  "Overhead Feeder Line Composite",
-  "Creepage Extenders & Covers",
-] as const;
+const FAMILY_ORDER = listFamilies();
 
 const FAMILY_INDEX: Record<string, string> = {
   "Silicone Composite Insulators": "01",

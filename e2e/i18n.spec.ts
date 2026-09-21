@@ -1,8 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
+import { FA_LOCALE_ENABLED } from "../lib/i18n/config";
 import { declineConsent, skipIntroViaTestFlag } from "./helpers/intro";
 
 const BREAKPOINTS = [375, 768, 1024, 1440] as const;
-const LOCALES = ["en", "fa"] as const;
+const LOCALES = FA_LOCALE_ENABLED ? (["en", "fa"] as const) : (["en"] as const);
 
 /** Consent declined; intro bypassed via documented `?tn_intro=skip` / flag. */
 async function gotoReady(page: Page, path: string) {
@@ -40,6 +41,7 @@ test.describe("i18n locale switch", () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
   test("switching language keeps the same page and query", async ({ page }) => {
+    test.skip(!FA_LOCALE_ENABLED, "Persian locale parked (FA_LOCALE_ENABLED=false)");
     await gotoReady(page, "/en/products?ref=e2e");
 
     const persian = page
@@ -64,6 +66,7 @@ test.describe("i18n locale switch", () => {
   });
 
   test("language links preserve hash in href", async ({ page }) => {
+    test.skip(!FA_LOCALE_ENABLED, "Persian locale parked (FA_LOCALE_ENABLED=false)");
     await gotoReady(page, "/en/contact");
     // Hash is client-side; set it then assert the switcher href includes it.
     await page.evaluate(() => {
@@ -74,10 +77,34 @@ test.describe("i18n locale switch", () => {
       page.getByRole("link", { name: "Switch to Persian" }).first(),
     ).toHaveAttribute("href", /\/fa\/contact#main-content/);
   });
+
+  test("Persian control stays visible but disabled while FA is parked", async ({
+    page,
+  }) => {
+    test.skip(FA_LOCALE_ENABLED, "Only applies while FA is parked");
+    await gotoReady(page, "/en/products");
+    const persian = page
+      .getByLabel("Persian version is coming soon")
+      .first();
+    await expect(persian).toBeVisible();
+    await expect(persian).not.toHaveAttribute("href");
+    await expect(
+      page.getByRole("link", { name: /Switch to Persian/i }),
+    ).toHaveCount(0);
+  });
 });
 
 test.describe("i18n document direction", () => {
+  test("/fa redirects to English while FA is parked", async ({ page }) => {
+    test.skip(FA_LOCALE_ENABLED, "Only applies while FA is parked");
+    await page.goto("/fa");
+    await expect(page).toHaveURL(/\/en\/?$/);
+    await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  });
+
   test("/fa sets dir=rtl and lang=fa", async ({ page }) => {
+    test.skip(!FA_LOCALE_ENABLED, "Persian locale parked (FA_LOCALE_ENABLED=false)");
     await page.goto("/fa");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.locator("html")).toHaveAttribute("lang", "fa");

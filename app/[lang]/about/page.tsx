@@ -110,7 +110,7 @@ export default async function AboutPage({
                     Projects
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
-                    <CountUp to={80} prefix="+" />
+                    <CountUp to={500} prefix="+" />
                   </p>
                 </div>
                 <div>
@@ -126,7 +126,7 @@ export default async function AboutPage({
                     Countries
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
-                    <CountUp to={10} />
+                    <CountUp to={10} prefix="+" />
                   </p>
                 </div>
               </div>
@@ -173,8 +173,7 @@ export default async function AboutPage({
               <p>
                 Our core activities include the design and manufacturing of high-voltage electrical
                 composite accessories, from distribution and transmission line insulators to station
-                post insulators, railway insulators, hybrid insulators, transformer bushings, and
-                cable accessories.
+                post insulators, railway insulators, hybrid insulators, and transformer bushings.
               </p>
               <p>
                 Taban Niroo’s culture is built around Excellence in Innovation, Leadership by Example,

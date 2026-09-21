@@ -19,9 +19,8 @@ export type Dictionary = {
     decline: string;
   };
   intro: {
-    kicker: string;
-    line: string;
-    spec: string;
+    /** Small line under the progress bar on the cinematic intro. */
+    tagline: string;
     skip: string;
   };
   home: {
@@ -93,9 +92,7 @@ export const en: Dictionary = {
     decline: "Decline",
   },
   intro: {
-    kicker: "High-voltage composites",
-    line: "Insulation for transmission networks.",
-    spec: "6–1000 kV · IEC",
+    tagline: "Power Transmission",
     skip: "Skip",
   },
   home: {

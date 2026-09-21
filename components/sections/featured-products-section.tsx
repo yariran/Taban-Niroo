@@ -62,11 +62,6 @@ const features: readonly Feature[] = [
     image: SITE_IMAGES.featured.hollowCoreBushing,
   },
   {
-    title: "Cable Accessories",
-    description: "Terminations & Joints",
-    image: SITE_IMAGES.featured.cableAccessories,
-  },
-  {
     title: "Creepage Extenders & Covers",
     description: "Patented product",
     image: SITE_IMAGES.featured.creepageExtenders,
@@ -237,7 +232,7 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
         >
           <p className="type-hig-label text-brand-burgundy">Full catalogue</p>
           <span className="type-hig-title mt-[var(--hig-10)] inline-flex items-baseline gap-[var(--hig-2)] text-[1.375rem] text-brand-navy md:mt-[var(--hig-12)] md:text-[1.5rem]">
-            All product families
+            All product categories
             <span
               aria-hidden
               className="text-brand-burgundy transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"

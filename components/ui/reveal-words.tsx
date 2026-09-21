@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Fragment,
   type CSSProperties,
   type ElementType,
   type ReactNode,
@@ -93,10 +94,25 @@ export function RevealWords({
       className={cn("inline-block", className)}
       data-reveal-words={shown ? "in" : "pre"}
     >
+      {/*
+        Word gaps are a real space character, not padding, and that is two
+        fixes in one line.
+
+        `paddingRight` is a PHYSICAL side: in an RTL heading it put every
+        word's gap on the word's own start edge, so the spacing sat on the
+        wrong side of each word and the line picked up a stray 0.22em at
+        its trailing end — visible on every Persian headline, and at a
+        different place in the wrap at every breakpoint.
+
+        Padding is also invisible to anything reading text rather than
+        pixels. With no whitespace between the slots, `textContent` came
+        out as `سبدعایق‌بندی` — one run-on token for a screen reader, for
+        the accessible name, and for a crawler. (The cinematic hero's
+        `Built for ` carries a note about the same trap.) A space fixes
+        both at once, wraps the way the reader's language expects, and
+        costs the exact word-space the font was designed with.
+      */}
       {words.map((word, i) => {
-        const slotStyle: CSSProperties = {
-          paddingRight: "0.22em",
-        };
         const innerStyle: CSSProperties = reduceMotion
           ? { transform: "translateY(0)", opacity: 1 }
           : {
@@ -106,15 +122,14 @@ export function RevealWords({
               willChange: "transform, opacity",
             };
         return (
-          <span
-            key={`${word}-${i}`}
-            style={slotStyle}
-            className="inline-block overflow-hidden align-baseline"
-          >
-            <span className="inline-block" style={innerStyle}>
-              {word}
+          <Fragment key={`${word}-${i}`}>
+            {i > 0 ? " " : null}
+            <span className="inline-block overflow-hidden align-baseline">
+              <span className="inline-block" style={innerStyle}>
+                {word}
+              </span>
             </span>
-          </span>
+          </Fragment>
         );
       })}
     </TagName>

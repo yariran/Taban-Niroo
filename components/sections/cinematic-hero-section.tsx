@@ -100,6 +100,7 @@ const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
 
 export function CinematicHeroSection() {
   const trackRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoWrapRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -252,7 +253,21 @@ export function CinematicHeroSection() {
       // ── read ────────────────────────────────────────────────────────
       const rect = track.getBoundingClientRect();
       const viewport = window.innerHeight;
-      const runway = Math.max(track.offsetHeight - viewport, 1);
+      /**
+       * The stage's own height, not `viewport`.
+       *
+       * `.stage` is sized in `svh`, so on a phone it is a different number
+       * from `window.innerHeight` the whole time the toolbar is sliding.
+       * Using the viewport here made the denominator larger than the pin's
+       * real travel, so `p` topped out below 1 on mobile and the fourth
+       * band — the brandmark and the one link in the frame — never reached
+       * the 0.85 its `pointer-events` is gated on. The CTA was literally
+       * unclickable on a phone and fine on every desktop it was tested on.
+       * `viewport` is still the right measure for the dark-header test
+       * below, which is about what the reader can see, not about travel.
+       */
+      const stageH = stageRef.current?.offsetHeight || viewport;
+      const runway = Math.max(track.offsetHeight - stageH, 1);
       const p = clamp01(-rect.top / runway);
       const video = videoRef.current;
       const duration =
@@ -427,7 +442,7 @@ export function CinematicHeroSection() {
       {heading}
 
       <div ref={trackRef} className={styles.track}>
-        <div className={styles.stage}>
+        <div ref={stageRef} className={styles.stage}>
           <div ref={videoWrapRef} className={styles.videoWrap}>
             {videoEl}
           </div>

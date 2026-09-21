@@ -118,12 +118,19 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
         {title} {titleLine2}
       </h2>
 
+      {/*
+        Track and stage are both `svh` — see the unit note in
+        `cinematic-hero.module.css`. `vh` resolves to the LARGE viewport
+        (toolbar hidden), so on a phone the track was laid out against one
+        height while `useScrollScene` divided by another, and the last
+        criterion in the sequence never finished arriving.
+      */}
       <div
         ref={trackRef}
         className="relative"
-        style={{ height: `${120 + criteria.length * 70}vh` }}
+        style={{ height: `${120 + criteria.length * 70}svh` }}
       >
-        <div className="sticky top-0 h-screen min-h-[100dvh] isolate overflow-hidden">
+        <div className="sticky top-0 h-[100svh] isolate overflow-hidden">
           {/* Held plate — slow push for the length of the runway.
               `.cine-grade` sets `position: relative`, so it nests inside the
               absolutely-positioned wrapper rather than sharing an element

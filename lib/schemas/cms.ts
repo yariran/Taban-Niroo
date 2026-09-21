@@ -42,6 +42,7 @@ const technicalRowSchema = z
     minimumCreepage: z.string().max(120).optional(),
     impulseWithstand: z.string().max(120).optional(),
     impulseNegative: z.string().max(120).optional(),
+    switchingWithstand: z.string().max(120).optional(),
     dryWithstand: z.string().max(120).optional(),
     wetWithstand: z.string().max(120).optional(),
     weight: z.string().max(120).optional(),

@@ -46,6 +46,35 @@ export function sceneLayerStyle(
   };
 }
 
+/**
+ * Height of the pinned stage — deliberately NOT `window.innerHeight`.
+ *
+ * Those two are the same number on a desktop browser and different on
+ * every phone, which is why a runway measured from `innerHeight` looks
+ * correct until it ships. A stage sized in `vh` is laid out against the
+ * LARGE viewport (toolbar hidden); `innerHeight` reports the CURRENT one,
+ * which shrinks the moment the toolbar slides back in. Divide the real
+ * travel — `trackHeight - stageHeight` — by the larger `trackHeight -
+ * innerHeight` and `progress` tops out somewhere around 0.85 instead of 1.
+ * Everything keyed to the end of the runway then never arrives: the last
+ * scene of a sequence holds at partial opacity, and anything gated on a
+ * high progress value (a CTA's `pointer-events`, say) never switches on.
+ *
+ * Measuring the element we actually pin makes the denominator the real
+ * travel whatever unit the stylesheet reached for, so the loop stays
+ * correct under `vh`, `svh`, `dvh` and a mid-scroll toolbar alike.
+ */
+function pinnedStageHeight(track: HTMLElement): number {
+  const stage = track.firstElementChild;
+  if (
+    stage instanceof HTMLElement &&
+    getComputedStyle(stage).position === "sticky"
+  ) {
+    return stage.offsetHeight;
+  }
+  return window.innerHeight;
+}
+
 export type ScrollScene = {
   /** 0 → 1 across the whole runway. Always 0 when `disabled`. */
   progress: number;
@@ -77,7 +106,10 @@ export function useScrollScene(
     const track = trackRef.current;
     if (!track) return;
     const rect = track.getBoundingClientRect();
-    const scrollable = Math.max(track.offsetHeight - window.innerHeight, 1);
+    const scrollable = Math.max(
+      track.offsetHeight - pinnedStageHeight(track),
+      1,
+    );
     const scrolled = Math.max(0, Math.min(scrollable, -rect.top));
     // Linear track progress — easing lives in the per-scene bands, so the
     // runway doesn't feel slow at the ends and fast in the middle.

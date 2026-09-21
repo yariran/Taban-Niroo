@@ -21,21 +21,33 @@
 /* ─── Runway ──────────────────────────────────────────────────────────── */
 
 /**
- * 200vh of track for 100vh of stage → exactly one viewport of scroll
- * drives the whole 10s film. Less than ~180vh and the four scenes cut
- * into each other; more than ~220vh and the pin outstays its welcome.
+ * 200svh of track for 100svh of stage → exactly one viewport of scroll
+ * drives the whole 10s film. Less than ~180svh and the four scenes cut
+ * into each other; more than ~220svh and the pin outstays its welcome.
+ *
+ * `svh`, and the unit is the whole difference between this working on a
+ * phone and not. The pair used to be `height: 100vh; min-height: 100dvh`,
+ * which resolves to the LARGE viewport — the height the page has only
+ * while the browser toolbar is hidden. So the stage was taller than what
+ * the reader could see for most of the scroll, and the mobile layout's
+ * bottom-anchored copy and scroll cue sat underneath the toolbar.
+ *
+ * `svh` is the small viewport: the height that is visible with the
+ * toolbar SHOWN, and — unlike `dvh` — a fixed number that does not
+ * change as the toolbar slides. So nothing hides behind browser chrome,
+ * and the runway length stays constant mid-scroll instead of stretching
+ * under the reader. On desktop `svh`, `dvh`, `lvh` and `vh` are all the
+ * same number, so nothing about the desktop frame moves.
  */
 .track {
   position: relative;
-  height: 200vh;
-  min-height: 200dvh;
+  height: 200svh;
 }
 
 .stage {
   position: sticky;
   top: 0;
-  height: 100vh;
-  min-height: 100dvh;
+  height: 100svh;
   overflow: hidden;
   isolation: isolate;
   /* Ground behind the video: the film's own deep blue, so the first paint
@@ -381,7 +393,7 @@
  */
 .staticStage {
   position: relative;
-  min-height: 100dvh;
+  min-height: 100svh;
   display: flex;
   align-items: flex-end;
   overflow: hidden;

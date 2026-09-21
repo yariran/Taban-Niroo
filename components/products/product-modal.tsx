@@ -36,6 +36,7 @@ import {
  *   minimumCreepage  → "Minimum Creepage L"                      (mm)
  *   impulseWithstand → "Lightning impulse flashover — Positive"  (kV)
  *   impulseNegative  → "Lightning impulse flashover — Negative"  (kV)
+ *   switchingWithstand → "Switching Impulse withstand Voltage" (kV)
  *   dryWithstand     → "Power frequency flashover — Dry"         (kV)
  *   wetWithstand     → "Power frequency flashover — Wet"         (kV)
  *   weight           → "Weight (for Reference)"                  (kg)
@@ -52,6 +53,7 @@ export type TechnicalRow = {
   minimumCreepage?: string;
   impulseWithstand?: string;
   impulseNegative?: string;
+  switchingWithstand?: string;
   dryWithstand?: string;
   wetWithstand?: string;
   weight?: string;
@@ -104,20 +106,55 @@ type ProductModalProps = {
   onClose: () => void;
 };
 
-/** Body cells under the shared flashover header (same for all products). */
-const TECH_BODY_COLUMNS = [
+/** Body cells under the flashover headers. */
+const TECH_CORE_COLUMNS = [
   "ratedVoltage",
   "sml",
   "sectionLength",
   "arcingDistance",
   "shedDiameter",
   "minimumCreepage",
+] as const satisfies ReadonlyArray<keyof TechnicalRow>;
+
+const TECH_FULL_ELECTRICAL = [
   "impulseWithstand",
   "impulseNegative",
   "dryWithstand",
   "wetWithstand",
 ] as const satisfies ReadonlyArray<keyof TechnicalRow>;
 
+const TECH_SIMPLE_ELECTRICAL = [
+  "impulseWithstand",
+  "wetWithstand",
+] as const satisfies ReadonlyArray<keyof TechnicalRow>;
+
+/** 330 / 400 / 500 kV — Lightning + Switching (empty for now) + Power. */
+const TECH_HV_ELECTRICAL = [
+  "impulseWithstand",
+  "switchingWithstand",
+  "wetWithstand",
+] as const satisfies ReadonlyArray<keyof TechnicalRow>;
+
+const FULL_ELECTRICAL_SUBHEADER_IDS = new Set([
+  "line-post-24-36",
+  "suspension-tension-24-36",
+]);
+
+const SWITCHING_COLUMN_PRODUCT_IDS = new Set([
+  "suspension-tension-330",
+  "suspension-tension-400",
+  "suspension-tension-500",
+]);
+
+function techBodyColumns(productId: string): readonly (keyof TechnicalRow)[] {
+  if (FULL_ELECTRICAL_SUBHEADER_IDS.has(productId)) {
+    return [...TECH_CORE_COLUMNS, ...TECH_FULL_ELECTRICAL, "weight"];
+  }
+  if (SWITCHING_COLUMN_PRODUCT_IDS.has(productId)) {
+    return [...TECH_CORE_COLUMNS, ...TECH_HV_ELECTRICAL, "weight"];
+  }
+  return [...TECH_CORE_COLUMNS, ...TECH_SIMPLE_ELECTRICAL, "weight"];
+}
 export function ProductModal({
   open,
   product,
@@ -416,11 +453,16 @@ function buildTechRows(product: ProductSpec): DatasheetRow[] {
 }
 
 /**
- * Shared datasheet header for all listed products (same as the first two
- * MV sheets): Positive/Negative + Dry/Wet sub-headers.
+ * Technical data table.
+ * 24/36 kV Suspension + Line Post keep Pos/Neg + Dry/Wet sub-headers.
+ * All other products: Lightning + Power group titles only (Pos + Wet values).
  */
 function TechnicalDataTable({ product }: { product: ProductSpec }) {
   const rows = buildTechRows(product);
+  const fullElectrical = FULL_ELECTRICAL_SUBHEADER_IDS.has(product.id);
+  const hasSwitching = SWITCHING_COLUMN_PRODUCT_IDS.has(product.id);
+  const bodyColumns = techBodyColumns(product.id);
+  const rowSpan = fullElectrical ? 2 : 1;
 
   return (
     <ScrollPan
@@ -429,59 +471,87 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
       className="rounded-2xl border border-border/70"
       passVerticalScroll
     >
-      <table className={cn(techTableClass, "min-w-[980px]")}>
+      <table
+        className={cn(
+          techTableClass,
+          fullElectrical || hasSwitching ? "min-w-[980px]" : "min-w-[820px]",
+        )}
+      >
         <thead>
           <tr>
-            <th rowSpan={2} scope="col" className={techTableHeadStickyClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadStickyClass}>
               Type
             </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
               Rated System Voltage (kV)
             </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
               Specified mechanical load (kN)
             </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
               Section length (mm)
             </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
               Arcing distance (mm)
             </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
               Diameter of shed (mm)
             </th>
-            <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
               Creepage distance (mm)
             </th>
-            <th
-              colSpan={2}
-              scope="colgroup"
-              className={techTableHeadCellClass}
-            >
-              Lightning impulse flashover voltage (kV)
-            </th>
-            <th
-              colSpan={2}
-              scope="colgroup"
-              className={techTableHeadCellClass}
-            >
-              Power frequency flashover voltage (kV)
+            {fullElectrical ? (
+              <>
+                <th
+                  colSpan={2}
+                  scope="colgroup"
+                  className={techTableHeadCellClass}
+                >
+                  Lightning impulse flashover voltage (kV)
+                </th>
+                <th
+                  colSpan={2}
+                  scope="colgroup"
+                  className={techTableHeadCellClass}
+                >
+                  Power frequency flashover voltage (kV)
+                </th>
+              </>
+            ) : (
+              <>
+                <th scope="col" className={techTableHeadCellClass}>
+                  Lightning impulse flashover voltage (kV)
+                </th>
+                {hasSwitching ? (
+                  <th scope="col" className={techTableHeadCellClass}>
+                    Switching Impulse withstand Voltage (kV)
+                  </th>
+                ) : null}
+                <th scope="col" className={techTableHeadCellClass}>
+                  Power frequency flashover voltage (kV)
+                </th>
+              </>
+            )}
+            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+              Weight
             </th>
           </tr>
-          <tr>
-            <th scope="col" className={techTableHeadCellClass}>
-              Positive
-            </th>
-            <th scope="col" className={techTableHeadCellClass}>
-              Negative
-            </th>
-            <th scope="col" className={techTableHeadCellClass}>
-              Dry
-            </th>
-            <th scope="col" className={techTableHeadCellClass}>
-              Wet
-            </th>
-          </tr>
+          {fullElectrical ? (
+            <tr>
+              <th scope="col" className={techTableHeadCellClass}>
+                Positive
+              </th>
+              <th scope="col" className={techTableHeadCellClass}>
+                Negative
+              </th>
+              <th scope="col" className={techTableHeadCellClass}>
+                Dry
+              </th>
+              <th scope="col" className={techTableHeadCellClass}>
+                Wet
+              </th>
+            </tr>
+          ) : null}
         </thead>
 
         <tbody>
@@ -502,14 +572,14 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
                     <span className="text-muted-foreground/50">—</span>
                   )}
                 </td>
-                {TECH_BODY_COLUMNS.map((key, i) => {
+                {bodyColumns.map((key, i) => {
                   const value = row.technical?.[key];
                   return (
                     <td
                       key={key}
                       className={cn(
                         techTableBodyCellClass,
-                        i !== TECH_BODY_COLUMNS.length - 1 &&
+                        i !== bodyColumns.length - 1 &&
                           "border-e border-border/70",
                         !isLast && "border-b border-border/70",
                       )}

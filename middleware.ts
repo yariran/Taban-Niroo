@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   DEFAULT_LOCALE,
   LOCALE_COOKIE,
+  isLocalePubliclyEnabled,
   stripLocalePrefix,
   withLocale,
 } from "@/lib/i18n";
@@ -44,6 +45,19 @@ export function middleware(request: NextRequest) {
   if (!pathLocale) {
     const url = request.nextUrl.clone();
     url.pathname = withLocale(pathname === "/" ? "/" : pathname, DEFAULT_LOCALE);
+    const res = NextResponse.redirect(url, 308);
+    res.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    return res;
+  }
+
+  /* Park disabled locales (e.g. FA) onto the default English path. */
+  if (!isLocalePubliclyEnabled(pathLocale)) {
+    const url = request.nextUrl.clone();
+    url.pathname = withLocale(bare === "/" ? "/" : bare, DEFAULT_LOCALE);
     const res = NextResponse.redirect(url, 308);
     res.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, {
       path: "/",
