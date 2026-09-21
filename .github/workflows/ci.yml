@@ -13,9 +13,7 @@ jobs:
   quality:
     name: Lint · Test · Build · E2E · Perf
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: taban-niroo-website
+  
 
     steps:
       - name: Checkout
@@ -26,7 +24,7 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: taban-niroo-website/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install
         run: npm ci
@@ -48,7 +46,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('taban-niroo-website/package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
