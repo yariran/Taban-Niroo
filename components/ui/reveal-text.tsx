@@ -147,6 +147,11 @@ type RevealBlockProps = {
    * themselves, so this component has to BE the list, not wrap it.
    */
   as?: "div" | "ul" | "ol" | "dl" | "section" | "article" | "header";
+  /**
+   * KPI figures stay left-to-right even inside the Persian RTL page, so the
+   * block that wraps them has to be able to pin its own direction.
+   */
+  dir?: "ltr" | "rtl";
 };
 
 /**
@@ -161,6 +166,7 @@ export function RevealBlock({
   distance = 22,
   stagger = 70,
   as = "div",
+  dir,
 }: RevealBlockProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [selfShown, setSelfShown] = useState(false);
@@ -227,6 +233,7 @@ export function RevealBlock({
     <Tag
       ref={ref as never}
       className={className}
+      dir={dir}
       data-reveal-block={shown ? "in" : "pre"}
     >
       {items.map((child, i) => {
