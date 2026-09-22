@@ -62,7 +62,7 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
             <div className={`${styles.panelRule} mt-4 grid grid-cols-2 pt-4`}>
               <div className="pe-4">
                 <p className={`${styles.statValue} text-[1.75rem] font-semibold leading-none text-white`}>
-                  {country.projects}
+                  +{country.projects}
                 </p>
                 <p className="mt-1.5 text-[10px] uppercase tracking-[0.16em] text-slate-400">
                   Projects

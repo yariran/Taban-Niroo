@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, DraftingCompass, ArrowRight } from "lucide-react";
+import { LayoutTemplate, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRODUCTS } from "@/lib/products";
 import { SITE_IMAGES } from "@/lib/site-images";
@@ -114,16 +114,8 @@ function SpecActions({
   return (
     <div className="flex items-center justify-center gap-0">
       <Link href={productHref} className={itemClass}>
-        <FileText size={compact ? 13 : 14} aria-hidden />
-        Table
-      </Link>
-      <span
-        className="mx-1 h-3.5 w-px shrink-0 bg-brand-navy/15"
-        aria-hidden
-      />
-      <Link href={productHref} className={itemClass}>
-        <DraftingCompass size={compact ? 13 : 14} aria-hidden />
-        Drawing
+        <LayoutTemplate size={compact ? 13 : 14} aria-hidden />
+        Table & drawing
       </Link>
       <span
         className="mx-1 h-3.5 w-px shrink-0 bg-brand-navy/15"

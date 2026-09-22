@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, ArrowUpRight, Ruler, Search, Table2, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, LayoutTemplate, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   ProductModal,
@@ -15,6 +15,7 @@ import {
   PRODUCTS,
   listFamilies,
   listProducts,
+  resolveProductDrawing,
   resolveProductImage,
 } from "@/lib/products";
 import { TechRef } from "@/components/ui/tech-ref";
@@ -32,6 +33,7 @@ type ProductItem = {
   voltageClass?: string;
   standard?: string;
   image?: string | null;
+  drawing?: string | null;
   order: number;
   variants?: ProductVariant[];
 };
@@ -114,6 +116,7 @@ function toSpec(item: ProductItem): ProductSpec {
     voltageClass: item.voltageClass,
     standard: item.standard,
     image: resolveProductImage(item),
+    drawing: resolveProductDrawing(item),
     variants: item.variants,
   };
 }
@@ -188,14 +191,8 @@ type ModalState = { item: ProductItem; view: ProductModalView } | null;
 /**
  * Product card surface.
  *
- * Design intent: the two documentation options the user keeps asking for —
- * "Technical table" and "Product drawing" — must be visible on the card
- * itself, not hidden one click deep. The card is therefore split into:
- *   1. A clickable visual/title region that opens the overview/picker.
- *   2. Two explicit action buttons that jump straight to Table or Drawing.
- *
- * Nested interactive elements are implemented as sibling buttons inside an
- * article (never buttons-inside-buttons) to stay semantically valid.
+ * One primary action opens the combined datasheet modal: drawing on top,
+ * technical table underneath.
  */
 function ProductCard({
   item,
@@ -212,7 +209,7 @@ function ProductCard({
     <article className="group interactive-lift relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/90 text-start shadow-elevate dark:border-white/[0.08] dark:bg-card/50">
       <button
         type="button"
-        onClick={() => onOpen(item, "picker")}
+        onClick={() => onOpen(item, "datasheet")}
         aria-label={`Open ${item.name} overview`}
         className="relative block aspect-[4/3] w-full overflow-hidden rounded-t-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
       >
@@ -233,7 +230,7 @@ function ProductCard({
 
         <button
           type="button"
-          onClick={() => onOpen(item, "picker")}
+          onClick={() => onOpen(item, "datasheet")}
           aria-label={
             item.name.trim()
               ? undefined
@@ -246,26 +243,15 @@ function ProductCard({
           </TechRef>
         </button>
 
-        {/* Two primary options — exactly as requested: clicking either opens
-            the corresponding content inside the product modal on this page. */}
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
+        <div className="mt-auto pt-2">
           <button
             type="button"
-            onClick={() => onOpen(item, "table")}
-            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-border bg-background px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
-            aria-label={`${ui.viewTable}: ${item.name}`}
+            onClick={() => onOpen(item, "datasheet")}
+            className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border border-border bg-background px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
+            aria-label={`${ui.viewDatasheet}: ${item.name}`}
           >
-            <Table2 size={13} aria-hidden strokeWidth={1.75} />
-            {ui.viewTable}
-          </button>
-          <button
-            type="button"
-            onClick={() => onOpen(item, "drawing")}
-            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-border bg-background px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.14em] text-foreground transition-colors hover:border-foreground hover:bg-foreground hover:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
-            aria-label={`${ui.viewDrawing}: ${item.name}`}
-          >
-            <Ruler size={13} aria-hidden strokeWidth={1.75} />
-            {ui.viewDrawing}
+            <LayoutTemplate size={13} aria-hidden strokeWidth={1.75} />
+            {ui.viewDatasheet}
           </button>
         </div>
 
@@ -309,7 +295,7 @@ export function ProductCatalogSection({
    * go straight to the relevant content instead of forcing an extra step.
    */
   const openProduct = useCallback(
-    (item: ProductItem, view: ProductModalView = "picker") => {
+    (item: ProductItem, view: ProductModalView = "datasheet") => {
       setModalState({ item, view });
     },
     [],
@@ -491,9 +477,7 @@ export function ProductCatalogSection({
             </h3>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
               {ui.viewsHintBefore}
-              <span className="text-foreground">{ui.viewTable}</span>
-              {ui.viewsHintMid}
-              <span className="text-foreground">{ui.viewDrawing}</span>
+              <span className="text-foreground">{ui.viewDatasheet}</span>
               {ui.viewsHintAfter}
             </p>
 

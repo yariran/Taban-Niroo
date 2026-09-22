@@ -137,10 +137,12 @@ export const CONTENT_SECTIONS: ContentSectionDef[] = [
     key: "home.collection",
     group: "خانه",
     label: "نقشه جهانی / شرکا",
-    description: "عنوان سکشن ردپای جهانی؛ کشورها را در آیتم‌ها وارد کنید.",
+    description:
+      "عنوان سکشن ردپای جهانی؛ اعداد هر بازار را در آیتم‌ها وارد کنید. آیتمِ خالی‌نشده، مقدار پیش‌فرض کد را نگه می‌دارد.",
     previewPath: "/#installations",
     fields: ["eyebrow", "title", "body", "image", "items"],
-    itemsHint: "هر آیتم = نام یک کشور (برچسب).",
+    itemsHint:
+      "برچسب = نام انگلیسی کشور (Iran, Iraq, Turkey, Greece, Morocco, Liberia, Ghana, Somalia, Afghanistan, Peru, Colombia) · مقدار = تعداد پروژه و سال شروع، مثلاً «۱۴ · 2011» · متن = محصولات، با ویرگول جدا شود.",
     ...homeSet("collection"),
   },
   {

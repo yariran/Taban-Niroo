@@ -4,7 +4,7 @@
  */
 export const SITE_IMAGES = {
   hero: "/images/hero-main.jpg",
-  technology: "/images/_L7A7232.JPG",
+  technology: "/images/technology-plate-v2.jpg",
   philosophyLongRod: "/images/philosophy-long-rod.jpg",
   philosophyPost: "/images/philosophy-post-insulator.png",
   projectMap: "/images/partners-map-light-mode.jpg",
@@ -12,8 +12,8 @@ export const SITE_IMAGES = {
   projectServices: "/images/project-services-panel.png",
   projectsHero: "/images/hero-main.jpg",
   productsHero: "/images/hero-main.jpg",
-  testimonials: "/images/About.jpg",
-  ceoPortrait: "/images/ceo-portrait.JPG",
+  testimonials: "/images/ceo-closing-factory.jpg",
+  ceoPortrait: "/images/ceo-letter-portrait.jpg",
   newRelease: "/images/new-release-line-post-insulator.jpg",
   featured: {
     longRod: "/images/LONGROD_INSULATORS.jpg",

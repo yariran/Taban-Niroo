@@ -103,6 +103,7 @@ export const fa: Dictionary = {
     name: "نام و نام خانوادگی",
     email: "ایمیل",
     company: "شرکت / سازمان",
+    whatsapp: "واتساپ",
     message: "شرح درخواست",
     sending: "در حال ارسال…",
     success: "درخواست شما ثبت شد. همکاران فنی ما تماس می‌گیرند.",

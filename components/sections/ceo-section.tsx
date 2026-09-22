@@ -105,9 +105,10 @@ export function CEOSection({
                     src={image}
                     alt="Asadollah Zamani, CEO of Taban Niroo"
                     fill
-                    className="object-cover object-top"
+                    className="object-cover object-[48%_18%]"
                     sizes="(max-width: 1024px) 260px, 280px"
-                    unoptimized={image.startsWith("http")}
+                    unoptimized
+                    priority
                   />
                 </ImageReveal>
               </div>
@@ -221,6 +222,7 @@ export function CEOSection({
                     fill
                     className="object-cover"
                     sizes="100vw"
+                    unoptimized
                   />
                 )}
               </div>

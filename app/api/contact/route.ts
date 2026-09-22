@@ -48,6 +48,7 @@ export async function POST(request: Request) {
   const name = singleLine(raw.name);
   const email = singleLine(raw.email);
   const company = singleLine(raw.company ?? "");
+  const whatsapp = singleLine(raw.whatsapp ?? "");
   const message = raw.message.trim();
   const productRef = singleLine(raw.productRef ?? "");
 
@@ -74,6 +75,7 @@ export async function POST(request: Request) {
     <p><strong>Name:</strong> ${escapeHtml(name)}</p>
     <p><strong>Email:</strong> ${escapeHtml(email)}</p>
     ${company ? `<p><strong>Company:</strong> ${escapeHtml(company)}</p>` : ""}
+    ${whatsapp ? `<p><strong>WhatsApp:</strong> ${escapeHtml(whatsapp)}</p>` : ""}
     ${
       productRef
         ? `<p><strong>Product ref:</strong> ${escapeHtml(productRef)} (<a href="${escapeHtml(absoluteUrl(`/products/${productRef}`))}">${escapeHtml(productRef)}</a>)</p>`

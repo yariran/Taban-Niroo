@@ -126,7 +126,7 @@ export default async function AboutPage({
                     Countries
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
-                    <CountUp to={10} prefix="+" />
+                    <CountUp to={15} prefix="+" />
                   </p>
                 </div>
               </div>
