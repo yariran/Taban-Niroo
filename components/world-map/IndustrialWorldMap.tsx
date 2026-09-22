@@ -12,15 +12,32 @@ import { LazyMotion, m, useReducedMotion } from "motion/react";
 
 import {
   COUNTRY_DATA,
+  HOME_COUNTRY,
   type InteractiveCountryKey,
 } from "./country-data";
 import { CountryInfoCard } from "./CountryInfoCard";
+import { CountryLabel, CountryMarker } from "./CountryMarker";
 import { CountryShape } from "./CountryShape";
-import { COUNTRY_SHAPES, INTERACTIVE_SHAPES } from "./map-geometry";
-import { MAP_MOTION, MAP_VIEWBOX } from "./map-config";
+import { MarketRoutes } from "./MarketRoutes";
+import type { MarketData } from "./resolve-markets";
+import {
+  COUNTRY_SHAPES,
+  INTERACTIVE_SHAPES,
+  MARKET_LABELS,
+} from "./map-geometry";
+import { MAP_MARKER, MAP_MOTION, MAP_VIEWBOX } from "./map-config";
 import styles from "./industrial-world-map.module.css";
 
-const HOME_COUNTRY: InteractiveCountryKey = "Iran";
+/** The eleven markets, in atlas order, for the marker and label layers. */
+const MARKET_SHAPES = COUNTRY_SHAPES.filter((shape) => shape.interactiveKey);
+
+/** Solved standing label positions, by market. */
+const STANDING_LABELS = new Map(
+  MARKET_LABELS.map((label) => [
+    label.key,
+    { x: label.x, y: label.y, anchor: label.anchor },
+  ]),
+);
 
 const loadMotionFeatures = () =>
   import("./motion-features").then((module) => module.default);
@@ -33,13 +50,23 @@ type IndustrialWorldMapProps = {
    * a second map is ever mounted on the same document.
    */
   idPrefix?: string;
+  /** CMS-resolved figures. Defaults to the built-in table. */
+  markets?: MarketData;
 };
 
 export function IndustrialWorldMap({
   embedded = false,
   idPrefix = "tn-world-map",
+  markets = COUNTRY_DATA,
 }: IndustrialWorldMapProps) {
   const [activeCountryKey, setActiveCountryKey] =
+    useState<InteractiveCountryKey | null>(null);
+  /*
+    Hover/focus is tracked here, not inside each country, because the
+    marker and label layers that respond to it are siblings of the
+    landmass layer rather than children of it.
+  */
+  const [engagedCountryKey, setEngagedCountryKey] =
     useState<InteractiveCountryKey | null>(null);
   const reduceMotion = useReducedMotion();
   const rootRef = useRef<HTMLElement | null>(null);
@@ -72,7 +99,7 @@ export function IndustrialWorldMap({
     : null;
   const homeShape = INTERACTIVE_SHAPES.get(HOME_COUNTRY) ?? null;
   const activeCountry = activeCountryKey
-    ? COUNTRY_DATA[activeCountryKey]
+    ? markets[activeCountryKey]
     : null;
 
   const zoomOrigin = useMemo(() => {
@@ -117,27 +144,21 @@ export function IndustrialWorldMap({
     <LazyMotion features={loadMotionFeatures} strict>
       <section
         ref={rootRef}
-        className={`${styles.shell} ${styles.shellFull} relative flex h-full min-h-0 flex-col overflow-hidden p-1.5 sm:p-2.5 md:p-3 ring-1 ring-brand-orange/10`}
+        className={`${styles.shell} ${styles.shellFull} relative flex h-full min-h-0 flex-col overflow-hidden p-1.5 sm:p-2.5 md:p-3`}
         aria-label={
           embedded
             ? "Interactive project and partner map"
             : undefined
         }
       >
-        <m.div
-          aria-hidden="true"
-          className={styles.gridTexture}
-          animate={
-            reduceMotion
-              ? { opacity: 0.62, x: 0, y: 0 }
-              : {
-                  opacity: [0.42, 0.65, 0.42],
-                  x: [0, 21, 0],
-                  y: [0, 21, 0],
-                }
-          }
-          transition={{ duration: 18, repeat: reduceMotion ? 0 : Infinity, ease: "linear" }}
-        />
+        {/*
+          Static. This drifted 21px and breathed between 0.42 and 0.65
+          opacity on an 18s loop, forever — at 7% grey over #0A0B0D the
+          movement is below the threshold anyone notices, so it was a
+          permanent compositor animation on a full-bleed layer buying
+          nothing. The texture itself still does its job.
+        */}
+        <div aria-hidden="true" className={styles.gridTexture} />
 
         {!embedded ? (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-6 pt-8 md:px-12 lg:px-20">
@@ -286,6 +307,15 @@ export function IndustrialWorldMap({
                 />
               ) : null}
 
+              {/*
+                Four stacked layers, in paint order: landmasses, routes,
+                markers, names. SVG resolves overlap by document order
+                alone, so a marker or a label nested inside its own
+                country's group is painted over by every country that
+                comes later in the atlas — which is what buried the names
+                of the markets whose neighbours happen to be drawn after
+                them.
+              */}
               <g>
                 {COUNTRY_SHAPES.map((shape) => (
                   <CountryShape
@@ -293,11 +323,57 @@ export function IndustrialWorldMap({
                     shape={shape}
                     isHome={shape.interactiveKey === HOME_COUNTRY}
                     isActive={shape.interactiveKey === activeCountryKey}
+                    isEngaged={shape.interactiveKey === engagedCountryKey}
                     activeHeatGradientId={heatGradientId}
                     homeHeatGradientId={homeHeatGradientId}
                     onSelect={selectCountry}
+                    onEngage={setEngagedCountryKey}
                   />
                 ))}
+              </g>
+
+              <MarketRoutes
+                activeCountryKey={activeCountryKey}
+                engagedCountryKey={engagedCountryKey}
+              />
+
+              <g>
+                {MARKET_SHAPES.map((shape) => (
+                  <CountryMarker
+                    key={`marker-${shape.id}`}
+                    shape={shape}
+                    isHome={shape.interactiveKey === HOME_COUNTRY}
+                    isActive={shape.interactiveKey === activeCountryKey}
+                    isEngaged={shape.interactiveKey === engagedCountryKey}
+                  />
+                ))}
+              </g>
+
+              <g>
+                {MARKET_SHAPES.map((shape) => {
+                  const key = shape.interactiveKey;
+                  if (!key) return null;
+
+                  const standing = STANDING_LABELS.get(key);
+
+                  return (
+                    <CountryLabel
+                      key={`label-${shape.id}`}
+                      name={key}
+                      placement={
+                        standing ?? {
+                          x: shape.centroid[0],
+                          y: shape.centroid[1] - MAP_MARKER.labelOffset,
+                          anchor: "middle",
+                        }
+                      }
+                      isStanding={Boolean(standing)}
+                      isEmphasised={
+                        key === activeCountryKey || key === engagedCountryKey
+                      }
+                    />
+                  );
+                })}
               </g>
             </svg>
           </m.div>

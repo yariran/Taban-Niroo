@@ -60,6 +60,7 @@ export function ContactForm({
       name: String(fd.get("name") ?? "").trim(),
       email: String(fd.get("email") ?? "").trim(),
       company: String(fd.get("company") ?? "").trim(),
+      whatsapp: String(fd.get("whatsapp") ?? "").trim(),
       message: String(fd.get("message") ?? "").trim(),
       productRef: String(fd.get("productRef") ?? "").trim(),
       _hp: String(fd.get("_hp") ?? ""),
@@ -179,6 +180,22 @@ export function ContactForm({
           id="company"
           name="company"
           autoComplete="organization"
+          disabled={loading}
+        />
+      </div>
+      <div className="space-y-2">
+        <label
+          className="text-sm font-medium text-foreground"
+          htmlFor="whatsapp"
+        >
+          {dict.contact.whatsapp}
+        </label>
+        <Input
+          id="whatsapp"
+          name="whatsapp"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
           disabled={loading}
         />
       </div>

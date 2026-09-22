@@ -71,16 +71,14 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
             <ImageReveal className="absolute inset-0">
               <Image
                 src={image}
-                alt="Taban Niroo composite insulators and power transmission"
+                alt="High-voltage transmission line with composite insulation"
                 fill
-                /* The default plate is a hazy desert line shot — near-zero
-                   contrast straight out of camera, which is what made this
-                   full viewport read as a loading state. A small grade gives
-                   the pylons something to separate against. */
-                className="object-cover contrast-[1.14] saturate-[0.88] brightness-[0.96]"
+                className="object-cover object-[58%_42%]"
                 sizes="(min-width: 1280px) 1280px, 100vw"
-                quality={70}
+                quality={85}
                 decoding="async"
+                unoptimized
+                priority
               />
             </ImageReveal>
           </div>

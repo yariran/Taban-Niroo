@@ -23,7 +23,7 @@ export const DEFAULT_KPIS: readonly Kpi[] = [
   { label: "Projects", to: 500, prefix: "+" },
   { label: "Years active", to: 24, prefix: "+" },
   { label: "Rated voltage", to: 1000, value: "6-1000 kV" },
-  { label: "Countries served", to: 10, prefix: "+" },
+  { label: "Countries served", to: 15, prefix: "+" },
 ];
 
 /**

@@ -4,6 +4,15 @@
   "home": {
     "timeline": {
       "image": "/images/home/history-timeline-v4.jpg"
+    },
+    "ceo": {
+      "image": "/images/ceo-letter-portrait.jpg"
+    },
+    "testimonials": {
+      "image": "/images/ceo-closing-factory.jpg"
+    },
+    "technology": {
+      "image": "/images/technology-plate-v2.jpg"
     }
   },
   "about": {},

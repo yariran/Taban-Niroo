@@ -77,6 +77,8 @@ export type Product = {
   standard?: string;
   /** Optional product image in `/public/images/...`. */
   image?: string | null;
+  /** Optional engineering drawing (datasheet plate) in `/public/images/...`. */
+  drawing?: string | null;
   /** Sort key inside its family (existing semantics). */
   order: number;
   /**
@@ -240,6 +242,38 @@ export function resolveProductImage(
     FAMILY_THUMBNAIL[family] ??
     FAMILY_THUMBNAIL["Silicone Composite Insulators"]
   );
+}
+
+/**
+ * Engineering drawings matched from `/public/images/Products` filenames
+ * (copied to URL-safe paths under `/images/product-drawings/`).
+ */
+export const PRODUCT_DRAWINGS: Readonly<Record<string, string>> = {
+  "suspension-tension-24-36":
+    "/images/product-drawings/drawing-suspension-tension-24-36.png",
+  "line-post-24-36":
+    "/images/product-drawings/drawing-line-post-24-36.png",
+  "suspension-tension-63-110":
+    "/images/product-drawings/drawing-suspension-tension-63-110.png",
+  "suspension-tension-132-161":
+    "/images/product-drawings/drawing-suspension-tension-132-161.png",
+  "suspension-tension-220-230":
+    "/images/product-drawings/drawing-suspension-tension-220-230.png",
+  "suspension-tension-330":
+    "/images/product-drawings/drawing-suspension-tension-330.png",
+  "suspension-tension-400":
+    "/images/product-drawings/drawing-suspension-tension-400.png",
+  "suspension-tension-500":
+    "/images/product-drawings/drawing-suspension-tension-500.png",
+};
+
+/** Prefer an explicit `drawing` field, else the filename-matched plate. */
+export function resolveProductDrawing(
+  product: Pick<Product, "id" | "drawing">,
+): string | null {
+  const explicit = product.drawing?.trim();
+  if (explicit) return explicit;
+  return PRODUCT_DRAWINGS[product.id] ?? null;
 }
 
 /**

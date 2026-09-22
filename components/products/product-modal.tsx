@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight, Mail, Table2, Ruler, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail, LayoutTemplate, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 import { trapFocusKeydown } from "@/lib/focus-trap";
@@ -94,10 +94,19 @@ export type ProductSpec = {
   voltageClass?: string;
   standard?: string;
   image?: string | null;
+  /** Engineering drawing shown above the technical table. */
+  drawing?: string | null;
   variants?: ProductVariant[];
 };
 
-export type ProductModalView = "picker" | "table" | "drawing";
+/** Combined drawing + table view. Legacy `table` / `drawing` map to datasheet. */
+export type ProductModalView = "picker" | "datasheet" | "table" | "drawing";
+
+function resolveModalView(
+  view: ProductModalView,
+): "picker" | "datasheet" {
+  return view === "picker" ? "picker" : "datasheet";
+}
 
 type ProductModalProps = {
   open: boolean;
@@ -144,10 +153,12 @@ function techBodyColumns(productId: string): readonly (keyof TechnicalRow)[] {
 export function ProductModal({
   open,
   product,
-  initialView = "picker",
+  initialView = "datasheet",
   onClose,
 }: ProductModalProps) {
-  const [view, setView] = useState<ProductModalView>(initialView);
+  const [view, setView] = useState<"picker" | "datasheet">(
+    resolveModalView(initialView),
+  );
   const [mounted, setMounted] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
@@ -158,7 +169,7 @@ export function ProductModal({
 
   useEffect(() => {
     if (!open) return;
-    setView(initialView);
+    setView(resolveModalView(initialView));
   }, [open, product?.id, initialView]);
 
   useEffect(() => {
@@ -215,7 +226,7 @@ export function ProductModal({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="relative z-10 flex max-h-[min(100dvh,100%)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-elevate outline-none animate-scale-in"
+        className="relative z-10 flex max-h-[min(100dvh,100%)] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-elevate outline-none animate-scale-in"
       >
         {/* Header */}
         <header className="flex items-start justify-between gap-4 border-b border-border/60 bg-card/95 px-5 py-4 md:px-7 md:py-5">
@@ -264,16 +275,13 @@ export function ProductModal({
           data-lenis-prevent-touch
         >
           {view === "picker" && (
-            <PickerView
-              onPickTable={() => setView("table")}
-              onPickDrawing={() => setView("drawing")}
+            <PickerView onPickDatasheet={() => setView("datasheet")} />
+          )}
+          {view === "datasheet" && (
+            <DatasheetView
+              product={product}
+              onBack={() => setView("picker")}
             />
-          )}
-          {view === "table" && (
-            <TableView product={product} onBack={() => setView("picker")} />
-          )}
-          {view === "drawing" && (
-            <DrawingView product={product} onBack={() => setView("picker")} />
           )}
         </div>
 
@@ -307,42 +315,27 @@ export function ProductModal({
 }
 
 /**
- * The "pick one" moment: only two equal options — technical table vs drawing.
- * No summary text, no specs, no applications copy. Keeping it this focused is
- * what the product owner asked for ("two options appear and that's it").
+ * Single entry into the combined datasheet (drawing above, table below).
  */
-function PickerView({
-  onPickTable,
-  onPickDrawing,
-}: {
-  onPickTable: () => void;
-  onPickDrawing: () => void;
-}) {
+function PickerView({ onPickDatasheet }: { onPickDatasheet: () => void }) {
   return (
     <div className="px-5 py-8 md:px-8 md:py-10">
       <div className="mx-auto max-w-xl text-center">
         <p className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-          Choose a view
+          Product documentation
         </p>
         <h3 className="font-hero-slogan mt-3 text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
-          Technical data or engineering drawing?
+          Drawing and technical table
         </h3>
       </div>
 
-      <div className="mx-auto mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
+      <div className="mx-auto mt-8 max-w-md">
         <PickerCard
-          icon={<Table2 size={26} aria-hidden strokeWidth={1.5} />}
+          icon={<LayoutTemplate size={26} aria-hidden strokeWidth={1.5} />}
           label="01"
-          title="Technical table"
-          description="Ratings, dimensions, mechanical and environmental values."
-          onClick={onPickTable}
-        />
-        <PickerCard
-          icon={<Ruler size={26} aria-hidden strokeWidth={1.5} />}
-          label="02"
-          title="Product drawing"
-          description="Sectional diagram and reference geometry."
-          onClick={onPickDrawing}
+          title="Table & drawing"
+          description="Sectional drawing on top, full ratings table underneath."
+          onClick={onPickDatasheet}
         />
       </div>
     </div>
@@ -587,7 +580,7 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
   );
 }
 
-function TableView({
+function DatasheetView({
   product,
   onBack,
 }: {
@@ -596,105 +589,107 @@ function TableView({
 }) {
   const variants = product.variants ?? [];
   const hasVariants = variants.length > 0;
+  const drawingSrc = product.drawing?.trim() || null;
 
   return (
     <div>
-      <BackBar onBack={onBack} label="Technical table" />
-      <div className="p-5 md:p-7">
-        <div className="flex flex-wrap items-end justify-between gap-4 pb-4">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-              Technical data
-            </p>
-            <p className="mt-1 text-sm text-foreground/85">
-              {hasVariants ? (
-                <>
-                  {variants.length} product reference
-                  {variants.length === 1 ? "" : "s"} in datasheet.
-                </>
-              ) : (
-                <>No variant rows defined for this product yet.</>
-              )}
-            </p>
-          </div>
-          {product.standard && (
-            <p className="max-w-[18rem] text-end text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {product.standard}
-            </p>
-          )}
-        </div>
-
-        <TechnicalDataTable product={product} />
-
-        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          Drag, swipe, or use the scrollbar to see all columns. All
-          dimensions in millimetres (mm) unless stated otherwise; voltages in
-          kilovolts (kV); mechanical loads in kilonewtons (kN). Values are
-          typed per product reference and confirmed by the individual test
-          report on request.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function DrawingView({
-  product,
-  onBack,
-}: {
-  product: ProductSpec;
-  onBack: () => void;
-}) {
-  return (
-    <div>
-      <BackBar onBack={onBack} label="Product drawing" />
-      <div className="p-5 md:p-7">
-        <div
-          className="relative overflow-hidden rounded-2xl border border-border/70 bg-background"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(0deg, var(--border) 0 1px, transparent 1px 40px), repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px 40px)",
-          }}
-        >
-          <div className="flex min-h-[340px] flex-col items-center justify-center gap-3 px-6 py-12 text-center md:min-h-[420px]">
-            <span className="inline-flex size-12 items-center justify-center rounded-full border border-border bg-muted/50 text-foreground">
-              <Ruler size={18} aria-hidden />
-            </span>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-              Drawing on request
-            </p>
-            <p className="max-w-md text-sm text-muted-foreground">
-              The sectional drawing and reference dimensions for{" "}
-              <span className="text-foreground">{product.name}</span> are
-              available from our engineering team with your enquiry.
-            </p>
-            <a
-              href={`/contact?ref=${encodeURIComponent(product.id)}`}
-              className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-primary-foreground transition-colors hover:bg-brand-burgundy"
-            >
-              <Mail size={14} aria-hidden />
-              Request drawing
-            </a>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          {[
-            { k: "Section view", v: "—" },
-            { k: "Reference height", v: "—" },
-            { k: "Coupling type", v: "—" },
-          ].map((i) => (
-            <div
-              key={i.k}
-              className="rounded-xl border border-border/60 bg-muted/20 p-3"
-            >
-              <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                {i.k}
+      <BackBar onBack={onBack} label="Table & drawing" />
+      <div className="space-y-10 p-5 md:p-7">
+        {/* Drawing — top */}
+        <section aria-labelledby="product-drawing-heading">
+          <div className="flex flex-wrap items-end justify-between gap-4 pb-4">
+            <div>
+              <p
+                id="product-drawing-heading"
+                className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
+              >
+                Product drawing
               </p>
-              <p className="mt-1 text-sm text-foreground">{i.v}</p>
+              <p className="mt-1 text-sm text-foreground/85">
+                Sectional diagram and reference geometry.
+              </p>
             </div>
-          ))}
-        </div>
+          </div>
+
+          <div
+            className="relative overflow-hidden rounded-2xl border border-border/70 bg-background"
+            style={
+              drawingSrc
+                ? undefined
+                : {
+                    backgroundImage:
+                      "repeating-linear-gradient(0deg, var(--border) 0 1px, transparent 1px 40px), repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px 40px)",
+                  }
+            }
+          >
+            {drawingSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={drawingSrc}
+                alt={`${product.name} engineering drawing`}
+                className="mx-auto max-h-[min(52vh,420px)] w-full object-contain p-4 md:p-6"
+              />
+            ) : (
+              <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 px-6 py-12 text-center md:min-h-[340px]">
+                <span className="inline-flex size-12 items-center justify-center rounded-full border border-border bg-muted/50 text-foreground">
+                  <LayoutTemplate size={18} aria-hidden />
+                </span>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+                  Drawing on request
+                </p>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  The sectional drawing for{" "}
+                  <span className="text-foreground">{product.name}</span> is
+                  available from our engineering team with your enquiry.
+                </p>
+                <a
+                  href={`/contact?ref=${encodeURIComponent(product.id)}`}
+                  className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-primary-foreground transition-colors hover:bg-brand-burgundy"
+                >
+                  <Mail size={14} aria-hidden />
+                  Request drawing
+                </a>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Table — bottom */}
+        <section aria-labelledby="product-table-heading">
+          <div className="flex flex-wrap items-end justify-between gap-4 pb-4">
+            <div>
+              <p
+                id="product-table-heading"
+                className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
+              >
+                Technical table
+              </p>
+              <p className="mt-1 text-sm text-foreground/85">
+                {hasVariants ? (
+                  <>
+                    {variants.length} product reference
+                    {variants.length === 1 ? "" : "s"} in datasheet.
+                  </>
+                ) : (
+                  <>No variant rows defined for this product yet.</>
+                )}
+              </p>
+            </div>
+            {product.standard && (
+              <p className="max-w-[18rem] text-end text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {product.standard}
+              </p>
+            )}
+          </div>
+
+          <TechnicalDataTable product={product} />
+
+          <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+            Drag, swipe, or use the scrollbar to see all columns. All
+            dimensions in millimetres (mm) unless stated otherwise; voltages in
+            kilovolts (kV); mechanical loads in kilonewtons (kN).
+          </p>
+        </section>
       </div>
     </div>
   );

@@ -208,7 +208,7 @@ export default async function RootLayout({
           {
             "@type": "PostalAddress",
             name: locale === "fa" ? "دفتر تهران" : "Tehran office",
-            streetAddress: "Office 9, No 64, Saeedi Ave, Africa St",
+            streetAddress: "Office 9, No. 64, Saeedi Ave, Africa Blvd",
             addressLocality: "Tehran",
             addressCountry: "IR",
           },

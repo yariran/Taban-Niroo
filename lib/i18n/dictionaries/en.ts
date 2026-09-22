@@ -58,6 +58,7 @@ export type Dictionary = {
     name: string;
     email: string;
     company: string;
+    whatsapp: string;
     message: string;
     sending: string;
     success: string;
@@ -173,6 +174,7 @@ export const en: Dictionary = {
     name: "Full name",
     email: "Work email",
     company: "Company",
+    whatsapp: "WhatsApp",
     message: "Message",
     sending: "Sending…",
     success: "Thank you — your message has been received.",

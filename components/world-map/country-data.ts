@@ -19,6 +19,9 @@ export const INTERACTIVE_COUNTRY_KEYS = [
 export type InteractiveCountryKey =
   (typeof INTERACTIVE_COUNTRY_KEYS)[number];
 
+/** Origin of the route arcs, and the one market badged as headquarters. */
+export const HOME_COUNTRY: InteractiveCountryKey = "Iran";
+
 export type CountryDetails = {
   readonly name: InteractiveCountryKey;
   readonly projects: number;
@@ -29,7 +32,7 @@ export type CountryDetails = {
 export const COUNTRY_DATA = {
   Iran: {
     name: "Iran",
-    projects: 48,
+    projects: 400,
     products: [
       "Long rod composites",
       "Post insulators",
@@ -81,7 +84,7 @@ export const COUNTRY_DATA = {
   },
   Afghanistan: {
     name: "Afghanistan",
-    projects: 8,
+    projects: 12,
     products: ["HV long rods", "Hybrid posts", "Creepage covers"],
     firstCooperation: 2010,
   },
@@ -98,6 +101,22 @@ export const COUNTRY_DATA = {
     firstCooperation: 2007,
   },
 } as const satisfies Record<InteractiveCountryKey, CountryDetails>;
+
+/**
+ * Section-level figures, derived rather than written down.
+ *
+ * The stat rail under the map and the per-country cards have to agree; a
+ * hand-typed total silently goes stale the first time a market is added
+ * or a project count moves.
+ */
+export const PORTFOLIO_TOTALS = (() => {
+  const entries = Object.values(COUNTRY_DATA);
+  return {
+    markets: entries.length,
+    projects: entries.reduce((total, entry) => total + entry.projects, 0),
+    since: Math.min(...entries.map((entry) => entry.firstCooperation)),
+  };
+})();
 
 /** Natural Earth/world-atlas names are not guaranteed to match product copy. */
 const WORLD_ATLAS_ALIASES: Readonly<Record<string, InteractiveCountryKey>> = {

@@ -1,4 +1,4 @@
-import { memo, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { memo, type CSSProperties, type KeyboardEvent } from "react";
 import { m, useReducedMotion } from "motion/react";
 
 import type { InteractiveCountryKey } from "./country-data";
@@ -10,9 +10,12 @@ type CountryShapeProps = {
   shape: CountryShapeModel;
   isActive: boolean;
   isHome: boolean;
+  /** Pointer is over this market, or its hit target holds keyboard focus. */
+  isEngaged: boolean;
   activeHeatGradientId: string;
   homeHeatGradientId: string;
   onSelect: (country: InteractiveCountryKey) => void;
+  onEngage: (country: InteractiveCountryKey | null) => void;
 };
 
 const transformStyle: CSSProperties = {
@@ -24,21 +27,13 @@ function CountryShapeComponent({
   shape,
   isActive,
   isHome,
+  isEngaged,
   activeHeatGradientId,
   homeHeatGradientId,
   onSelect,
+  onEngage,
 }: CountryShapeProps) {
   const reduceMotion = useReducedMotion();
-
-  /*
-    Hover is explicit state rather than motion's `whileHover` variants.
-    The landmass layers animate `scale` through their own `animate` prop,
-    and a child that declares `animate` stops variant propagation — so a
-    variant set on the outer group would never reach the wash path behind
-    it. Keyboard focus drives the same state, which is what surfaces the
-    label for tab users.
-  */
-  const [isEngaged, setIsEngaged] = useState(false);
 
   // ~170 of the ~180 atlas countries are backdrop. They were previously
   // wrapped in a motion group animating `scale: 1`, which is a live
@@ -59,24 +54,12 @@ function CountryShapeComponent({
     }
   };
 
-  const showLabel = isEngaged || isActive;
-  const ringRadius = isActive
-    ? MAP_MARKER.ringActive
-    : isEngaged
-      ? MAP_MARKER.ringHover
-      : MAP_MARKER.ringRest;
-  const coreRadius = isActive
-    ? MAP_MARKER.coreActive
-    : isEngaged
-      ? MAP_MARKER.coreHover
-      : MAP_MARKER.coreRest;
   const washOpacity = isActive ? (isEngaged ? 0.28 : 0.16) : isEngaged ? 0.4 : 0;
-  const markerTransition = { duration: reduceMotion ? 0 : 0.24, ease: "easeOut" as const };
 
   return (
     <g
-      onPointerEnter={() => setIsEngaged(true)}
-      onPointerLeave={() => setIsEngaged(false)}
+      onPointerEnter={() => onEngage(countryKey)}
+      onPointerLeave={() => onEngage(null)}
     >
       <m.g
         className={styles.countryTransform}
@@ -187,45 +170,6 @@ function CountryShapeComponent({
         ) : null}
       </m.g>
 
-      {/*
-        The marker, not the fill, is what says "clickable". Liberia is
-        14×17 viewBox units and Greece 21×28 — at section width those are
-        a handful of pixels, so no fill treatment survives there.
-      */}
-      <g transform={`translate(${cx} ${cy})`} pointerEvents="none">
-        <m.circle
-          className={`${styles.markerRing} ${isHome ? styles.markerRingHome : ""}`}
-          initial={false}
-          animate={{ r: ringRadius, opacity: showLabel ? 1 : isHome ? 0.95 : 0.7 }}
-          transition={markerTransition}
-        />
-        <m.circle
-          className={`${styles.markerCore} ${isHome ? styles.markerCoreHome : ""}`}
-          initial={false}
-          animate={{ r: coreRadius }}
-          transition={markerTransition}
-        />
-      </g>
-
-      {/*
-        Names stay hidden at rest: Greece, Turkey, Iraq, Iran and
-        Afghanistan sit within 41 units of each other, so eleven permanent
-        labels collide into noise at this scale.
-      */}
-      <m.text
-        className={styles.markerLabel}
-        x={cx}
-        y={cy - MAP_MARKER.labelOffset}
-        textAnchor="middle"
-        initial={false}
-        animate={{ opacity: showLabel ? 1 : 0, y: showLabel ? 0 : 4 }}
-        transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeOut" }}
-        pointerEvents="none"
-        aria-hidden="true"
-      >
-        {countryKey}
-      </m.text>
-
       {/* Mouse target for the landmass itself — deliberately not focusable,
           so each market contributes exactly one tab stop. */}
       <path
@@ -244,8 +188,8 @@ function CountryShapeComponent({
         data-market={countryKey}
         onClick={selectCountry}
         onKeyDown={handleKeyDown}
-        onFocus={() => setIsEngaged(true)}
-        onBlur={() => setIsEngaged(false)}
+        onFocus={() => onEngage(countryKey)}
+        onBlur={() => onEngage(null)}
         role="button"
         tabIndex={0}
         aria-label={`Show ${countryKey} project details`}

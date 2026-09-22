@@ -23,7 +23,7 @@ const TICKER: readonly { label: string; value: string }[] = [
   { label: "RATED VOLTAGE", value: "6-1000 kV" },
   { label: "Active since", value: "1997" },
   { label: "Registered patents", value: "03" },
-  { label: "Served countries", value: "10" },
+  { label: "Served countries", value: "15" },
   { label: "Production line", value: "Shiraz SEZ, Iran" },
   { label: "Compliance", value: "IEC 61109 · 62217" },
 ];

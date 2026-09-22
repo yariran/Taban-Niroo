@@ -59,9 +59,9 @@ export default async function ImprintPage({
 
       <h2>Tehran office</h2>
       <p>
-        Office 9, No 64, Saeedi Avenue
+        Office 9, No. 64, Saeedi Avenue
         <br />
-        Africa Street
+        Africa Boulevard
         <br />
         Tehran, Islamic Republic of Iran
       </p>
@@ -70,7 +70,7 @@ export default async function ImprintPage({
       <p>
         Phone: <a href="tel:+987137175115">+98 71 3717 5115</a>
         <br />
-        Fax: +98 21 2629 3990
+        Fax: +98 21 2264 4237
         <br />
         Email:{" "}
         <a href="mailto:info@taban-niroo.com">info@taban-niroo.com</a>

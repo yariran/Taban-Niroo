@@ -81,6 +81,7 @@ export const productSchema = z
     voltageClass: z.string().max(200).optional(),
     standard: z.string().max(500).optional(),
     image: z.string().max(2000).nullable().optional(),
+    drawing: z.string().max(2000).nullable().optional(),
     order: z.number().int().min(0).max(10_000),
     hidden: z.boolean().optional(),
     variants: z.array(variantSchema).max(200).optional(),
@@ -195,6 +196,14 @@ export const contactSchema = z
     name: z.string().min(1).max(200),
     email: z.string().email().max(320),
     company: z.string().max(200).optional().default(""),
+    whatsapp: z
+      .string()
+      .max(40)
+      .regex(/^[\d\s+\-().]*$/, {
+        message: "whatsapp must be a phone number",
+      })
+      .optional()
+      .default(""),
     message: z.string().min(10).max(8000),
     productRef: z
       .string()

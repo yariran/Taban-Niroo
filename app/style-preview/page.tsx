@@ -378,7 +378,7 @@ export default function StylePreviewPage() {
                   "Works",
                   "Taban Niroo Bldg, Shiraz Special Economic Zone, Fars",
                 ],
-                ["Tehran office", "Office 9, No 64, Saeedi Ave, Africa St"],
+                ["Tehran office", "Office 9, No. 64, Saeedi Ave, Africa Blvd"],
                 ["Telephone", "+98 71 3717 5115"],
                 ["Email", "info@taban-niroo.com"],
               ].map(([k, v]) => (

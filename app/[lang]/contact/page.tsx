@@ -50,19 +50,19 @@ export default async function ContactPage({ params, searchParams }: Props) {
       ? offices
       : [
           {
-            label: "Headquarters",
-            value: "Tel: +98 713 717 5115-7\nFax: +98 21 2629 3990",
+            label: "Headquarter",
+            value: "Tel: +98 713 717 5115-7\nFax: +98 21 2264 4237",
             body: "Taban Niroo Building\nShiraz Special Economic Zone, Iran",
           },
           {
             label: "Tehran office",
-            value: "Tel: +98 21 8821 6952\nFax: +98 21 2629 3990",
-            body: "Office 9, No. 64, Saeedi Ave,\nAfrica St, Tehran, Iran",
+            value: "Tel: +98 21 8821 6952\nFax: +98 21 2264 4237",
+            body: "Office 9, No. 64, Saeedi Ave,\nAfrica Blvd, Tehran, Iran",
           },
           {
             label: "Email",
             value: "",
-            body: "info@taban-niroo.com",
+            body: "info@taban-niroo.com\nsales@taban-niroo.com",
           },
         ];
 
@@ -112,13 +112,22 @@ export default async function ContactPage({ params, searchParams }: Props) {
                   </p>
                   {office.body ? (
                     <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-                      {office.label.toLowerCase() === "email" ? (
-                        <a
-                          className="underline underline-offset-2 hover:text-foreground"
-                          href={`mailto:${office.body.trim()}`}
-                        >
-                          {office.body.trim()}
-                        </a>
+                      {office.label.toLowerCase() === "email" ||
+                      office.label.includes("ایمیل") ? (
+                        office.body
+                          .split(/\n+/)
+                          .map((line) => line.trim())
+                          .filter(Boolean)
+                          .map((addr) => (
+                            <span key={addr} className="block">
+                              <a
+                                className="underline underline-offset-2 hover:text-foreground"
+                                href={`mailto:${addr}`}
+                              >
+                                {addr}
+                              </a>
+                            </span>
+                          ))
                       ) : (
                         office.body
                       )}
