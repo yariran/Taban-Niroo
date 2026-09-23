@@ -54,7 +54,7 @@ export default async function AboutPage({
   const storyBody = cmsText(
     story,
     "body",
-    "Based in the Shiraz Special Economic Zone, Taban Niroo manufactures a full range of medium and high-voltage composite insulators, hybrid insulators, transformer bushings, and accessories for markets across the Middle East, Africa, South America, and Eastern Europe.",
+    "Based in the Shiraz Especial Economic Zone, Taban Niroo manufactures a full range of medium and high-voltage composite insulators, hybrid insulators, transformer bushings, and accessories for markets across the Middle East, Africa, South America, and Eastern Europe.",
   );
   const heroImage = cmsImage(hero, SITE_IMAGES.hero) ?? SITE_IMAGES.hero;
 
@@ -71,7 +71,7 @@ export default async function AboutPage({
 
       <section id="about-us" data-chapter-id="about-us" className="bg-background">
         <div className="px-6 pt-14 pb-20 md:px-12 md:pt-16 md:pb-24 lg:px-20 lg:pt-20 lg:pb-28">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.15fr)] lg:items-center lg:gap-14">
             <div>
               <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
                 {eyebrow}
@@ -132,7 +132,7 @@ export default async function AboutPage({
               </div>
             </div>
 
-            <div className="cine-grade relative h-[320px] overflow-hidden rounded-2xl bg-secondary md:h-[380px]">
+            <div className="cine-grade relative h-[320px] overflow-hidden rounded-2xl bg-secondary md:h-[520px] lg:h-[640px] xl:h-[720px]">
               {heroImage.startsWith("http") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -146,6 +146,7 @@ export default async function AboutPage({
                   alt="High-voltage composite insulators at Taban Niroo"
                   fill
                   priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover grayscale"
                 />
               )}

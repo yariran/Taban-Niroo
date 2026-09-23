@@ -191,7 +191,7 @@ type ModalState = { item: ProductItem; view: ProductModalView } | null;
 /**
  * Product card surface.
  *
- * One primary action opens the combined datasheet modal: drawing on top,
+ * One primary action opens the combined datasheet modal: drawing slot on top,
  * technical table underneath.
  */
 function ProductCard({

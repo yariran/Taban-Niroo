@@ -94,7 +94,7 @@ export type ProductSpec = {
   voltageClass?: string;
   standard?: string;
   image?: string | null;
-  /** Engineering drawing shown above the technical table. */
+  /** Engineering drawing for the datasheet plate (shown when set). */
   drawing?: string | null;
   variants?: ProductVariant[];
 };
@@ -133,9 +133,10 @@ const TECH_FULL_ELECTRICAL = [
 ] as const satisfies ReadonlyArray<keyof TechnicalRow>;
 
 /** All non-MV-24/36 products: Lightning + Switching + Power. */
+/** All non-MV-24/36 products: Switching + Lightning + Power. */
 const TECH_HV_ELECTRICAL = [
-  "impulseWithstand",
   "switchingWithstand",
+  "impulseWithstand",
   "wetWithstand",
 ] as const satisfies ReadonlyArray<keyof TechnicalRow>;
 
@@ -315,7 +316,8 @@ export function ProductModal({
 }
 
 /**
- * Single entry into the combined datasheet (drawing above, table below).
+ * Single entry into the combined datasheet (drawing slot above, table below).
+ * Drawing art is withheld for now — the labelled slot stays for later assets.
  */
 function PickerView({ onPickDatasheet }: { onPickDatasheet: () => void }) {
   return (
@@ -498,16 +500,16 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
               </>
             ) : (
               <>
-                <th scope="col" className={techTableHeadCellClass}>
-                  Lightning impulse flashover voltage (kV)
-                </th>
                 {hasSwitching ? (
                   <th scope="col" className={techTableHeadCellClass}>
                     Switching Impulse withstand Voltage (kV)
                   </th>
                 ) : null}
                 <th scope="col" className={techTableHeadCellClass}>
-                  Power frequency flashover voltage (kV)
+                  Lightning impulse flashover voltage (kV)
+                </th>
+                <th scope="col" className={techTableHeadCellClass}>
+                  Wet Power frequency flashover voltage (kV)
                 </th>
               </>
             )}
@@ -589,13 +591,17 @@ function DatasheetView({
 }) {
   const variants = product.variants ?? [];
   const hasVariants = variants.length > 0;
-  const drawingSrc = product.drawing?.trim() || null;
+  /** When false, all drawings stay as labelled placeholders. */
+  const SHOW_PRODUCT_DRAWINGS = true;
+  const drawingSrc = SHOW_PRODUCT_DRAWINGS
+    ? product.drawing?.trim() || null
+    : null;
 
   return (
     <div>
       <BackBar onBack={onBack} label="Table & drawing" />
       <div className="space-y-10 p-5 md:p-7">
-        {/* Drawing — top */}
+        {/* Drawing — top (placeholder until assets are ready) */}
         <section aria-labelledby="product-drawing-heading">
           <div className="flex flex-wrap items-end justify-between gap-4 pb-4">
             <div>
@@ -635,12 +641,13 @@ function DatasheetView({
                   <LayoutTemplate size={18} aria-hidden />
                 </span>
                 <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Drawing on request
+                  Drawing coming soon
                 </p>
                 <p className="max-w-md text-sm text-muted-foreground">
                   The sectional drawing for{" "}
-                  <span className="text-foreground">{product.name}</span> is
-                  available from our engineering team with your enquiry.
+                  <span className="text-foreground">{product.name}</span> will
+                  appear here. Request it from our engineering team in the
+                  meantime.
                 </p>
                 <a
                   href={`/contact?ref=${encodeURIComponent(product.id)}`}

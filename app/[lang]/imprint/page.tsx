@@ -50,7 +50,7 @@ export default async function ImprintPage({
       <p>
         Taban Niroo Bldg
         <br />
-        Shiraz Special Economic Zone
+        Shiraz Especial Economic Zone
         <br />
         Shiraz, Fars Province
         <br />

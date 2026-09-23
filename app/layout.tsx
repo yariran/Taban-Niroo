@@ -200,7 +200,7 @@ export default async function RootLayout({
           {
             "@type": "PostalAddress",
             name: locale === "fa" ? "دفتر مرکزی" : "Headquarters",
-            streetAddress: "Taban Niroo Bldg, Shiraz Special Economic Zone",
+            streetAddress: "Taban Niroo Bldg, Shiraz Especial Economic Zone",
             addressLocality: "Shiraz",
             addressRegion: "Fars",
             addressCountry: "IR",

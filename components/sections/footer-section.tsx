@@ -215,7 +215,7 @@ export function FooterSection({
 
           <OfficeCol
             label="Shiraz"
-            lines={["Taban Niroo Bldg", "Shiraz Special Economic Zone, Iran"]}
+            lines={["Taban Niroo Bldg", "Shiraz Especial Economic Zone, Iran"]}
             phone={{ display: "+98 713 717 5115-7", href: "tel:+987137175115" }}
             fax="+98 21 2264 4237"
             email={{ display: "info@taban-niroo.com", href: "mailto:info@taban-niroo.com" }}

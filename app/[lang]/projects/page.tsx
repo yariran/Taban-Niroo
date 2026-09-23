@@ -68,7 +68,7 @@ export default async function ProjectsPage({
 
       <section className="bg-background">
         <div className="px-6 pb-20 pt-28 md:px-12 md:pb-24 md:pt-32 lg:px-20 lg:pb-28 lg:pt-36">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center">
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.15fr)] lg:items-center lg:gap-14">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
                 {eyebrow}
@@ -95,7 +95,7 @@ export default async function ProjectsPage({
               </RevealUp>
             </div>
 
-            <div className="cine-grade relative h-[320px] overflow-hidden bg-secondary md:h-[380px]">
+            <div className="cine-grade relative h-[320px] overflow-hidden bg-secondary md:h-[520px] lg:h-[640px] xl:h-[720px]">
               {heroImage.startsWith("http") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -108,6 +108,7 @@ export default async function ProjectsPage({
                   src={heroImage}
                   alt="Transmission infrastructure in operation"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover grayscale"
                 />
               )}

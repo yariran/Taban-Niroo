@@ -3,9 +3,8 @@ import type { ProductTechnicalRow, ProductVariant } from "@/lib/products";
 export type TechBodyKey = keyof ProductTechnicalRow;
 
 /**
- * Only these two MV datasheets keep Positive / Negative / Dry / Wet
- * sub-headers. Every other product shows Lightning + Power group titles
- * only (Positive + Wet values, no sub-header labels, no Neg/Dry columns).
+ * These datasheets keep Positive / Negative / Dry / Wet sub-headers.
+ * Every other product shows Switching + Lightning + Power (Wet).
  */
 export const FULL_ELECTRICAL_SUBHEADER_PRODUCT_IDS = new Set([
   "line-post-24-36",
@@ -33,11 +32,11 @@ export const SIMPLE_ELECTRICAL_BODY_KEYS = [
 ] as const satisfies readonly TechBodyKey[];
 
 /** Simplified electrical columns for every product except the two MV
- *  datasheets above: Lightning + Switching Impulse + Power (Wet).
+ *  datasheets above: Switching Impulse + Lightning + Power (Wet).
  *  Switching cells may be empty until catalogue values are filled in. */
 export const HV_ELECTRICAL_BODY_KEYS = [
-  "impulseWithstand",
   "switchingWithstand",
+  "impulseWithstand",
   "wetWithstand",
 ] as const satisfies readonly TechBodyKey[];
 
