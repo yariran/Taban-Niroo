@@ -520,10 +520,10 @@ const TECH_FULL_ELECTRICAL = [
   "wetWithstand",
 ] as const;
 
-/** All non-MV-24/36 products: Lightning + Switching + Power. */
+/** All non-MV-24/36 products: Switching + Lightning + Power. */
 const TECH_HV_ELECTRICAL = [
-  "impulseWithstand",
   "switchingWithstand",
+  "impulseWithstand",
   "wetWithstand",
 ] as const;
 
@@ -589,16 +589,16 @@ function ProductTechnicalTable({ product }: { product: Product }) {
             </>
           ) : (
             <>
-              <th scope="col" className={techTableHeadCellClass}>
-                Lightning impulse flashover voltage (kV)
-              </th>
               {hasSwitching ? (
                 <th scope="col" className={techTableHeadCellClass}>
                   Switching Impulse withstand Voltage (kV)
                 </th>
               ) : null}
               <th scope="col" className={techTableHeadCellClass}>
-                Power frequency flashover voltage (kV)
+                Lightning impulse flashover voltage (kV)
+              </th>
+              <th scope="col" className={techTableHeadCellClass}>
+                Wet Power frequency flashover voltage (kV)
               </th>
             </>
           )}

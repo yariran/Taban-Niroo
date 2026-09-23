@@ -105,7 +105,7 @@ export function CEOSection({
                     src={image}
                     alt="Asadollah Zamani, CEO of Taban Niroo"
                     fill
-                    className="object-cover object-[48%_18%]"
+                    className="object-cover object-[50%_12%]"
                     sizes="(max-width: 1024px) 260px, 280px"
                     unoptimized
                     priority
@@ -212,13 +212,13 @@ export function CEOSection({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={closingImage}
-                    alt="Taban Niroo manufacturing, Shiraz Special Economic Zone"
+                    alt="Taban Niroo manufacturing, Shiraz Especial Economic Zone"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <Image
                     src={closingImage}
-                    alt="Taban Niroo manufacturing, Shiraz Special Economic Zone"
+                    alt="Taban Niroo manufacturing, Shiraz Especial Economic Zone"
                     fill
                     className="object-cover"
                     sizes="100vw"

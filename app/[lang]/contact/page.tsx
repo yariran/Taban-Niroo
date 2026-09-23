@@ -52,7 +52,7 @@ export default async function ContactPage({ params, searchParams }: Props) {
           {
             label: "Headquarter",
             value: "Tel: +98 713 717 5115-7\nFax: +98 21 2264 4237",
-            body: "Taban Niroo Building\nShiraz Special Economic Zone, Iran",
+            body: "Taban Niroo Building\nShiraz Especial Economic Zone, Iran",
           },
           {
             label: "Tehran office",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Beat } from "@/components/ui/beat";
 import { RevealBlock } from "@/components/ui/reveal-text";
 import { RevealUp } from "@/components/ui/reveal-words";
@@ -9,10 +10,7 @@ import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import type { ContentBlock } from "@/lib/cms-content-types";
 import { cmsText } from "@/lib/cms-resolve";
 import { useLocale } from "@/components/locale-link";
-import {
-  MATERIALS_STEPS_COPY,
-  pickLocale,
-} from "@/lib/i18n/section-copy";
+import { MATERIALS_STEPS_COPY, pickLocale } from "@/lib/i18n/section-copy";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { cn } from "@/lib/utils";
 import styles from "./materials-scrollytelling.module.css";
@@ -39,13 +37,9 @@ import styles from "./materials-scrollytelling.module.css";
  *    this bug once; see its comment.) So the `<Beat>` below wraps the
  *    HEADER only: `Beat` itself is a bare div, but `RevealBlock` sets an
  *    inline transform on each direct child and must never enclose the stage.
- * 2. The narrow fallback is CSS, not state. Every layout swap is a `lg:`
- *    class and the "all layers lit" styling lives in the module's
- *    `max-width: 1023.98px` block, so a phone is correct on the first paint
- *    instead of collapsing ~3 viewports of step height after hydration.
- *    `prefers-reduced-motion` is the one switch still driven from React —
- *    same as `philosophy-section.tsx`, and rare enough that a settle costs
- *    nothing.
+ * 2. Scroll-driven layer switching runs on every viewport (including phones)
+ *    unless the user prefers reduced motion. The stage sticks while the
+ *    steps scroll, so the cutaway stays in view as each layer lights.
  * 3. Nearest-to-centre selection, not "first intersecting": the latter is
  *    unstable at both ends of the track, where no step is intersecting the
  *    trigger band. Same selection rule as `components/chapter-rail.tsx`.
@@ -115,56 +109,17 @@ function useMaterialsSteps(): readonly Step[] {
     body: copy[i]!.body,
   }));
 }
-/* ---------------------------------------------------------------------------
-   Geometry, computed once at module scope — deterministic, so SSR and client
-   render byte-identical. (No Date/random anywhere near this.)
-   --------------------------------------------------------------------------- */
-
-const X0 = 200;
-const X1 = 600;
-const PITCH = 34;
-const SHEATH_T = 8;
-/** Sheds reach well past the 12px core radius — under-reaching them makes the
- *  housing read as ripples on a bar instead of an insulator. Large / small
- *  alternating is the standard anti-pollution profile. */
-const REACH = [52, 30] as const;
-
-/**
- * One continuous profile line per side. Drawing each shed as its own closed
- * fin makes adjacent fins overlap and the housing reads as a sine wave; a
- * single tip-valley-tip outline is how the part is actually drawn.
- */
-function housingProfile(sign: -1 | 1): string {
-  const base = sign < 0 ? 288 - SHEATH_T : 312 + SHEATH_T;
-  let p = `M${X0} ${base} `;
-  let i = 0;
-  for (let cx = X0 + PITCH / 2; cx <= X1 - PITCH / 2; cx += PITCH, i++) {
-    const tip = base + sign * REACH[i % 2];
-    p += `L${cx - 13} ${base} Q${cx} ${tip} ${cx + 13} ${base} `;
-  }
-  return `${p}L${X1} ${base} `;
-}
-
-const HOUSING_TOP = housingProfile(-1);
-const HOUSING_BOTTOM = housingProfile(1);
-
-/** Fibre hatching inside the rod — reads as FRP rather than a plain bar. */
-const FIBRES = (() => {
-  let f = "";
-  for (let x = 204; x <= 596; x += 11) f += `M${x} 290 L${x + 6} 310 `;
-  return f;
-})();
-
-/** Matches Tailwind's `lg` breakpoint — see invariant 2. */
-const NARROW_QUERY = "(max-width: 1023.98px)";
-
 export function MaterialsScrollytellingSection({
   cms,
 }: { cms?: ContentBlock } = {}) {
   const STEPS = useMaterialsSteps();
   const locale = useLocale();
   const eyebrow = cmsText(cms, "eyebrow", "Materials science");
-  const title = cmsText(cms, "title", "Three layers. Thirty years on the line.");
+  const title = cmsText(
+    cms,
+    "title",
+    "Three layers. Thirty years on the line.",
+  );
   const body = cmsText(
     cms,
     "body",
@@ -172,26 +127,13 @@ export function MaterialsScrollytellingSection({
   );
 
   const reduceMotion = usePrefersReducedMotion();
-  const [narrow, setNarrow] = useState(false);
   const [active, setActive] = useState(0);
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
   const rafRef = useRef<number | null>(null);
 
-  /**
-   * Reduced motion is the ONLY layout switch driven from React. `narrow`
-   * gates behaviour only — never appearance — so its false-on-first-render
-   * value cannot flash. See invariant 2.
-   */
+  /** Reduced motion draws every layer lit and skips scroll driving. */
   const staticLayout = reduceMotion;
-  const driving = !reduceMotion && !narrow;
-
-  useEffect(() => {
-    const mq = window.matchMedia(NARROW_QUERY);
-    const sync = () => setNarrow(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
+  const driving = !reduceMotion;
 
   const update = useCallback(() => {
     const mid = window.innerHeight / 2;
@@ -286,7 +228,7 @@ export function MaterialsScrollytellingSection({
       <div className="mx-auto max-w-6xl px-6 pb-24 pt-12 md:px-12 md:pb-28 lg:px-20">
         <div
           className={cn(
-            "grid gap-12",
+            "grid gap-10 md:gap-12",
             !staticLayout &&
               "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-start",
           )}
@@ -296,10 +238,12 @@ export function MaterialsScrollytellingSection({
             className={cn(
               "order-first",
               !staticLayout &&
-                "lg:order-last lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:items-center",
+                // Stick below the fixed header on phones; full viewport
+                // column on desktop. `top` must clear SiteHeader (~3.5–4rem).
+                "sticky top-[4.25rem] z-[5] -mx-1 bg-background px-1 pb-3 pt-1 md:top-[4.75rem] lg:order-last lg:top-0 lg:mx-0 lg:flex lg:h-[100dvh] lg:items-center lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0",
             )}
           >
-            <div className="cine-grade relative aspect-[4/3] w-full overflow-hidden rounded-[1.25rem] bg-brand-navy-deep shadow-elevate">
+            <div className="cine-grade relative aspect-[16/9] max-h-[min(48vh,22rem)] w-full overflow-hidden rounded-[1.25rem] bg-brand-navy-deep shadow-elevate md:max-h-[min(52vh,26rem)] lg:max-h-none">
               {/* technical grid, masked to centre — house vocabulary, not a gradient */}
               <div
                 aria-hidden
@@ -307,92 +251,61 @@ export function MaterialsScrollytellingSection({
               />
               <div aria-hidden className="grain-layer" />
 
-              {/* viewBox crops to the drawn extent incl. callouts, so the part
-                  fills the frame instead of floating. Keeps 4:3. */}
-              <svg
-                viewBox="80 60 640 480"
-                className="absolute inset-0 h-full w-full"
+              {/*
+                Four supplied renders of the same insulator, crossfaded.
+                Each lights the layer its step is about: the ECR rod, the
+                silicone sheds, both end fittings, and the two junction
+                points. They are stacked rather than swapped so the metal
+                body never blinks between beats.
+
+                The sources were re-registered before import. The raw
+                renders were framed slightly differently — content centre
+                drifting up to 30px and scale by ~3% — which read as the
+                part twitching on every crossfade. The files in
+                `public/images/insulator/` are normalised to a common
+                2000x640 canvas with the solid content centred, so only the
+                highlight changes.
+
+                The SVG callouts that used to live here went with the
+                drawing: their leader lines were positioned against the old
+                viewBox and would point at nothing on this artwork. The
+                highlight itself is now what marks the layer.
+              */}
+              <div
+                className="absolute inset-0"
                 role="img"
                 aria-label="Cutaway of a composite insulator: ECR core rod, HTV silicone housing, and hot-dip galvanized forged end fittings."
               >
-                <line
-                  x1="40"
-                  y1="300"
-                  x2="760"
-                  y2="300"
-                  className={styles.axis}
-                  strokeDasharray="6 6"
-                />
-
-                {/* housing */}
-                <LayerGroup on={on("housing")}>
-                  <path d={HOUSING_TOP} className={styles.line} />
-                  <path d={HOUSING_BOTTOM} className={styles.line} />
-                  <path
-                    d={`M${X0} ${288 - SHEATH_T} L${X0} ${312 + SHEATH_T}`}
-                    className={styles.line}
+                {STEPS.map((step) => (
+                  <Image
+                    key={step.id}
+                    src={`/images/insulator/${step.id}.webp`}
+                    alt=""
+                    aria-hidden
+                    fill
+                    sizes="(min-width: 1024px) 45vw, 92vw"
+                    /*
+                      All four load with the section, not on intersection.
+                      They are stacked in one box, so a lazy sibling is
+                      technically "in view" and still unloaded when the
+                      crossfade reaches it — measured on mobile: the second
+                      beat sat at opacity 1 with naturalWidth 0, i.e. an
+                      empty stage. The set is ~570KB total and the section
+                      is itself lazy-mounted, so fetching all four once it
+                      mounts is the cheaper trade.
+                    */
+                    priority={step.id === "core"}
+                    loading={step.id === "core" ? undefined : "eager"}
+                    className={cn(
+                      "object-contain transition-opacity duration-500 motion-reduce:transition-none",
+                      on(step.id) ? "opacity-100" : "opacity-0",
+                    )}
                   />
-                  <path
-                    d={`M${X1} ${288 - SHEATH_T} L${X1} ${312 + SHEATH_T}`}
-                    className={styles.line}
-                  />
-                </LayerGroup>
+                ))}
+              </div>
 
-                {/* core */}
-                <LayerGroup on={on("core")}>
-                  <rect x="196" y="288" width="408" height="24" rx="3" className={styles.fill} />
-                  <rect x="196" y="288" width="408" height="24" rx="3" className={styles.line} />
-                  <path d={FIBRES} className={styles.line} opacity="0.55" />
-                </LayerGroup>
-
-                {/* end fittings */}
-                <LayerGroup on={on("fittings")}>
-                  <path d="M96 262 h60 v18 h44 v40 h-44 v18 h-60 z" className={styles.fill} />
-                  <path d="M96 262 h60 v18 h44 v40 h-44 v18 h-60 z" className={styles.line} />
-                  <circle cx="122" cy="300" r="15" className={styles.fill} />
-                  <circle cx="122" cy="300" r="15" className={styles.line} />
-                  <path d="M704 262 h-60 v18 h-44 v40 h44 v18 h60 z" className={styles.fill} />
-                  <path d="M704 262 h-60 v18 h-44 v40 h44 v18 h60 z" className={styles.line} />
-                  <circle cx="678" cy="300" r="15" className={styles.fill} />
-                  <circle cx="678" cy="300" r="15" className={styles.line} />
-                </LayerGroup>
-
-                {/* junction rings */}
-                <LayerGroup on={on("junction")}>
-                  <circle cx="200" cy="300" r="34" className={styles.line} strokeDasharray="4 4" />
-                  <circle cx="600" cy="300" r="34" className={styles.line} strokeDasharray="4 4" />
-                </LayerGroup>
-
-                {/* callouts — hidden under reduced motion; four sets at once is noise */}
-                <Callout on={!staticLayout && live.id === "core"}>
-                  <line x1="400" y1="288" x2="400" y2="196" />
-                  <text x="400" y="184" textAnchor="middle">ECR CORE — LOAD PATH</text>
-                </Callout>
-                <Callout on={!staticLayout && live.id === "housing"}>
-                  <line x1="330" y1="240" x2="330" y2="170" />
-                  <text x="330" y="158" textAnchor="middle">HTV SILICONE — HYDROPHOBIC</text>
-                </Callout>
-                {/* anchored start/end: centred on their leaders these overrun
-                    the cropped viewBox and clip at both edges. */}
-                <Callout on={!staticLayout && live.id === "fittings"}>
-                  <line x1="122" y1="336" x2="122" y2="410" />
-                  <text x="96" y="426" textAnchor="start">FORGED / GALVANISED</text>
-                  <line x1="678" y1="336" x2="678" y2="410" />
-                  <text x="704" y="426" textAnchor="end">Ø ROUNDED — FIELD CONTROL</text>
-                </Callout>
-                <Callout on={!staticLayout && live.id === "junction"}>
-                  <line x1="200" y1="266" x2="200" y2="176" />
-                  <text x="200" y="164" textAnchor="middle">TRIPLE JUNCTION</text>
-                  <line x1="600" y1="266" x2="600" y2="176" />
-                  <text x="600" y="164" textAnchor="middle">SEALED — NO INGRESS</text>
-                </Callout>
-              </svg>
-
-              {/* Absolutely positioned, so hiding it below `lg` costs no shift.
-                  It reports which step is driving — a claim only true when one
-                  actually is. */}
               {!staticLayout && (
-                <div className="absolute inset-x-6 bottom-5 z-[3] hidden items-end justify-between gap-4 font-mono text-[11px] tracking-[0.1em] text-[#8A9099] lg:flex">
+                <div className="absolute inset-x-4 bottom-3 z-[3] flex items-end justify-between gap-3 font-mono text-[10px] tracking-[0.1em] text-[#8A9099] md:inset-x-6 md:bottom-5 md:text-[11px]">
                   <span className="text-brand-orange">{live.readout}</span>
                   <span className="opacity-75">
                     {live.num} / {String(STEPS.length).padStart(2, "0")}
@@ -416,7 +329,7 @@ export function MaterialsScrollytellingSection({
                     styles.step,
                     "flex flex-col justify-center border-t border-border py-8 first:border-t-0 first:pt-0",
                     !staticLayout &&
-                      "lg:min-h-[78vh] lg:border-0 lg:py-2 lg:first:pt-2",
+                      "min-h-[70vh] border-0 py-6 first:pt-6 lg:min-h-[78vh] lg:py-2 lg:first:pt-2",
                   )}
                   data-step-on={String(isOn)}
                   aria-current={driving && i === active ? "step" : undefined}
@@ -443,9 +356,7 @@ export function MaterialsScrollytellingSection({
                   <span
                     className={cn(
                       "font-mono text-xs tracking-[0.2em] transition-colors duration-500",
-                      isOn
-                        ? "text-brand-burgundy"
-                        : "text-brand-burgundy lg:text-muted-foreground",
+                      isOn ? "text-brand-burgundy" : "text-muted-foreground",
                     )}
                   >
                     {s.num}
@@ -485,27 +396,5 @@ export function MaterialsScrollytellingSection({
         </div>
       </div>
     </section>
-  );
-}
-
-function LayerGroup({
-  on,
-  children,
-}: {
-  on: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <g data-lyr-on={String(on)} className={styles.layer}>
-      {children}
-    </g>
-  );
-}
-
-function Callout({ on, children }: { on: boolean; children: React.ReactNode }) {
-  return (
-    <g className={styles.callout} data-on={String(on)} aria-hidden>
-      {children}
-    </g>
   );
 }

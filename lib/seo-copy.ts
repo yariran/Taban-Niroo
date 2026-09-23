@@ -40,7 +40,7 @@ export const PAGE_SEO: Record<
     en: {
       title: "Company",
       description:
-        "Taban Niroo: high-voltage composite insulators and power transmission equipment from Shiraz Special Economic Zone. IEC-tested, serving the Middle East and beyond since 1997.",
+        "Taban Niroo: high-voltage composite insulators and power transmission equipment from Shiraz Especial Economic Zone. IEC-tested, serving the Middle East and beyond since 1997.",
     },
     fa: {
       title: "دربارهٔ تابان نیرو — بیش از ۲۵ سال تولید مقره",

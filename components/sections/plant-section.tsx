@@ -35,7 +35,7 @@ export function PlantSection({ cms }: { cms?: ContentBlock } = {}) {
   const body = cmsText(
     cms,
     "body",
-    "Moulding, assembly and routine test — Shiraz Special Economic Zone.",
+    "Moulding, assembly and routine test — Shiraz Especial Economic Zone.",
   );
 
   const images = SITE_IMAGES.gallery.map((src, i) => ({
