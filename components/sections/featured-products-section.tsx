@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { FadeImage } from "@/components/fade-image";
 import { SITE_IMAGES } from "@/lib/site-images";
 import { RevealBlock } from "@/components/ui/reveal-text";
 import { BlurReveal } from "@/components/ui/blur-reveal";
-import { ImageReveal } from "@/components/ui/image-reveal";
 import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE } from "@/lib/motion-roles";
 import type { ContentBlock } from "@/lib/cms-content-types";
@@ -16,56 +15,57 @@ type Feature = {
   title: string;
   description: string;
   image: string;
+  /** Native pixel size — box aspect follows the photo. */
+  width: number;
+  height: number;
   /** Spans two columns — one per row band, never two adjacent. */
   wide?: boolean;
-  /** Fill the frame instead of standing the product inside it. */
-  cover?: boolean;
 };
 
 /**
- * Catalogue order, and the grid geometry that follows from it.
+ * Catalogue order. Each card’s media frame uses the photo’s own
+ * width/height so the product is never cropped or letterboxed into a
+ * mismatched slot.
  *
- * This list used to carry a per-item `imageAspect`, `imagePadding` and
- * `imageBackground` — six different ratios (16/9, 1024/779, 1024/768, 4/3,
- * 1024/909, 4/5) and three different whites across six cards. Grid rows
- * size to their tallest cell, so six ratios meant no two titles in a row
- * ever shared a baseline, and the mismatched whites read as six unrelated
- * plates. Both are gone: the aspect is now a property of the SLOT
- * (wide vs. standard), not of the photograph, and the surface is the
- * shared `.product-plate`.
- *
- * Two wide cards open and close the grid, which also fixes the ragged
- * tail — 2+1 / 1+1+1 / 2+1 fills three rows exactly, where the old
- * 2+1 / 1+1+1 / 1 left a lone card hanging in row three.
+ * Two wide cards open and close the grid — 2+1 / 1+1+1 / 2+1 fills
+ * three rows exactly.
  */
 const features: readonly Feature[] = [
   {
     title: "Long Rod Insulators",
     description: "Distribution & Transmission",
     image: SITE_IMAGES.featured.longRod,
+    width: 1024,
+    height: 895,
     wide: true,
-    cover: true,
   },
   {
     title: "Post Insulators",
     description: "Line Post, Station Post, Railway",
     image: SITE_IMAGES.featured.post,
+    width: 1024,
+    height: 768,
   },
   {
     title: "Hybrid Post Insulators",
     description: "Silicone & porcelain",
     image: SITE_IMAGES.featured.hybrid,
+    width: 1024,
+    height: 768,
   },
   {
-    title: "Hollow Core Bushing",
+    title: "Transformer Bushings",
     description: "Polymer housed",
-    image: SITE_IMAGES.featured.hollowCoreBushing,
+    image: SITE_IMAGES.featured.transformerBushings,
+    width: 1024,
+    height: 853,
   },
   {
     title: "Creepage Extenders & Covers",
     description: "Patented product",
     image: SITE_IMAGES.featured.creepageExtenders,
-    wide: true,
+    width: 1024,
+    height: 1024,
   },
 ];
 
@@ -132,77 +132,45 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
 
       <Beat>
       <RevealBlock
-        className="grid grid-cols-1 gap-4 px-6 pb-24 sm:grid-cols-2 md:gap-5 md:px-12 lg:grid-cols-3 lg:px-20 lg:pb-32"
+        className="grid grid-cols-1 items-start gap-4 px-6 pb-24 sm:grid-cols-2 md:gap-5 md:px-12 lg:grid-cols-3 lg:px-20 lg:pb-32"
         delayMs={BEAT.first}
         stagger={EVIDENCE.stagger}
         distance={EVIDENCE.distance}
         durationMs={EVIDENCE.duration}
       >
-        {features.map((feature, index) => (
+        {features.map((feature) => (
           <div
             key={feature.title}
             className={cn(
-              /* `flex flex-col` + `mt-auto` on the caption is what makes a
-                 row's titles share a baseline: grid stretches every card to
-                 the tallest in its row, and without this the caption floats
-                 wherever its own image happens to end. */
+              /* Card height follows the photo — grid uses items-start so
+                 a taller neighbour never stretches a shorter product plate. */
               "group interactive-lift flex flex-col overflow-hidden rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60",
               feature.wide && "sm:col-span-2 lg:col-span-2",
             )}
           >
-            <div
-              className={cn(
-                /* `grow`, not `flex-1`: flex-basis stays `auto` so the
-                   aspect ratio still sets the plate's natural height, and
-                   growth only kicks in when the grid has stretched this
-                   card to match a taller neighbour. Without it, a standard
-                   card sharing a row with a wide one pushed its caption to
-                   the bottom and left a dark void where the photo stopped. */
-                "relative grow overflow-hidden",
-                feature.wide ? "aspect-[16/9]" : "aspect-[4/3]",
-                /* A cover image fills the frame, so there is no sweep left
-                   to match — the plate would only multiply the photograph
-                   against a surface nobody can see. */
-                !feature.cover && "product-plate",
-              )}
-            >
-              <ImageReveal
-                className="absolute inset-0"
-                delayMs={120 + index * 40}
-                durationMs={1050}
-              >
-                <FadeImage
-                  src={feature.image || "/placeholder.svg"}
-                  alt={feature.title}
-                  fill
-                  className={cn(
-                    feature.cover
-                      ? "object-cover"
-                      : /* One padding for every standing product, so the
-                           silhouettes share a scale across the grid. */
-                        "object-contain p-5 md:p-7",
-                  )}
-                  sizes={
-                    feature.wide
-                      ? "(min-width: 1024px) 66vw, (min-width: 640px) 100vw, 100vw"
-                      : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  }
-                />
-              </ImageReveal>
+            <div className="product-plate relative w-full overflow-hidden">
+              <Image
+                src={feature.image || "/placeholder.svg"}
+                alt={feature.title}
+                width={feature.width}
+                height={feature.height}
+                className="h-auto w-full"
+                sizes={
+                  feature.wide
+                    ? "(min-width: 1024px) 66vw, (min-width: 640px) 100vw, 100vw"
+                    : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                }
+                quality={85}
+              />
             </div>
 
-            {/* 16px horizontal / 16px vertical — the guidelines' card
-                internal padding, replacing the 20-24 / 24 pair. */}
-            <div className="mt-auto border-t border-border/30 px-[var(--hig-4)] py-[var(--hig-4)] dark:border-white/[0.06] md:px-[var(--hig-5)] md:py-[var(--hig-5)]">
+            <div className="border-t border-border/30 px-[var(--hig-4)] py-[var(--hig-4)] dark:border-white/[0.06] md:px-[var(--hig-5)] md:py-[var(--hig-5)]">
               <p className="type-hig-label mb-[var(--hig-2)] text-brand-burgundy">
                 {feature.description}
               </p>
               <h3
                 className={cn(
                   "type-hig-title text-brand-navy",
-                  /* The card title is a card title, not a section heading —
-                     the wide tile used to jump to 3xl and made two cards in
-                     the same row disagree about their own hierarchy. */
                   feature.wide
                     ? "text-[1.375rem] md:text-[1.5rem]"
                     : "text-[1.1875rem] md:text-[1.375rem]",
@@ -215,20 +183,12 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
         ))}
 
         {/*
-          Closing tile — the ninth cell.
-
-          Two wide cards leave exactly one slot open at the end of row three.
-          Filling it with the catalogue link turns what was a ragged tail into
-          the grid's resolution, and gives the section the exit it never had:
-          a reader who has just looked at six product families previously had
-          nowhere to go from here.
+          Closing tile — fills the last cell beside Creepage on lg
+          (2+1 / 1+1+1 / 1+1).
         */}
         <Link
           href="/products"
-          /* Spans the full width at `sm`, where the two-column arrangement
-             would otherwise leave it as a half-empty box beside nothing.
-             At `lg` it is the ninth cell and takes a single column. */
-          className="group interactive-lift flex flex-col justify-between rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 sm:col-span-2 md:p-7 lg:col-span-1"
+          className="group interactive-lift flex flex-col justify-between self-start rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 sm:col-span-2 md:p-7 lg:col-span-1"
         >
           <p className="type-hig-label text-brand-burgundy">Full catalogue</p>
           <span className="type-hig-title mt-[var(--hig-10)] inline-flex items-baseline gap-[var(--hig-2)] text-[1.375rem] text-brand-navy md:mt-[var(--hig-12)] md:text-[1.5rem]">

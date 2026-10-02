@@ -56,7 +56,7 @@ export default async function AboutPage({
     "body",
     "Based in the Shiraz Especial Economic Zone, Taban Niroo manufactures a full range of medium and high-voltage composite insulators, hybrid insulators, transformer bushings, and accessories for markets across the Middle East, Africa, South America, and Eastern Europe.",
   );
-  const heroImage = cmsImage(hero, SITE_IMAGES.hero) ?? SITE_IMAGES.hero;
+  const heroImage = cmsImage(hero, SITE_IMAGES.aboutHero) ?? SITE_IMAGES.aboutHero;
 
   return (
     <main id="main-content" className="min-h-screen bg-background">
@@ -132,25 +132,30 @@ export default async function AboutPage({
               </div>
             </div>
 
-            <div className="cine-grade relative h-[320px] overflow-hidden rounded-2xl bg-secondary md:h-[520px] lg:h-[640px] xl:h-[720px]">
+            {/*
+              Portrait plate sized by the photo — no cover crop, no vignette.
+            */}
+            <div className="mx-auto w-full max-w-md overflow-hidden rounded-2xl bg-secondary sm:max-w-lg lg:mx-0 lg:max-w-none">
               {heroImage.startsWith("http") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={heroImage}
-                  alt="High-voltage composite insulators at Taban Niroo"
-                  className="absolute inset-0 h-full w-full object-cover grayscale"
+                  alt="High-voltage transmission towers at dawn"
+                  width={819}
+                  height={1024}
+                  className="block h-auto w-full"
                 />
               ) : (
                 <Image
                   src={heroImage}
-                  alt="High-voltage composite insulators at Taban Niroo"
-                  fill
+                  alt="High-voltage transmission towers at dawn"
+                  width={819}
+                  height={1024}
                   priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover grayscale"
+                  sizes="(max-width: 1024px) 90vw, 42vw"
+                  className="block h-auto w-full"
                 />
               )}
-              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-background/70 via-transparent to-background/10" />
             </div>
           </div>
         </div>

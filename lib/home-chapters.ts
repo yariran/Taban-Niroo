@@ -1,5 +1,5 @@
 /**
- * The ten chapters of the home page, in three acts.
+ * The chapters of the home page, in three acts.
  *
  * Kept in a plain module — not in a `"use client"` component — because
  * the server-rendered page reads this list to feed `ChapterRail`.
@@ -33,6 +33,7 @@ export const HOME_CHAPTERS: readonly HomeChapter[] = [
   { id: "materials", label: "Materials", act: 2 },
   { id: "technology", label: "Standards", act: 2 },
 
+  { id: "timeline", label: "Our journey", act: 3 },
   { id: "plant", label: "On the factory floor", act: 3 },
   { id: "installations", label: "Global footprint", act: 3 },
   { id: "why-taban", label: "Why Taban Niroo", act: 3 },

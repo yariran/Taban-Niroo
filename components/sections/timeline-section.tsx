@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { ScrollPan } from "@/components/ui/scroll-pan";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
@@ -9,15 +8,14 @@ import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { cn } from "@/lib/utils";
 
-const TIMELINE_IMAGE = "/images/home/history-timeline-v4.jpg";
+const TIMELINE_LIGHT = "/images/home/history-timeline-v5.jpg";
+const TIMELINE_DARK = "/images/home/history-timeline-v5-dark.jpg";
 
 /**
  * Company history timeline.
  *
- * Desktop: full-bleed illustrated timeline (1024×345).
- * Mobile: same asset inside a horizontal ScrollPan so milestones stay
- * legible without shrinking the artwork.
- * Light and dark mode share the same illustrated asset.
+ * Full-width illustrated plate (1024×576) that scales to the viewport —
+ * no horizontal scroll. Light and dark modes each get a dedicated asset.
  */
 const MILESTONES = [
   {
@@ -65,6 +63,9 @@ const MILESTONES = [
   },
 ] as const;
 
+const TIMELINE_ALT =
+  "Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators.";
+
 function TimelineIllustration({
   sizes,
   src,
@@ -79,7 +80,7 @@ function TimelineIllustration({
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={src}
-        alt="Taban Niroo history timeline"
+        alt={TIMELINE_ALT}
         className="absolute inset-0 h-full w-full object-contain"
       />
     );
@@ -87,14 +88,39 @@ function TimelineIllustration({
   return (
     <Image
       src={src}
-      alt="Taban Niroo history timeline from 1998 to 2022, showing milestones for DPL insulators, MV and HV insulators, hybrid insulators, cable accessories, post insulators, transformer bushings and hybrid post insulators."
+      alt={TIMELINE_ALT}
       fill
       sizes={sizes}
       priority={priority}
       decoding="async"
-      quality={80}
+      quality={85}
       className="object-contain"
     />
+  );
+}
+
+function TimelinePlate({
+  lightSrc,
+  darkSrc,
+  sizes,
+  priority = false,
+  className,
+}: {
+  lightSrc: string;
+  darkSrc: string;
+  sizes: string;
+  priority?: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={cn("relative aspect-[1024/576] w-full", className)}>
+      <div className="absolute inset-0 dark:hidden">
+        <TimelineIllustration src={lightSrc} sizes={sizes} priority={priority} />
+      </div>
+      <div className="absolute inset-0 hidden dark:block">
+        <TimelineIllustration src={darkSrc} sizes={sizes} priority={priority} />
+      </div>
+    </div>
   );
 }
 
@@ -111,7 +137,8 @@ export function TimelineSection({ cms }: { cms?: ContentBlock } = {}) {
     "body",
     "From medium-voltage beginnings in Shiraz to a full high-voltage catalogue shipped across three continents.",
   );
-  const image = cmsImage(cms, TIMELINE_IMAGE) ?? TIMELINE_IMAGE;
+  const lightSrc = cmsImage(cms, TIMELINE_LIGHT) ?? TIMELINE_LIGHT;
+  const darkSrc = TIMELINE_DARK;
   const milestones =
     cms?.items?.length && cms.items.some((i) => i.label.trim())
       ? cms.items.map((i) => ({
@@ -164,44 +191,18 @@ export function TimelineSection({ cms }: { cms?: ContentBlock } = {}) {
         </div>
       </div>
 
-      {/* Wide desktop illustration — only when milestones stay legible. */}
+      {/* Timeline illustration — full width, no horizontal scroll. */}
       <figure
-        className="mt-14 hidden w-full bg-white px-4 lg:mt-20 lg:block lg:px-12 dark:bg-white"
+        className="mt-12 w-full bg-[#f2f2f2] px-4 md:mt-14 md:px-8 lg:mt-20 lg:px-12 dark:bg-[#0b111e]"
         aria-describedby="timeline-heading"
       >
-        <div className="relative mx-auto aspect-[1024/345] w-full max-w-[1400px]">
-          <TimelineIllustration src={image} sizes="(min-width: 1024px) 1400px, 100vw" />
-        </div>
-      </figure>
-
-      {/* Tablet & mobile — same illustration, horizontal pan for legibility. */}
-      <figure
-        className="mt-12 bg-white lg:hidden dark:bg-white"
-        aria-describedby="timeline-heading"
-      >
-        <ScrollPan
-          className="px-0"
-          innerClassName="px-6 pb-2"
-          ariaLabel="Company history timeline"
-          edgeFades
-          fadeFrom="from-white"
-          passVerticalScroll
-        >
-          <div className="relative aspect-[1024/345] w-[1024px] max-w-none shrink-0">
-            <TimelineIllustration src={image} sizes="1024px" />
-          </div>
-        </ScrollPan>
-        <figcaption className="mt-4 flex items-center justify-center gap-2 px-6 text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-          <span
-            aria-hidden
-            className="inline-block h-px w-6 bg-current opacity-60"
-          />
-          <span>Scroll to explore timeline</span>
-          <span
-            aria-hidden
-            className="inline-block h-px w-6 bg-current opacity-60"
-          />
-        </figcaption>
+        <TimelinePlate
+          lightSrc={lightSrc}
+          darkSrc={darkSrc}
+          sizes="(min-width: 1400px) 1400px, 100vw"
+          priority
+          className="mx-auto max-w-[1400px]"
+        />
       </figure>
 
       {/* Screen-reader milestone list — indexable content alongside the art. */}

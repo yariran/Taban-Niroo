@@ -136,19 +136,19 @@ function ProductVisual({
   if (src) {
     return (
       <>
+        <div className="product-plate absolute inset-0" aria-hidden />
         <Image
           src={src}
           alt={item.name}
           fill
           sizes="(min-width: 1280px) 28vw, (min-width: 640px) 45vw, 90vw"
-          className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.04] group-hover:grayscale-0"
+          className="object-contain object-center p-3 md:p-4"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-        <div className="absolute start-3 top-3 rounded-full border border-white/30 bg-black/45 px-2 py-0.5 text-[10px] tracking-wider text-white backdrop-blur-sm">
+        <div className="absolute start-3 top-3 z-[1] rounded-full border border-brand-navy/15 bg-white/90 px-2 py-0.5 text-[10px] tracking-wider text-brand-navy backdrop-blur-sm dark:border-white/20 dark:bg-black/45 dark:text-white">
           <TechRef>{codeLabel}</TechRef>
         </div>
         {item.voltageClass && (
-          <div className="absolute end-3 top-3 rounded-full border border-white/30 bg-black/45 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+          <div className="absolute end-3 top-3 z-[1] rounded-full border border-brand-navy/15 bg-white/90 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-brand-navy backdrop-blur-sm dark:border-white/20 dark:bg-black/45 dark:text-white">
             <TechRef>{item.voltageClass}</TechRef>
           </div>
         )}
