@@ -29,7 +29,7 @@ export async function generateMetadata({
  *
  *   ACT I   Who we are            Hero · Proof
  *   ACT II  What we make, and why Philosophy · Featured · Engineering · Technology
- *   ACT III Proof                 Plant · Footprint · Why Taban · CEO
+ *   ACT III Proof                 Journey · Plant · Footprint · Why Taban · CEO
  *
  * Motion is NOT configured here. Each section applies the three roles
  * from `lib/motion-roles.ts` to its own content, inside a `<Beat>` that
@@ -104,6 +104,7 @@ export default async function Home({
             engineering={content.home.engineering}
             materials={content.home.materials}
             technology={content.home.technology}
+            timeline={content.home.timeline}
             gallery={content.home.gallery}
             collection={content.home.collection}
             whyTaban={content.home.whyTaban}

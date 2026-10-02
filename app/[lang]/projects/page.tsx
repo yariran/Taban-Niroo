@@ -95,24 +95,31 @@ export default async function ProjectsPage({
               </RevealUp>
             </div>
 
-            <div className="cine-grade relative h-[320px] overflow-hidden bg-secondary md:h-[520px] lg:h-[640px] xl:h-[720px]">
+            {/*
+              Projects keeps hero-main (landscape). Frame sized by the photo
+              so edges are not cropped — Company uses the towers shot separately.
+            */}
+            <div className="w-full overflow-hidden rounded-2xl bg-secondary">
               {heroImage.startsWith("http") ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={heroImage}
                   alt="Transmission infrastructure in operation"
-                  className="absolute inset-0 h-full w-full object-cover grayscale"
+                  width={1408}
+                  height={768}
+                  className="block h-auto w-full"
                 />
               ) : (
                 <Image
                   src={heroImage}
                   alt="Transmission infrastructure in operation"
-                  fill
+                  width={1408}
+                  height={768}
+                  priority
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover grayscale"
+                  className="block h-auto w-full"
                 />
               )}
-              <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-background/70 via-transparent to-background/10" />
             </div>
           </div>
         </div>

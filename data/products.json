@@ -406,6 +406,7 @@
       "voltageClass": "24 · 36 · 63 · 132 · 230 · 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
+      "drawing": "/images/product-drawings/drawing-silicone-post-24-400.png",
       "order": 12,
       "variants": [
         {
@@ -3437,6 +3438,7 @@
       "voltageClass": "63 · 132 · 230 · 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
+      "drawing": "/images/product-drawings/drawing-hybrid-post-63-400.jpg",
       "order": 13,
       "variants": [
         {

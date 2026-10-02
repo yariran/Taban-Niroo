@@ -248,27 +248,22 @@ export default async function ProductDetailPage({ params }: Props) {
 
           {/* Visual block */}
           <RevealUp delay={260}>
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border/40 bg-muted/30 shadow-elevate dark:border-white/[0.08] dark:bg-white/[0.025]">
+            <div className="product-plate relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border/40 shadow-elevate dark:border-white/[0.08]">
               <Image
                 src={thumbnail}
                 alt={`${product.family} — ${product.name}`}
                 fill
                 sizes="(min-width: 1024px) 40vw, (min-width: 640px) 60vw, 100vw"
-                className="object-cover"
+                className="object-contain object-center p-4 md:p-5"
                 priority
               />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"
-              />
-              <div className="grain-layer opacity-50" aria-hidden />
 
-              <div className="absolute start-4 top-4 rounded-full border border-white/25 bg-black/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-white backdrop-blur-sm">
+              <div className="absolute start-4 top-4 z-[1] rounded-full border border-brand-navy/15 bg-white/90 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.22em] text-brand-navy backdrop-blur-sm dark:border-white/25 dark:bg-black/40 dark:text-white">
                 DPL · {product.catalogueRef}
               </div>
 
               {product.voltageClass && (
-                <div className="absolute end-4 top-4 rounded-full border border-white/25 bg-black/40 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white backdrop-blur-sm">
+                <div className="absolute end-4 top-4 z-[1] rounded-full border border-brand-navy/15 bg-white/90 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-brand-navy backdrop-blur-sm dark:border-white/25 dark:bg-black/40 dark:text-white">
                   {product.voltageClass}
                 </div>
               )}
@@ -465,15 +460,14 @@ export default async function ProductDetailPage({ params }: Props) {
                     href={`/products/${r.id}`}
                     className="group interactive-lift flex h-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 dark:border-white/[0.08] dark:bg-card/40"
                   >
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/40 dark:bg-white/[0.02]">
+                    <div className="product-plate relative aspect-[4/3] w-full overflow-hidden">
                       <Image
                         src={resolveProductImage(r)}
                         alt={r.name}
                         fill
                         sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 92vw"
-                        className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.04] group-hover:grayscale-0"
+                        className="object-contain object-center p-3"
                       />
-                      <div className="grain-layer opacity-40" aria-hidden />
                     </div>
                     <div className="flex flex-1 flex-col p-5">
                       <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">

@@ -94,23 +94,24 @@ export function CEOSection({
           />
         </header>
 
-        <div className="mt-14 grid items-start gap-12 md:mt-16 lg:mt-20 lg:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] lg:gap-16 xl:gap-20">
+        <div className="mt-14 grid items-start gap-12 md:mt-16 lg:mt-20 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)] lg:gap-16 xl:gap-20">
           {/* Portrait + attribution — one identity block */}
-          <div className="mx-auto w-full max-w-[260px] lg:mx-0 lg:max-w-none">
+          <div className="mx-auto w-full max-w-[300px] lg:mx-0 lg:max-w-[320px]">
             <figure>
-              {/* The only human plate on the site. */}
-              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-secondary ring-1 ring-border/50 dark:ring-white/10">
-                <ImageReveal className="absolute inset-0" delayMs={BEAT.lede}>
-                  <Image
-                    src={image}
-                    alt="Asadollah Zamani, CEO of Taban Niroo"
-                    fill
-                    className="object-cover object-[50%_12%]"
-                    sizes="(max-width: 1024px) 260px, 280px"
-                    unoptimized
-                    priority
-                  />
-                </ImageReveal>
+              {/* Cropped plate — left plant/hand removed; compact column. */}
+              <div
+                className="relative w-full overflow-hidden rounded-2xl ring-1 ring-border/50 dark:ring-white/10"
+                style={{ aspectRatio: "500 / 560" }}
+              >
+                <Image
+                  src={image}
+                  alt="Asadollah Zamani, CEO of Taban Niroo"
+                  fill
+                  className="object-cover object-center"
+                  sizes="(max-width: 1024px) 300px, 320px"
+                  unoptimized
+                  priority
+                />
               </div>
               <figcaption className="mt-5 border-t border-border/50 pt-4 dark:border-white/[0.08]">
                 <p className="font-hero-slogan text-sm font-semibold uppercase tracking-[0.14em] text-brand-navy">

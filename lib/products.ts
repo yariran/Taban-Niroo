@@ -265,6 +265,10 @@ export const PRODUCT_DRAWINGS: Readonly<Record<string, string>> = {
     "/images/product-drawings/drawing-suspension-tension-400-v2.png",
   "suspension-tension-500":
     "/images/product-drawings/drawing-suspension-tension-500-v2.png",
+  "hybrid-post-63-400":
+    "/images/product-drawings/drawing-hybrid-post-63-400.jpg",
+  "silicone-post-24-400":
+    "/images/product-drawings/drawing-silicone-post-24-400.png",
 };
 
 /** Prefer an explicit `drawing` field, else the filename-matched plate. */
@@ -686,6 +690,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "24 · 36 · 63 · 132 · 230 · 400 kV",
     standard: "IEC 61109 · IEC 62217",
     image: null,
+    drawing: "/images/product-drawings/drawing-silicone-post-24-400.png",
     order: 12,
     variants: [
       {
@@ -3574,6 +3579,7 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "63 · 132 · 230 · 400 kV",
     standard: "IEC 61109 · IEC 62217",
     image: null,
+    drawing: "/images/product-drawings/drawing-hybrid-post-63-400.jpg",
     order: 13,
     variants: [
       {

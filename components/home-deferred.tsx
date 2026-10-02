@@ -40,6 +40,14 @@ const TechnologySection = dynamic(
   { loading: () => <SectionSkeleton /> },
 );
 
+const TimelineSection = dynamic(
+  () =>
+    import("@/components/sections/timeline-section").then(
+      (m) => m.TimelineSection,
+    ),
+  { loading: () => <SectionSkeleton minH="min-h-[50vh]" /> },
+);
+
 const PlantSection = dynamic(
   () =>
     import("@/components/sections/plant-section").then((m) => m.PlantSection),
@@ -72,6 +80,7 @@ type HomeDeferredProps = {
   engineering?: ContentBlock;
   materials?: ContentBlock;
   technology?: ContentBlock;
+  timeline?: ContentBlock;
   gallery?: ContentBlock;
   collection?: ContentBlock;
   whyTaban?: ContentBlock;
@@ -83,6 +92,7 @@ export function HomeDeferred({
   engineering,
   materials,
   technology,
+  timeline,
   gallery,
   collection,
   whyTaban,
@@ -107,6 +117,10 @@ export function HomeDeferred({
       </HomeSectionSnap>
 
       {/* ── ACT III — the evidence ──────────────────────────────── */}
+      <HomeSectionSnap chapterId="timeline">
+        <TimelineSection cms={timeline} />
+      </HomeSectionSnap>
+
       <HomeSectionSnap chapterId="plant">
         <PlantSection cms={gallery} />
       </HomeSectionSnap>
