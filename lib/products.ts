@@ -44,6 +44,12 @@ export type ProductTechnicalRow = {
   dryWithstand?: string;
   wetWithstand?: string;
   weight?: string;
+  /** Cut-out fuse datasheet columns. */
+  ratedCurrent?: string;
+  breakingCapacity?: string;
+  leakageUp?: string;
+  leakageDown?: string;
+  mechanicalDurability?: string;
 };
 
 export type ProductVariant = {
@@ -269,6 +275,8 @@ export const PRODUCT_DRAWINGS: Readonly<Record<string, string>> = {
     "/images/product-drawings/drawing-hybrid-post-63-400.jpg",
   "silicone-post-24-400":
     "/images/product-drawings/drawing-silicone-post-24-400.png",
+  "cutout-fuse-24-36":
+    "/images/product-drawings/drawing-cutout-fuse-24-36.png",
 };
 
 /** Prefer an explicit `drawing` field, else the filename-matched plate. */
@@ -691,7 +699,7 @@ export const PRODUCTS: readonly Product[] = [
     standard: "IEC 61109 · IEC 62217",
     image: null,
     drawing: "/images/product-drawings/drawing-silicone-post-24-400.png",
-    order: 12,
+    order: 13,
     variants: [
       {
         code: "DPL175-700-10PI",
@@ -3713,13 +3721,13 @@ export const PRODUCTS: readonly Product[] = [
       {
         code: "DPL1550-14040-16HPI",
         voltage: "400 kV",
-        sectionLength: "3350±15 mm",
+        sectionLength: "4350±15 mm",
         creepage: "14040 mm",
         technical: {
           ratedVoltage: "400",
           sml: "16",
-          sectionLength: "3350±15",
-          arcingDistance: "3141",
+          sectionLength: "4350±15",
+          arcingDistance: "3765",
           shedDiameter: "345/310",
           minimumCreepage: "14040",
           impulseWithstand: "1550",
@@ -3729,12 +3737,12 @@ export const PRODUCTS: readonly Product[] = [
       {
         code: "DPL1550-17154-12.5HPI",
         voltage: "400 kV",
-        sectionLength: "3930±15 mm",
+        sectionLength: "4350±15 mm",
         creepage: "17154 mm",
         technical: {
           ratedVoltage: "400",
           sml: "12.5",
-          sectionLength: "3930±15",
+          sectionLength: "4350±15",
           arcingDistance: "3765",
           shedDiameter: "345/310",
           minimumCreepage: "17154",
@@ -3745,12 +3753,12 @@ export const PRODUCTS: readonly Product[] = [
       {
         code: "DPL1550-17154-16HPI",
         voltage: "400 kV",
-        sectionLength: "3930±15 mm",
+        sectionLength: "4350±15 mm",
         creepage: "17154 mm",
         technical: {
           ratedVoltage: "400",
           sml: "16",
-          sectionLength: "3930±15",
+          sectionLength: "4350±15",
           arcingDistance: "3765",
           shedDiameter: "345/310",
           minimumCreepage: "17154",
@@ -3901,7 +3909,8 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "20 – 33 kV",
     standard: "IEC standards",
     image: null,
-    order: 11,
+    order: 1,
+    hidden: true,
     variants: [
       { code: "DPL 20-1345-100 CU", voltage: "20 kV", sectionLength: "1345 mm", notes: "Type A · 100 A" },
       { code: "DPL 33-1850-100 CU", voltage: "33 kV", sectionLength: "1850 mm", notes: "Type A · 100 A" },
@@ -3919,10 +3928,63 @@ export const PRODUCTS: readonly Product[] = [
     voltageClass: "20 – 33 kV",
     standard: "IEC standards",
     image: null,
-    order: 12,
+    order: 2,
+    hidden: true,
     variants: [
       { code: "DPL 20-1450-100 CU", voltage: "20 kV", sectionLength: "1450 mm", notes: "Type B · 100 A" },
       { code: "DPL 33-1850-100 CU", voltage: "33 kV", sectionLength: "1850 mm", notes: "Type B · 100 A" },
+    ],
+  },
+  {
+    id: "cutout-fuse-24-36",
+    name: "24 kV & 36 kV Composite Cut Out Fuse",
+    family: "Silicone Composite Insulators",
+    subFamily: "Cut Out Fuse",
+    catalogueRef: "DPL24-1440-100CO · DPL36-1850-100CO — Type A / Type B",
+    summary:
+      "Composite-housed cutout fuse for 24–36 kV distribution feeders. Type A and Type B geometries protect transformers and lines from overcurrent, with 100 A continuous rating and 8 kA breaking capacity.",
+    applications: "Distribution protection · Isolation · Transformer & line",
+    voltageClass: "24 · 36 kV",
+    standard: "IEC standards",
+    image: "/images/product-gallery-cutout-fuses.png",
+    drawing: "/images/product-drawings/drawing-cutout-fuse-24-36.png",
+    order: 12,
+    hidden: false,
+    variants: [
+      {
+        code: "DPL24-1440-100CO",
+        voltage: "24 kV",
+        creepage: "1440 mm",
+        notes: "Type A / Type B",
+        technical: {
+          ratedVoltage: "24",
+          ratedCurrent: "100",
+          breakingCapacity: "8000",
+          leakageUp: "975",
+          leakageDown: "975",
+          minimumCreepage: "1440",
+          impulseWithstand: "145",
+          wetWithstand: "70",
+          mechanicalDurability: "300",
+        },
+      },
+      {
+        code: "DPL36-1850-100CO",
+        voltage: "36 kV",
+        creepage: "1850 mm",
+        notes: "Type A / Type B",
+        technical: {
+          ratedVoltage: "36",
+          ratedCurrent: "100",
+          breakingCapacity: "8000",
+          leakageUp: "1200",
+          leakageDown: "1200",
+          minimumCreepage: "1850",
+          impulseWithstand: "170",
+          wetWithstand: "75",
+          mechanicalDurability: "300",
+        },
+      },
     ],
   },
   {

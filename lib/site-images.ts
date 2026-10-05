@@ -14,7 +14,7 @@ export const SITE_IMAGES = {
   productsHero: "/images/hero-main.jpg",
   aboutHero: "/images/about-hero-towers.jpg",
   testimonials: "/images/ceo-closing-factory-v2.jpg",
-  ceoPortrait: "/images/ceo-letter-portrait-v4.jpg",
+  ceoPortrait: "/images/ceo-letter-portrait-v5.jpg",
   newRelease: "/images/new-release-line-post-insulator.jpg",
   featured: {
     longRod: "/images/featured-long-rod-v2.jpg",

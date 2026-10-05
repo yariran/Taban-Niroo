@@ -94,21 +94,21 @@ export function CEOSection({
           />
         </header>
 
-        <div className="mt-14 grid items-start gap-12 md:mt-16 lg:mt-20 lg:grid-cols-[minmax(260px,320px)_minmax(0,1fr)] lg:gap-16 xl:gap-20">
+        <div className="mt-14 grid items-start gap-12 md:mt-16 lg:mt-20 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)] lg:gap-16 xl:gap-20">
           {/* Portrait + attribution — one identity block */}
-          <div className="mx-auto w-full max-w-[300px] lg:mx-0 lg:max-w-[320px]">
+          <div className="mx-auto w-full max-w-[400px] lg:mx-0 lg:max-w-[420px]">
             <figure>
-              {/* Cropped plate — left plant/hand removed; compact column. */}
+              {/* Full bust plate — plant trimmed, shoulders & head complete. */}
               <div
                 className="relative w-full overflow-hidden rounded-2xl ring-1 ring-border/50 dark:ring-white/10"
-                style={{ aspectRatio: "500 / 560" }}
+                style={{ aspectRatio: "780 / 880" }}
               >
                 <Image
                   src={image}
                   alt="Asadollah Zamani, CEO of Taban Niroo"
                   fill
-                  className="object-cover object-center"
-                  sizes="(max-width: 1024px) 300px, 320px"
+                  className="object-cover object-top"
+                  sizes="(max-width: 1024px) 400px, 420px"
                   unoptimized
                   priority
                 />

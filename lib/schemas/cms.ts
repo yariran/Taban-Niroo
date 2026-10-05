@@ -46,6 +46,11 @@ const technicalRowSchema = z
     dryWithstand: z.string().max(120).optional(),
     wetWithstand: z.string().max(120).optional(),
     weight: z.string().max(120).optional(),
+    ratedCurrent: z.string().max(120).optional(),
+    breakingCapacity: z.string().max(120).optional(),
+    leakageUp: z.string().max(120).optional(),
+    leakageDown: z.string().max(120).optional(),
+    mechanicalDurability: z.string().max(120).optional(),
   })
   .strict();
 
