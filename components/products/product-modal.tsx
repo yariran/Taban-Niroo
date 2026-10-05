@@ -57,6 +57,11 @@ export type TechnicalRow = {
   dryWithstand?: string;
   wetWithstand?: string;
   weight?: string;
+  ratedCurrent?: string;
+  breakingCapacity?: string;
+  leakageUp?: string;
+  leakageDown?: string;
+  mechanicalDurability?: string;
 };
 
 /**
@@ -145,7 +150,25 @@ const FULL_ELECTRICAL_SUBHEADER_IDS = new Set([
   "suspension-tension-24-36",
 ]);
 
+/** Cut-out fuse datasheet — exact columns from the engineering table. */
+const CUTOUT_TECH_IDS = new Set(["cutout-fuse-24-36"]);
+
+const CUTOUT_BODY_COLUMNS = [
+  "ratedVoltage",
+  "ratedCurrent",
+  "breakingCapacity",
+  "leakageUp",
+  "leakageDown",
+  "minimumCreepage",
+  "impulseWithstand",
+  "wetWithstand",
+  "mechanicalDurability",
+] as const satisfies ReadonlyArray<keyof TechnicalRow>;
+
 function techBodyColumns(productId: string): readonly (keyof TechnicalRow)[] {
+  if (CUTOUT_TECH_IDS.has(productId)) {
+    return [...CUTOUT_BODY_COLUMNS];
+  }
   if (FULL_ELECTRICAL_SUBHEADER_IDS.has(productId)) {
     return [...TECH_CORE_COLUMNS, ...TECH_FULL_ELECTRICAL, "weight"];
   }
@@ -436,14 +459,116 @@ function buildTechRows(product: ProductSpec): DatasheetRow[] {
 /**
  * Technical data table.
  * 24/36 kV Suspension + Line Post keep Pos/Neg + Dry/Wet sub-headers.
+ * Cut-out fuse uses the printed datasheet column set.
  * All other products: Lightning + Power group titles only (Pos + Wet values).
  */
 function TechnicalDataTable({ product }: { product: ProductSpec }) {
   const rows = buildTechRows(product);
-  const fullElectrical = FULL_ELECTRICAL_SUBHEADER_IDS.has(product.id);
-  const hasSwitching = !fullElectrical;
+  const isCutout = CUTOUT_TECH_IDS.has(product.id);
+  const fullElectrical =
+    !isCutout && FULL_ELECTRICAL_SUBHEADER_IDS.has(product.id);
+  const hasSwitching = !isCutout && !fullElectrical;
   const bodyColumns = techBodyColumns(product.id);
-  const rowSpan = fullElectrical ? 2 : 1;
+  const rowSpan = fullElectrical || isCutout ? 2 : 1;
+
+  if (isCutout) {
+    return (
+      <ScrollPan
+        ariaLabel={`${product.name} technical data`}
+        fadeFrom="from-card"
+        className="rounded-2xl border border-border/70"
+        passVerticalScroll
+      >
+        <table className={cn(techTableClass, "min-w-[1100px]")}>
+          <thead>
+            <tr>
+              <th rowSpan={2} scope="col" className={techTableHeadStickyClass}>
+                Catalog No.
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Rated System Voltage (kV)
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Rated Current (A)
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Breaking (A)
+              </th>
+              <th
+                colSpan={2}
+                scope="colgroup"
+                className={techTableHeadCellClass}
+              >
+                Leakage To Ground Metal To Metal
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Creepage Distance (mm)
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Impulse Voltage (BIL) (kV)
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Power Frequency Withstand Voltage (kV)
+              </th>
+              <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
+                Mechanical Durability items
+              </th>
+            </tr>
+            <tr>
+              <th scope="col" className={techTableHeadCellClass}>
+                Up (mm)
+              </th>
+              <th scope="col" className={techTableHeadCellClass}>
+                Down (mm)
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, idx) => {
+              const isLast = idx === rows.length - 1;
+              return (
+                <tr
+                  key={`${row.code || "empty"}-${idx}`}
+                  className="bg-background"
+                >
+                  <td
+                    className={cn(
+                      techTableBodyStickyClass,
+                      !isLast && "border-b border-border/70",
+                    )}
+                  >
+                    {row.code || (
+                      <span className="text-muted-foreground/50">—</span>
+                    )}
+                  </td>
+                  {bodyColumns.map((key, i) => {
+                    const value = row.technical?.[key];
+                    return (
+                      <td
+                        key={key}
+                        className={cn(
+                          techTableBodyCellClass,
+                          i !== bodyColumns.length - 1 &&
+                            "border-e border-border/70",
+                          !isLast && "border-b border-border/70",
+                        )}
+                      >
+                        {value && value.trim().length > 0 ? (
+                          value
+                        ) : (
+                          <span className="text-muted-foreground/50">—</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </ScrollPan>
+    );
+  }
 
   return (
     <ScrollPan
