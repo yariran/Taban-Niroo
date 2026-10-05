@@ -116,6 +116,7 @@ export default async function ProjectsPage({
                   width={1408}
                   height={768}
                   priority
+                  quality={92}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="block h-auto w-full"
                 />

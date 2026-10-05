@@ -254,6 +254,7 @@ export default async function ProductDetailPage({ params }: Props) {
                 alt={`${product.family} — ${product.name}`}
                 fill
                 sizes="(min-width: 1024px) 40vw, (min-width: 640px) 60vw, 100vw"
+                quality={92}
                 className="object-contain object-center p-4 md:p-5"
                 priority
               />
@@ -466,6 +467,7 @@ export default async function ProductDetailPage({ params }: Props) {
                         alt={r.name}
                         fill
                         sizes="(min-width: 1024px) 28vw, (min-width: 640px) 45vw, 92vw"
+                        quality={92}
                         className="object-contain object-center p-3"
                       />
                     </div>

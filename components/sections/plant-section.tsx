@@ -105,8 +105,8 @@ export function PlantSection({ cms }: { cms?: ContentBlock } = {}) {
                     alt={image.alt}
                     fill
                     className="object-cover transition-none"
-                    sizes="(min-width: 1024px) 28rem, (min-width: 768px) 56vw, 80vw"
-                    quality={70}
+                    sizes="(min-width: 1024px) 32rem, (min-width: 768px) 56vw, 85vw"
+                    quality={92}
                     decoding="async"
                   />
                 </div>

@@ -284,6 +284,7 @@ export function MaterialsScrollytellingSection({
                     aria-hidden
                     fill
                     sizes="(min-width: 1024px) 45vw, 92vw"
+                    quality={92}
                     /*
                       All four load with the section, not on intersection.
                       They are stacked in one box, so a lazy sibling is

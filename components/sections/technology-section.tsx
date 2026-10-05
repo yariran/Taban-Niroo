@@ -75,7 +75,7 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
                 fill
                 className="object-cover object-[58%_42%]"
                 sizes="(min-width: 1280px) 1280px, 100vw"
-                quality={85}
+                quality={92}
                 decoding="async"
                 unoptimized
                 priority

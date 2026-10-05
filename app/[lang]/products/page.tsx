@@ -188,6 +188,7 @@ export default async function ProductsPage({
                   fill
                   className="object-cover grayscale"
                   priority
+                  quality={92}
                   sizes="(min-width: 1024px) 40vw, 100vw"
                   unoptimized={heroImage.startsWith("http")}
                 />

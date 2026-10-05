@@ -93,7 +93,7 @@ function TimelineIllustration({
       sizes={sizes}
       priority={priority}
       decoding="async"
-      quality={85}
+      quality={92}
       className="object-contain"
     />
   );

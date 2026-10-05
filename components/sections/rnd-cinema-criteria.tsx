@@ -147,7 +147,7 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
                 fill
                 className="object-cover"
                 sizes="100vw"
-                quality={82}
+                quality={92}
               />
             </div>
           </div>

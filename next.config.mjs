@@ -46,12 +46,12 @@ const nextConfig = {
    */
   images: {
     formats: ["image/avif", "image/webp"],
-    /** Cap at 1920 — hero rarely needs 2400px variants on the wire. */
-    deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600, 1920],
+    /** Include 2K/retina breakpoints so large photo plates stay sharp. */
+    deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600, 1920, 2048, 2560],
     imageSizes: [64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 30,
     /** Allowed quality values for next/image `quality` prop. */
-    qualities: [70, 75, 80, 85, 92],
+    qualities: [75, 80, 85, 90, 92, 95],
     remotePatterns: [
       {
         protocol: "https",

@@ -60,10 +60,12 @@ type ScrollPanProps = {
  *   • iOS momentum scroll via `-webkit-overflow-scrolling: touch`.
  *
  * What it deliberately doesn't do:
- *   • Translate vertical wheel into horizontal scroll. That pattern
- *     traps users on the table — they have to pan to the end before
+ *   • Translate *vertical* wheel into horizontal scroll. That pattern
+ *     traps users on the rail — they have to pan to the end before
  *     they can continue down the page. Visible scrollbar + drag is
  *     enough discoverability without taking control away.
+ *   • With `passVerticalScroll`, it also skips `data-lenis-prevent` so
+ *     page scroll keeps moving over tall photo rails (home gallery).
  */
 export function ScrollPan({
   children,
@@ -153,7 +155,9 @@ export function ScrollPan({
       }
       if (dragging) {
         node.scrollLeft = startScrollLeft - dx;
-        node.scrollTop = startScrollTop - dy;
+        if (!passVerticalScroll) {
+          node.scrollTop = startScrollTop - dy;
+        }
       }
     };
 
@@ -199,7 +203,43 @@ export function ScrollPan({
       window.removeEventListener("pointerup", endDrag);
       window.removeEventListener("pointercancel", endDrag);
     };
-  }, []);
+  }, [passVerticalScroll]);
+
+  /**
+   * Gallery / table rails with `passVerticalScroll`: do NOT set
+   * `data-lenis-prevent`. That attribute swallowed every wheel event over
+   * tall photo cards and made homepage scroll feel stuck on the rail.
+   * Vertical gestures go to the page (Lenis); only horizontal-dominant
+   * (or shift+wheel) pans this container.
+   */
+  useEffect(() => {
+    if (!passVerticalScroll) return;
+    const node = ref.current;
+    if (!node) return;
+
+    const onWheel = (e: WheelEvent) => {
+      const absX = Math.abs(e.deltaX);
+      const absY = Math.abs(e.deltaY);
+      const shiftAsHorizontal = e.shiftKey && absY > 0;
+      const horizontal =
+        absX > absY + 0.5 || (shiftAsHorizontal && absX <= absY);
+
+      if (!horizontal) return;
+
+      const delta = shiftAsHorizontal && absX < absY ? e.deltaY : e.deltaX;
+      const max = node.scrollWidth - node.clientWidth;
+      if (max <= 0) return;
+
+      const next = Math.min(max, Math.max(0, node.scrollLeft + delta));
+      if (next === node.scrollLeft) return;
+
+      e.preventDefault();
+      node.scrollLeft = next;
+    };
+
+    node.addEventListener("wheel", onWheel, { passive: false });
+    return () => node.removeEventListener("wheel", onWheel);
+  }, [passVerticalScroll]);
 
   return (
     <div className={cn("relative isolate", className)}>
@@ -230,18 +270,19 @@ export function ScrollPan({
         aria-label={ariaLabel}
         tabIndex={0}
         className={cn(
-          "scroll-pan-bar cursor-grab touch-pan-x outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2",
+          "scroll-pan-bar cursor-grab outline-none focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:ring-offset-2",
+          !passVerticalScroll && "touch-pan-x",
           passVerticalScroll
-            ? "overflow-x-auto overflow-y-visible overscroll-x-contain overscroll-y-auto"
+            ? "overflow-x-auto overflow-y-visible overscroll-x-contain"
             : "overflow-auto overscroll-contain",
           innerClassName,
         )}
-        data-lenis-prevent
-        data-lenis-prevent-touch
+        data-lenis-prevent={passVerticalScroll ? undefined : true}
+        data-lenis-prevent-touch={passVerticalScroll ? undefined : true}
         style={
           {
             WebkitOverflowScrolling: "touch",
-            touchAction: passVerticalScroll ? "pan-x pan-y" : "pan-x pan-y",
+            touchAction: "pan-x pan-y",
           } as CSSProperties
         }
       >

@@ -59,7 +59,7 @@ export function FadeImage({
         alt={alt ?? ""}
         priority={priority}
         decoding="async"
-        quality={props.quality ?? 80}
+        quality={props.quality ?? 92}
         className={`${className || ""} transition-opacity duration-300 ease-out motion-reduce:transition-none ${
           revealed ? "opacity-100" : "opacity-0"
         }`}

@@ -142,6 +142,7 @@ function ProductVisual({
           alt={item.name}
           fill
           sizes="(min-width: 1280px) 28vw, (min-width: 640px) 45vw, 90vw"
+          quality={92}
           className="object-contain object-center p-3 md:p-4"
         />
         <div className="absolute start-3 top-3 z-[1] rounded-full border border-brand-navy/15 bg-white/90 px-2 py-0.5 text-[10px] tracking-wider text-brand-navy backdrop-blur-sm dark:border-white/20 dark:bg-black/45 dark:text-white">

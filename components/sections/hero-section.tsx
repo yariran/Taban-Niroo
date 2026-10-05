@@ -161,7 +161,7 @@ export function HeroSection({
             className={cn("object-cover", !staticLayout && "hero-ken-burns")}
             priority
             sizes="100vw"
-            quality={85}
+            quality={92}
             decoding="async"
           />
         )}

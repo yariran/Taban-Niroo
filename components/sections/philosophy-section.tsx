@@ -176,6 +176,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                         fill
                         className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                         sizes="45vw"
+                        quality={92}
                       />
                     </ImageReveal>
                   ) : (
@@ -185,6 +186,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                       fill
                       className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                       sizes="45vw"
+                      quality={92}
                     />
                   )}
                   <div className="absolute bottom-2 start-2 sm:bottom-4 sm:start-4 md:bottom-6 md:start-6">
@@ -211,6 +213,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                         fill
                         className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                         sizes="45vw"
+                        quality={92}
                       />
                     </ImageReveal>
                   ) : (
@@ -220,6 +223,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                       fill
                       className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                       sizes="45vw"
+                      quality={92}
                     />
                   )}
                   <div className="absolute bottom-2 start-2 sm:bottom-4 sm:start-4 md:bottom-6 md:start-6">
