@@ -699,7 +699,7 @@ export const PRODUCTS: readonly Product[] = [
     standard: "IEC 61109 · IEC 62217",
     image: null,
     drawing: "/images/product-drawings/drawing-silicone-post-24-400.png",
-    order: 13,
+    order: 18,
     variants: [
       {
         code: "DPL175-700-10PI",

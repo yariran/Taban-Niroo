@@ -160,7 +160,7 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
                     ? "(min-width: 1024px) 66vw, (min-width: 640px) 100vw, 100vw"
                     : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 }
-                quality={85}
+                quality={92}
               />
             </div>
 

@@ -169,7 +169,7 @@ export function NewReleaseShowcaseSection({
       width={IMG_W}
       height={IMG_H}
       priority={embedded}
-      quality={75}
+      quality={92}
       className={cn(
         "mx-auto h-auto w-full object-contain object-center",
         embedded

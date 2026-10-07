@@ -11,7 +11,6 @@ export const SITE_IMAGES = {
   projectMapDark: "/images/partners-map-dark-mode.jpg",
   projectServices: "/images/project-services-panel.png",
   projectsHero: "/images/hero-main.jpg",
-  productsHero: "/images/hero-main.jpg",
   aboutHero: "/images/about-hero-towers.jpg",
   testimonials: "/images/ceo-closing-factory-v2.jpg",
   ceoPortrait: "/images/ceo-letter-portrait-v5.jpg",

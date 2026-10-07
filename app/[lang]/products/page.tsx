@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, LayoutGrid, Search } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
@@ -9,8 +8,7 @@ import { ProductCatalogSection } from "@/components/products/product-catalog-sec
 import { SiteFooter } from "@/components/site-footer";
 import { getPublicProducts } from "@/lib/cms-products";
 import { getSiteContent } from "@/lib/cms-content";
-import { cmsHeadlineLines, cmsImage, cmsText } from "@/lib/cms-resolve";
-import { SITE_IMAGES } from "@/lib/site-images";
+import { cmsHeadlineLines, cmsText } from "@/lib/cms-resolve";
 import { RevealWords } from "@/components/ui/reveal-words";
 import { pageSocialFor } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
@@ -61,7 +59,6 @@ export default async function ProductsPage({
   const cta1Href = cmsText(hero, "ctaHref", "#product-explorer");
   const cta2 = cmsText(hero, "ctaLabel2", "Technical enquiry");
   const cta2Href = cmsText(hero, "ctaHref2", "/contact");
-  const heroImage = cmsImage(hero, SITE_IMAGES.productsHero) ?? SITE_IMAGES.productsHero;
   const stdEyebrow = cmsText(standards, "eyebrow", "Standards & testing");
   const stdTitle = cmsText(standards, "title", "Type-tested.\nRoutine-tested.");
   const stdBody = cmsText(
@@ -122,90 +119,61 @@ export default async function ProductsPage({
             <span className="text-foreground">Products</span>
           </nav>
 
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16 lg:items-end">
-            <div>
-              <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-burgundy">
-                <span className="inline-flex h-px w-10 bg-brand-burgundy/50" />
-                <span>{eyebrow}</span>
-              </div>
-              {/*
-                Lines come from `cmsHeadlineLines`, so a locale that says
-                this in two lines gets two — never its own two plus the
-                English third. The middle line keeps the quiet tint
-                whatever the count, so the lockup reads the same in both
-                languages.
-              */}
-              <h1 className="font-hero-slogan text-brand-heading mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] font-bold uppercase leading-[0.92] tracking-[-0.012em]">
-                {titleLines.map((line, index) => (
-                  <RevealWords
-                    key={line}
-                    as="span"
-                    className={
-                      index === 1 ? "block text-brand-navy/55" : "block"
-                    }
-                    delay={index * 150}
-                  >
-                    {line}
-                  </RevealWords>
-                ))}
-              </h1>
-              <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-                {body}
-              </p>
-
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link
-                  href={cta1Href}
-                  className="group pill-elevate inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-all hover:bg-brand-burgundy"
-                >
-                  <LayoutGrid size={16} aria-hidden />
-                  {cta1}
-                  <ArrowRight
-                    size={16}
-                    aria-hidden
-                    className="transition-transform group-hover:translate-x-0.5"
-                  />
-                </Link>
-                <Link
-                  href={cta2Href}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-navy/25 bg-transparent px-6 py-3 text-sm font-medium uppercase tracking-wider text-brand-navy transition-all hover:border-brand-navy/50 hover:bg-brand-navy-soft"
-                >
-                  {cta2}
-                </Link>
-              </div>
-
-              <p className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                <Search size={12} aria-hidden />
-                28 product references · Search by voltage, DPL code or family
-              </p>
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-burgundy">
+              <span className="inline-flex h-px w-10 bg-brand-burgundy/50" />
+              <span>{eyebrow}</span>
             </div>
+            {/*
+              Lines come from `cmsHeadlineLines`, so a locale that says
+              this in two lines gets two — never its own two plus the
+              English third. The middle line keeps the quiet tint
+              whatever the count, so the lockup reads the same in both
+              languages.
+            */}
+            <h1 className="font-hero-slogan text-brand-heading mt-6 text-[clamp(2.6rem,6.4vw,5.2rem)] font-bold uppercase leading-[0.92] tracking-[-0.012em]">
+              {titleLines.map((line, index) => (
+                <RevealWords
+                  key={line}
+                  as="span"
+                  className={
+                    index === 1 ? "block text-brand-navy/55" : "block"
+                  }
+                  delay={index * 150}
+                >
+                  {line}
+                </RevealWords>
+              ))}
+            </h1>
+            <p className="mt-8 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              {body}
+            </p>
 
-            <div className="relative">
-              <div className="cine-grade relative aspect-[4/5] overflow-hidden rounded-2xl border border-border/50 shadow-elevate dark:border-white/[0.08]">
-                <Image
-                  src={heroImage}
-                  alt="Composite and hybrid insulators in service"
-                  fill
-                  className="object-cover grayscale"
-                  priority
-                  sizes="(min-width: 1024px) 40vw, 100vw"
-                  unoptimized={heroImage.startsWith("http")}
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link
+                href={cta1Href}
+                className="group pill-elevate inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-all hover:bg-brand-burgundy"
+              >
+                <LayoutGrid size={16} aria-hidden />
+                {cta1}
+                <ArrowRight
+                  size={16}
+                  aria-hidden
+                  className="transition-transform group-hover:translate-x-0.5"
                 />
-                <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-                <div className="absolute start-5 top-5 z-[3] inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-white backdrop-blur-sm">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-orange" />
-                  Field-proven
-                </div>
-                <div className="absolute bottom-5 start-5 end-5 z-[3] border-t border-white/20 pt-3 text-white">
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-white/70">
-                    Reference fleet
-                  </p>
-                  <p className="mt-1 text-sm font-medium">
-                    400 kV &amp; 800 kV transmission corridors
-                  </p>
-                </div>
-              </div>
+              </Link>
+              <Link
+                href={cta2Href}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-navy/25 bg-transparent px-6 py-3 text-sm font-medium uppercase tracking-wider text-brand-navy transition-all hover:border-brand-navy/50 hover:bg-brand-navy-soft"
+              >
+                {cta2}
+              </Link>
             </div>
+
+            <p className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+              <Search size={12} aria-hidden />
+              28 product references · Search by voltage, DPL code or family
+            </p>
           </div>
         </div>
       </section>

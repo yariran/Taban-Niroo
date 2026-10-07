@@ -41,6 +41,7 @@ export function Header({
 }) {
   const barePath = useBarePath();
   const isHome = barePath === "/";
+  const isProjects = barePath === "/projects";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -55,10 +56,14 @@ export function Header({
    * pinned film that holds the viewport for a full extra screen, so the
    * header would flip to its light surface while still sitting on a dark
    * plate. The hero owns the truth and publishes it as
-   * `<html data-tn-dark-hero>`; this reads it. Nothing else about the
-   * header changes, and pages without a dark hero never set the flag.
+   * `<html data-tn-dark-hero>`; this reads it.
+   *
+   * Projects uses a static full-bleed photo hero — treat the first fold
+   * as dark until the user scrolls past it onto the light page body.
    */
-  const onDarkHero = isHome && (!isScrolled || overDarkHero);
+  const onDarkHero =
+    (isHome && (!isScrolled || overDarkHero)) ||
+    (isProjects && !isScrolled);
 
   const closeMobileMenu = useCallback(() => {
     setIsMenuOpen(false);

@@ -152,6 +152,7 @@ export default async function AboutPage({
                   width={819}
                   height={1024}
                   priority
+                  quality={92}
                   sizes="(max-width: 1024px) 90vw, 42vw"
                   className="block h-auto w-full"
                 />
