@@ -66,63 +66,72 @@ export default async function ProjectsPage({
     <main id="main-content" className="min-h-screen bg-background">
       <SiteHeader />
 
-      <section className="bg-background">
-        <div className="px-6 pb-20 pt-28 md:px-12 md:pb-24 md:pt-32 lg:px-20 lg:pb-28 lg:pt-36">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.15fr)] lg:items-center lg:gap-14">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
-                {eyebrow}
-              </p>
-              <h1
-                className={cn(
-                  "font-hero-slogan text-brand-heading mt-4 font-bold uppercase tracking-tight",
-                  pageHeadingScale(locale),
-                )}
-              >
-                <RevealWords as="span" className="block">
-                  {titleLine1}
-                </RevealWords>
-                <RevealWords as="span" className="block" delay={140}>
-                  {titleLine2}
-                </RevealWords>
-              </h1>
-              <RevealUp
-                as="p"
-                delay={380}
-                className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg"
-              >
-                {heroBody}
-              </RevealUp>
-            </div>
-
-            {/*
-              Projects keeps hero-main (landscape). Frame sized by the photo
-              so edges are not cropped — Company uses the towers shot separately.
-            */}
-            <div className="w-full overflow-hidden rounded-2xl bg-secondary">
-              {heroImage.startsWith("http") ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={heroImage}
-                  alt="Transmission infrastructure in operation"
-                  width={1408}
-                  height={768}
-                  className="block h-auto w-full"
-                />
-              ) : (
-                <Image
-                  src={heroImage}
-                  alt="Transmission infrastructure in operation"
-                  width={1408}
-                  height={768}
-                  priority
-                  quality={92}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="block h-auto w-full"
-                />
-              )}
-            </div>
+      {/*
+        Full-bleed plate — landscape hero-main sits under the copy with a
+        navy scrim so type stays readable. Same optical layer the R&D / home
+        cinema plates use (cine-grade + grain).
+      */}
+      <section
+        className="relative isolate flex min-h-[min(88svh,44rem)] flex-col justify-end overflow-hidden bg-brand-navy-deep md:min-h-[min(92svh,52rem)]"
+        aria-labelledby="projects-hero-heading"
+      >
+        <div className="absolute inset-0" aria-hidden>
+          <div className="cine-grade h-full w-full">
+            {heroImage.startsWith("http") ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={heroImage}
+                alt=""
+                className="h-full w-full object-cover object-center"
+              />
+            ) : (
+              <Image
+                src={heroImage}
+                alt=""
+                fill
+                priority
+                quality={92}
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            )}
           </div>
+        </div>
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-brand-navy-deep/70 via-brand-navy-deep/45 to-brand-navy-deep"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-navy-deep/55 via-transparent to-transparent"
+          aria-hidden
+        />
+        <div className="grain-layer" aria-hidden />
+
+        <div className="relative mx-auto w-full max-w-6xl px-6 pb-16 pt-32 md:px-12 md:pb-20 md:pt-36 lg:px-20 lg:pb-24 lg:pt-40">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-orange md:text-[11px]">
+            {eyebrow}
+          </p>
+          <h1
+            id="projects-hero-heading"
+            className={cn(
+              "font-hero-slogan mt-5 max-w-4xl font-bold uppercase tracking-tight text-brand-cream",
+              pageHeadingScale(locale),
+            )}
+          >
+            <RevealWords as="span" className="block">
+              {titleLine1}
+            </RevealWords>
+            <RevealWords as="span" className="block text-brand-cream/80" delay={140}>
+              {titleLine2}
+            </RevealWords>
+          </h1>
+          <RevealUp
+            as="p"
+            delay={380}
+            className="mt-6 max-w-xl text-base leading-relaxed text-brand-cream/75 md:text-lg"
+          >
+            {heroBody}
+          </RevealUp>
         </div>
       </section>
 
