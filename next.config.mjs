@@ -45,7 +45,9 @@ const nextConfig = {
    * have shipped tens of MB on every cold visit.
    */
   images: {
-    formats: ["image/avif", "image/webp"],
+    /* WebP only — Safari has repeatedly failed to paint certain Sharp-
+       encoded AVIFs from `/_next/image` (blank product plates on home). */
+    formats: ["image/webp"],
     /** Include 2K/retina breakpoints so large photo plates stay sharp. */
     deviceSizes: [360, 420, 640, 768, 1024, 1280, 1600, 1920, 2048, 2560],
     imageSizes: [64, 96, 128, 256, 384],

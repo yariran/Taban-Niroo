@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -15,59 +16,138 @@ type Feature = {
   title: string;
   description: string;
   image: string;
-  /** Native pixel size — box aspect follows the photo. */
   width: number;
   height: number;
-  /** Spans two columns — one per row band, never two adjacent. */
-  wide?: boolean;
 };
 
 /**
- * Catalogue order. Each card’s media frame uses the photo’s own
- * width/height so the product is never cropped or letterboxed into a
- * mismatched slot.
+ * Three composed bands — neighbours share one media height so the
+ * plate pair reads as one unit, not two mismatched aspect ratios.
  *
- * Two wide cards open and close the grid — 2+1 / 1+1+1 / 2+1 fills
- * three rows exactly.
+ * 1. Line products — Long Rod (wide) + Post
+ * 2. Station products — Hybrid + Transformer, equal weight
+ * 3. Patented close — Creepage (wide) + catalogue CTA
  */
-const features: readonly Feature[] = [
-  {
-    title: "Long Rod Insulators",
-    description: "Distribution & Transmission",
-    image: SITE_IMAGES.featured.longRod,
-    width: 1024,
-    height: 895,
-    wide: true,
-  },
-  {
-    title: "Post Insulators",
-    description: "Line Post, Station Post, Railway",
-    image: SITE_IMAGES.featured.post,
-    width: 1024,
-    height: 768,
-  },
-  {
-    title: "Hybrid Post Insulators",
-    description: "Silicone & porcelain",
-    image: SITE_IMAGES.featured.hybrid,
-    width: 1024,
-    height: 768,
-  },
-  {
-    title: "Transformer Bushings",
-    description: "Polymer housed",
-    image: SITE_IMAGES.featured.transformerBushings,
-    width: 1024,
-    height: 853,
-  },
-  {
-    title: "Creepage Extenders & Covers",
-    description: "Patented product",
-    image: SITE_IMAGES.featured.creepageExtenders,
-    width: 1024,
-    height: 1024,
-  },
-];
+const longRod: Feature = {
+  title: "Long Rod Insulators",
+  description: "Distribution & Transmission",
+  image: SITE_IMAGES.featured.longRod,
+  width: 1024,
+  height: 895,
+};
+
+const post: Feature = {
+  title: "Post Insulators",
+  description: "Line Post, Station Post, Railway",
+  image: SITE_IMAGES.featured.post,
+  width: 1024,
+  height: 768,
+};
+
+const hybrid: Feature = {
+  title: "Hybrid Post Insulators",
+  description: "Silicone & porcelain",
+  image: SITE_IMAGES.featured.hybrid,
+  width: 1024,
+  height: 768,
+};
+
+const bushings: Feature = {
+  title: "Transformer Bushings",
+  description: "Polymer housed",
+  image: SITE_IMAGES.featured.transformerBushings,
+  width: 1024,
+  height: 853,
+};
+
+const creepage: Feature = {
+  title: "Creepage Extenders & Covers",
+  description: "Patented product",
+  image: SITE_IMAGES.featured.creepageExtenders,
+  width: 1024,
+  height: 1024,
+};
+
+function ProductCard({
+  feature,
+  className,
+  mediaClassName,
+  wide,
+  style,
+  cover,
+}: {
+  feature: Feature;
+  className?: string;
+  /** Shared media frame for the band — keeps neighbours flush. */
+  mediaClassName: string;
+  wide?: boolean;
+  /** Forwarded from RevealBlock stagger. */
+  style?: CSSProperties;
+  /** Fill the plate (landscape companions); default contains the product. */
+  cover?: boolean;
+}) {
+  return (
+    <div
+      style={style}
+      className={cn(
+        "group interactive-lift flex h-full min-h-0 flex-col overflow-hidden rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60",
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          "product-plate relative w-full min-h-[12rem] overflow-hidden",
+          mediaClassName,
+        )}
+      >
+        {/*
+          Inset wrapper — never put padding on a Next `fill` <img>.
+          Safari ignores/zeros the painted content when absolute fill
+          images also carry padding.
+        */}
+        <div
+          data-product-media
+          className={
+            cover
+              ? "absolute inset-0"
+              : "absolute inset-3 sm:inset-4 md:inset-5"
+          }
+        >
+          <Image
+            src={feature.image || "/placeholder.svg"}
+            alt={feature.title}
+            fill
+            className={
+              cover ? "object-cover object-center" : "object-contain object-center"
+            }
+            sizes={
+              wide
+                ? "(min-width: 768px) 66vw, 100vw"
+                : "(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
+            }
+            quality={92}
+          />
+        </div>
+      </div>
+
+      <div className="border-t border-border/30 px-[var(--hig-4)] py-[var(--hig-4)] dark:border-white/[0.06] md:px-[var(--hig-5)] md:py-[var(--hig-5)]">
+        <p className="type-hig-label mb-[var(--hig-2)] text-brand-burgundy">
+          {feature.description}
+        </p>
+        <h3
+          className={cn(
+            "type-hig-title text-brand-navy",
+            wide
+              ? "text-[1.375rem] md:text-[1.5rem]"
+              : "text-[1.1875rem] md:text-[1.375rem]",
+          )}
+        >
+          {feature.title}
+        </h3>
+      </div>
+    </div>
+  );
+}
 
 export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
   const eyebrow = cmsText(cms, "eyebrow", "Standards");
@@ -84,8 +164,6 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
       aria-labelledby="featured-products-heading"
     >
       <Beat className="px-6 py-20 text-center md:px-12 md:py-28 lg:px-20 lg:py-32 lg:pb-20">
-        {/* The claim leans toward the reader — the only foreground
-            parallax in Act II. Wrapper carries no other transform. */}
         <div data-parallax="1.06">
           <RevealBlock
             delayMs={BEAT.first}
@@ -97,24 +175,10 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
               {eyebrow}
             </p>
           </RevealBlock>
-          {/*
-            The page's ONE character-level blur reveal. It is the signature
-            device precisely because it appears once — using it on every
-            headline is what turns a signature into a tic.
-          */}
-          {/*
-            `|` is the CMS author's line-break marker. It is converted to a
-            newline and rendered with `whitespace-pre-line` rather than
-            stripped, so the deliberate break after the first sentence
-            survives the move from RevealText's line splitter to this one.
-          */}
           <BlurReveal
             as="h2"
             splitBy="char"
             delayMs={BEAT.headline}
-            /* Sentence case, not uppercase: Persian has no case, so
-               `uppercase` only ever affected the Latin product names here
-               while widening the line for everyone. */
             className="type-hig-title text-brand-heading block whitespace-pre-line"
           >
             {titleForReveal.replace(/\s*\|\s*/g, "\n")}
@@ -131,77 +195,68 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
       </Beat>
 
       <Beat>
-      <RevealBlock
-        className="grid grid-cols-1 items-start gap-4 px-6 pb-24 sm:grid-cols-2 md:gap-5 md:px-12 lg:grid-cols-3 lg:px-20 lg:pb-32"
-        delayMs={BEAT.first}
-        stagger={EVIDENCE.stagger}
-        distance={EVIDENCE.distance}
-        durationMs={EVIDENCE.duration}
-      >
-        {features.map((feature) => (
-          <div
-            key={feature.title}
-            className={cn(
-              /* Card height follows the photo — grid uses items-start so
-                 a taller neighbour never stretches a shorter product plate. */
-              "group interactive-lift flex flex-col overflow-hidden rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60",
-              feature.wide && "sm:col-span-2 lg:col-span-2",
-            )}
-          >
-            <div className="product-plate relative w-full overflow-hidden">
-              <Image
-                src={feature.image || "/placeholder.svg"}
-                alt={feature.title}
-                width={feature.width}
-                height={feature.height}
-                className="h-auto w-full"
-                sizes={
-                  feature.wide
-                    ? "(min-width: 1024px) 66vw, (min-width: 640px) 100vw, 100vw"
-                    : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                }
-                quality={92}
-              />
-            </div>
-
-            <div className="border-t border-border/30 px-[var(--hig-4)] py-[var(--hig-4)] dark:border-white/[0.06] md:px-[var(--hig-5)] md:py-[var(--hig-5)]">
-              <p className="type-hig-label mb-[var(--hig-2)] text-brand-burgundy">
-                {feature.description}
-              </p>
-              <h3
-                className={cn(
-                  "type-hig-title text-brand-navy",
-                  feature.wide
-                    ? "text-[1.375rem] md:text-[1.5rem]"
-                    : "text-[1.1875rem] md:text-[1.375rem]",
-                )}
-              >
-                {feature.title}
-              </h3>
-            </div>
-          </div>
-        ))}
-
-        {/*
-          Closing tile — fills the last cell beside Creepage on lg
-          (2+1 / 1+1+1 / 1+1).
-        */}
-        <Link
-          href="/products"
-          className="group interactive-lift flex flex-col justify-between self-start rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 sm:col-span-2 md:p-7 lg:col-span-1"
+        <RevealBlock
+          className="flex flex-col gap-4 px-6 pb-24 md:gap-5 md:px-12 lg:px-20 lg:pb-32"
+          delayMs={BEAT.first}
+          stagger={EVIDENCE.stagger}
+          distance={EVIDENCE.distance}
+          durationMs={EVIDENCE.duration}
         >
-          <p className="type-hig-label text-brand-burgundy">Full catalogue</p>
-          <span className="type-hig-title mt-[var(--hig-10)] inline-flex items-baseline gap-[var(--hig-2)] text-[1.375rem] text-brand-navy md:mt-[var(--hig-12)] md:text-[1.5rem]">
-            All product categories
-            <span
-              aria-hidden
-              className="text-brand-burgundy transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+          {/* Band 1 — line products: wide flagship + companion */}
+          <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3 md:gap-5">
+            <ProductCard
+              feature={longRod}
+              wide
+              className="md:col-span-2"
+              mediaClassName="aspect-[16/10]"
+            />
+            <ProductCard
+              feature={post}
+              cover
+              className="md:col-span-1"
+              /* Keep a real aspect on Safari — `flex-1` + `aspect-auto`
+                 collapses the absolute fill plate to 0 height in WebKit. */
+              mediaClassName="aspect-[16/10]"
+            />
+          </div>
+
+          {/* Band 2 — station products: equal pair */}
+          <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 md:gap-5">
+            <ProductCard
+              feature={hybrid}
+              mediaClassName="aspect-[4/3]"
+            />
+            <ProductCard
+              feature={bushings}
+              mediaClassName="aspect-[4/3]"
+            />
+          </div>
+
+          {/* Band 3 — patented close + catalogue CTA */}
+          <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3 md:gap-5">
+            <ProductCard
+              feature={creepage}
+              wide
+              className="md:col-span-2"
+              mediaClassName="aspect-[16/10]"
+            />
+            <Link
+              href="/products"
+              className="group interactive-lift flex h-full min-h-[14rem] flex-col justify-between rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 md:col-span-1 md:min-h-0 md:p-8 lg:p-10"
             >
-              →
-            </span>
-          </span>
-        </Link>
-      </RevealBlock>
+              <p className="type-hig-label text-brand-burgundy">Full catalogue</p>
+              <span className="type-hig-title mt-[var(--hig-10)] inline-flex items-baseline gap-[var(--hig-2)] text-[1.5rem] text-brand-navy md:mt-auto md:text-[1.75rem] lg:text-[1.875rem]">
+                All product categories
+                <span
+                  aria-hidden
+                  className="text-brand-burgundy transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
+                >
+                  →
+                </span>
+              </span>
+            </Link>
+          </div>
+        </RevealBlock>
       </Beat>
     </section>
   );

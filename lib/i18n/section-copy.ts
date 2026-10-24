@@ -10,7 +10,7 @@ export const ENGINEERING_FEATURES = {
   en: [
     {
       eyebrow: "Triple junction point",
-      title: "No moisture infiltrate.",
+      title: "No moisture infiltration.",
       description:
         "Silicone rubber is directly moulded onto the ECR rod and permanently bonded to each fitting. Air and water cannot reach the triple junction point, eliminating the partial-discharge pathway that causes ageing in conventional insulators.",
     },
