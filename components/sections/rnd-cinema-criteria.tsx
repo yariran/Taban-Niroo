@@ -63,10 +63,9 @@ const CRITERIA: readonly Criterion[] = [
 /**
  * Act II — the pinned criteria runway.
  *
- * One held image under a slow Ken Burns push, with the six IEC criteria
- * advancing through it one frame at a time. This is the page's storytelling
- * engine: the reader stops moving through a list and instead watches a single
- * scene resolve, which is what makes the reference sites feel cinematic.
+ * Six IEC plates crossfade under a slow Ken Burns push while the criteria
+ * advance one frame at a time. The reader stops moving through a list and
+ * instead watches a scene resolve — one image per profile check.
  *
  * Under `prefers-reduced-motion` this collapses entirely to the existing
  * `PollutionPerformanceSection`, so every criterion stays in the DOM, in
@@ -88,6 +87,7 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
         }))
       : CRITERIA;
 
+  const plates = SITE_IMAGES.pollutionCriteria;
   const title = cmsText(cms, "title", "Every shed profile,");
   const titleLine2 = cmsText(
     cms,
@@ -108,6 +108,19 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
   const intro = band(0.02, 0.1);
   const frameSpan = 0.86 / criteria.length;
   const framesStart = 0.12;
+
+  /** Opacity of plate `i` — intro holds plate 0, then each criterion owns one. */
+  const plateOpacity = (i: number) => {
+    const introHold =
+      i === 0 ? 1 - band(framesStart - 0.02, framesStart + frameSpan * 0.2) : 0;
+    const start = framesStart + i * frameSpan;
+    const enter = band(start, start + frameSpan * 0.28);
+    const exit =
+      i === criteria.length - 1
+        ? 0
+        : band(start + frameSpan * 0.78, start + frameSpan);
+    return Math.max(introHold, enter * (1 - exit));
+  };
 
   return (
     <section
@@ -131,7 +144,7 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
         style={{ height: `${120 + criteria.length * 70}svh` }}
       >
         <div className="sticky top-0 h-[100svh] isolate overflow-hidden">
-          {/* Held plate — slow push for the length of the runway.
+          {/* Crossfading plates — slow push for the length of the runway.
               `.cine-grade` sets `position: relative`, so it nests inside the
               absolutely-positioned wrapper rather than sharing an element
               with it (which would collapse the plate to zero height). */}
@@ -140,16 +153,38 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
             style={{ transform: `scale(${1.04 + intro * 0.06})` }}
             aria-hidden
           >
-            <div className="cine-grade h-full w-full">
-              <Image
-                src={SITE_IMAGES.philosophyLongRod}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="100vw"
-                quality={92}
-              />
-            </div>
+            {criteria.map((criterion, i) => {
+              const src = plates[i % plates.length]!;
+              const opacity = plateOpacity(i);
+              return (
+                <div
+                  key={criterion.number}
+                  className="absolute inset-0"
+                  style={{
+                    opacity,
+                    visibility: opacity > 0.02 ? "visible" : "hidden",
+                  }}
+                >
+                  {/*
+                    `.cine-grade` forces `position: relative` — keep it on an
+                    inner shell so the outer plate can stay `absolute inset-0`
+                    and actually fill the sticky stage (otherwise height
+                    collapses to 0 and every Image disappears).
+                  */}
+                  <div className="cine-grade h-full w-full">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      className="object-cover object-right"
+                      sizes="100vw"
+                      quality={92}
+                      priority={i === 0}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div
             className="pointer-events-none absolute inset-0 bg-brand-navy-deep/72"

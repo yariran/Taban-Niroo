@@ -8,10 +8,11 @@ import type { ReactNode } from "react";
  * `- bullets` rendered as literal punctuation in a wall of text.
  *
  * The R&D drafts use a small, closed set of constructs — H2, unordered
- * lists, ordered lists, paragraphs, `**bold**` and `*italic*` — with no
- * tables, links, images, code fences, blockquotes or H3. This renderer
- * covers exactly that set and nothing more, which is why it earns its
- * place over pulling in a full Markdown pipeline.
+ * lists, ordered lists, paragraphs, images (`![alt](src)` on its own
+ * line), `**bold**` and `*italic*` — with no tables, links, code fences,
+ * blockquotes or H3. This renderer covers exactly that set and nothing
+ * more, which is why it earns its place over pulling in a full Markdown
+ * pipeline.
  *
  * Output is built as React elements, never `dangerouslySetInnerHTML`, so
  * article text cannot inject markup even if a draft is pasted in from an
@@ -52,6 +53,7 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
 type Block =
   | { kind: "heading"; text: string }
   | { kind: "paragraph"; text: string }
+  | { kind: "image"; alt: string; src: string }
   | { kind: "ul"; items: string[] }
   | { kind: "ol"; items: string[] };
 
@@ -90,6 +92,17 @@ function parseBlocks(source: string): Block[] {
 
     if (!line) {
       flushAll();
+      continue;
+    }
+
+    const image = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(line);
+    if (image) {
+      flushAll();
+      blocks.push({
+        kind: "image",
+        alt: image[1].trim(),
+        src: image[2].trim(),
+      });
       continue;
     }
 
@@ -182,6 +195,16 @@ export function ArticleBody({ source }: { source: string }) {
               >
                 {renderInline(block.text, `h${i}`)}
               </h2>
+            );
+          case "image":
+            return (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={block.src}
+                alt={block.alt}
+                className="mt-10 w-full rounded-2xl object-cover first:mt-0 md:mt-12"
+              />
             );
           case "ul":
             return (

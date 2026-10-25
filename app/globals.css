@@ -834,7 +834,8 @@
    */
   .product-plate {
     position: relative;
-    isolation: isolate;
+    /* No isolation / mix-blend — WebKit paints blank absolute images
+       when those combine with overflow, radius, and opacity reveals. */
     background:
       radial-gradient(
         118% 92% at 50% 0%,
@@ -843,20 +844,11 @@
         #e3e5e8 100%
       );
   }
-  .product-plate > :where(img, picture, [data-image-reveal]) {
-    mix-blend-mode: multiply;
-    /* Multiply only erases a ground that is actually WHITE. Two of these
-       renders sit on a light grey (#EDEDEF), which survives the blend as a
-       visible rectangle inside the plate. Clipping the top of the range to
-       white first removes it; the plate then multiplies the whole frame
-       back down, so net exposure on the product is ≈ +5%. The contrast
-       term does the actual clipping — these grounds carry a soft vignette,
-       and brightness alone lifts the whole gradient rather than closing it
-       onto white. Around mid-grey the two terms cancel, so the product
-       itself comes through at roughly its own density. */
-    /* Sized against the darkest ground in the library (#E6E8ED, the new
-       release shot) — anything lighter clips too. */
-    filter: brightness(1.06) contrast(1.12);
+  .product-plate > :where(img, picture, [data-image-reveal]),
+  .product-plate [data-product-media] > :where(img, picture) {
+    /* Stack under the plate hairline; do not touch `position` — Next
+       `fill` images rely on inline `absolute`. */
+    z-index: 1;
   }
   /* Hairline + a soft floor so the sweep reads as a lit surface the
      product stands on, rather than a flat swatch behind it. */
@@ -897,24 +889,21 @@
    * on thin lines. Keep hover feedback via shadow/border, but freeze
    * transform-based image motion.
    */
+  /*
+    Do NOT put translateZ / backface-visibility on product imgs.
+    WebKit often composites those layers as blank inside overflow +
+    border-radius cards (home featured plates empty in Safari).
+  */
   .interactive-lift :where(img, video) {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    transition: filter 0.5s var(--ease-standard);
+    transition: opacity 0.5s var(--ease-standard);
   }
   @media (hover: hover) {
     /**
      * Anti-jitter: kill transform-based hover motion on images (it
-     * produced visible sub-pixel shimmer on high-DPI displays), but
-     * keep a soft, GPU-cheap brightness lift so cards still have a
-     * tactile hover response. Filter changes do not reflow.
+     * produced visible sub-pixel shimmer on high-DPI displays).
      */
     .group:hover :where([class*="group-hover:scale"], [class*="group-hover:translate"]) {
       transform: none !important;
-    }
-    .interactive-lift:hover :where(img, video) {
-      filter: brightness(1.04) saturate(1.04);
     }
   }
 

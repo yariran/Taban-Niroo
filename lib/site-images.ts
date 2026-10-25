@@ -7,6 +7,18 @@ export const SITE_IMAGES = {
   technology: "/images/technology-plate-v2.jpg",
   philosophyLongRod: "/images/philosophy-long-rod-v2.jpg",
   philosophyPost: "/images/philosophy-post-insulator-v2.png",
+  /**
+   * Blog R&D — Pollution performance cinema runway (one plate per IEC
+   * 60815-3 criterion, in order 01–06).
+   */
+  pollutionCriteria: [
+    "/images/rnd/pollution-01-alternating-shed.jpg",
+    "/images/rnd/pollution-02-spacing-overhang.jpg",
+    "/images/rnd/pollution-03-minimum-distance.jpg",
+    "/images/rnd/pollution-04-creepage-clearance.jpg",
+    "/images/rnd/pollution-05-shed-angle.jpg",
+    "/images/rnd/pollution-06-creepage-factor.jpg",
+  ] as const,
   projectMap: "/images/partners-map-light-mode.jpg",
   projectMapDark: "/images/partners-map-dark-mode.jpg",
   projectServices: "/images/project-services-panel.png",
