@@ -94,21 +94,19 @@ export async function generateMetadata(): Promise<Metadata> {
       description: home.description,
     },
     icons: {
+      // The .ico stays first so legacy browsers and search crawlers that only
+      // probe /favicon.ico still resolve the mark. The tile reads the same in
+      // light and dark, so no per-scheme variants are needed.
       icon: [
-        {
-          url: "/icon-light-32x32.png",
-          media: "(prefers-color-scheme: light)",
-        },
-        {
-          url: "/icon-dark-32x32.png",
-          media: "(prefers-color-scheme: dark)",
-        },
-        {
-          url: "/icon.svg",
-          type: "image/svg+xml",
-        },
+        { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+        { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+        { url: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
+        { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+        { url: "/icon.svg", type: "image/svg+xml" },
       ],
-      apple: "/apple-icon.png",
+      shortcut: "/favicon.ico",
+      apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+      other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#15171A" }],
     },
     alternates: {
       canonical: `/${locale}`,
@@ -160,8 +158,8 @@ export default async function RootLayout({
             : "تابان نیرو",
         legalName: "Taban Niroo · Dena Power Line Insulators",
         url: `${siteUrl}/${locale}`,
-        logo: `${siteUrl}/apple-icon.png`,
-        image: `${siteUrl}/icon.svg`,
+        logo: `${siteUrl}/icon-512.png`,
+        image: `${siteUrl}/icon-512.png`,
         foundingDate: "1997",
         description: home.description,
         inLanguage: lang,
