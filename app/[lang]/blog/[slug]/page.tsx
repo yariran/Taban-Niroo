@@ -73,7 +73,7 @@ export default async function BlogPostPage({ params }: Props) {
       name: "Taban Niroo",
       logo: {
         "@type": "ImageObject",
-        url: `${siteUrl}/apple-icon.png`,
+        url: `${siteUrl}/icon-512.png`,
       },
     },
     ...(post.coverImage
