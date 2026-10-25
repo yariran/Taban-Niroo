@@ -34,9 +34,13 @@ export function CollectionSection({ cms }: { cms?: ContentBlock } = {}) {
   */
   const { data: markets, totals } = useMemo(() => resolveMarkets(cms), [cms]);
 
+  /*
+    Portfolio rail figures are marketing floors (15+ / 550+), not the
+    live sum of map pins — those stay in `totals` for the country cards.
+  */
   const stats = [
-    { value: totals.markets, label: "Markets" },
-    { value: totals.projects, label: "Projects" },
+    { value: "+15", label: "Markets" },
+    { value: "+550", label: "Projects" },
     { value: totals.since, label: "Since" },
   ];
 
