@@ -77,7 +77,7 @@ export function RnDCinemaOpening({ cms }: { cms?: ContentBlock } = {}) {
         <div className="cine-grade h-full w-full">
           <video
             className="h-full w-full object-cover"
-            src="/videos/industrial.mp4"
+            src="/videos/rnd-opening.mp4"
             autoPlay
             muted
             loop
