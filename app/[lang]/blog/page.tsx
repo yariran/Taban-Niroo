@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -62,41 +63,63 @@ export default async function BlogPage({
               {posts.map((post) => (
                 <article
                   key={post.id}
-                  className="flex flex-col justify-between rounded-2xl border border-border/80 bg-background/60 p-6 backdrop-blur"
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/60 backdrop-blur"
                 >
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                      {post.publishedAt
-                        ? new Date(post.publishedAt).toLocaleDateString(
-                            "en-GB",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            },
-                          )
-                        : "Article"}
-                    </p>
-                    <h2 className="mt-3 text-xl font-semibold text-brand-navy">
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="hover:underline underline-offset-2"
-                      >
-                        {post.title}
-                      </Link>
-                    </h2>
-                    {post.excerpt ? (
-                      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                        {post.excerpt}
-                      </p>
-                    ) : null}
-                  </div>
                   <Link
                     href={`/blog/${post.slug}`}
-                    className="mt-6 text-xs font-medium uppercase tracking-wider text-brand-burgundy hover:text-brand-burgundy-strong"
+                    className="relative block aspect-[16/10] overflow-hidden bg-brand-navy-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-burgundy"
+                    aria-label={post.title}
                   >
-                    Read article →
+                    {post.coverImage ? (
+                      <Image
+                        src={post.coverImage}
+                        alt=""
+                        fill
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <span
+                        className="absolute inset-0 bg-gradient-to-br from-brand-navy-soft via-brand-navy/15 to-brand-burgundy/20"
+                        aria-hidden
+                      />
+                    )}
                   </Link>
+                  <div className="flex flex-1 flex-col justify-between p-6">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
+                        {post.publishedAt
+                          ? new Date(post.publishedAt).toLocaleDateString(
+                              "en-GB",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              },
+                            )
+                          : "Article"}
+                      </p>
+                      <h2 className="mt-3 text-xl font-semibold text-brand-navy">
+                        <Link
+                          href={`/blog/${post.slug}`}
+                          className="hover:underline underline-offset-2"
+                        >
+                          {post.title}
+                        </Link>
+                      </h2>
+                      {post.excerpt ? (
+                        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                          {post.excerpt}
+                        </p>
+                      ) : null}
+                    </div>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="mt-6 text-xs font-medium uppercase tracking-wider text-brand-burgundy hover:text-brand-burgundy-strong"
+                    >
+                      Read article →
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>

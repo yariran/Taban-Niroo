@@ -769,6 +769,30 @@
   .cine-grade--muted {
     --cine-saturate: 0.55;
   }
+  /**
+   * Lift for plates that already arrive low-key (dark studio / night rain).
+   * The default grade dims midtones; this opens them without washing
+   * highlights, and softens the vignette so the subject stays readable
+   * under a text scrim.
+   */
+  .cine-grade--lift > :where(img, video, [data-cine-target]) {
+    filter: contrast(1.04) brightness(1.22) saturate(var(--cine-saturate, 1));
+  }
+  .cine-grade--lift::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(8, 16, 28, 0.08) 0%,
+        rgba(0, 0, 0, 0) 30%,
+        rgba(0, 0, 0, 0) 70%,
+        rgba(0, 0, 0, 0.12) 100%
+      ),
+      radial-gradient(
+        130% 90% at 50% 50%,
+        transparent 62%,
+        rgba(0, 0, 0, 0.1) 100%
+      );
+  }
   .cine-grade::after {
     content: "";
     position: absolute;
