@@ -87,6 +87,7 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
         }))
       : CRITERIA;
 
+  const introPlate = SITE_IMAGES.pollutionCriteriaIntro;
   const plates = SITE_IMAGES.pollutionCriteria;
   const title = cmsText(cms, "title", "Every shed profile,");
   const titleLine2 = cmsText(
@@ -101,25 +102,25 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
   }
 
   /**
-   * Runway budget: an opening title beat, then one equal band per criterion.
-   * Each frame fades in, holds, and fades out before the next arrives, so two
-   * frames are never legible at once.
+   * Runway budget: an opening title beat on its own plate, then one equal
+   * band per criterion. Intro must not reuse criterion 01 — otherwise the
+   * first two on-screen frames look identical.
    */
   const intro = band(0.02, 0.1);
   const frameSpan = 0.86 / criteria.length;
   const framesStart = 0.12;
+  const introPlateOpacity =
+    1 - band(framesStart - 0.02, framesStart + frameSpan * 0.2);
 
-  /** Opacity of plate `i` — intro holds plate 0, then each criterion owns one. */
+  /** Opacity of criterion plate `i` — each criterion owns one unique plate. */
   const plateOpacity = (i: number) => {
-    const introHold =
-      i === 0 ? 1 - band(framesStart - 0.02, framesStart + frameSpan * 0.2) : 0;
     const start = framesStart + i * frameSpan;
     const enter = band(start, start + frameSpan * 0.28);
     const exit =
       i === criteria.length - 1
         ? 0
         : band(start + frameSpan * 0.78, start + frameSpan);
-    return Math.max(introHold, enter * (1 - exit));
+    return enter * (1 - exit);
   };
 
   return (
@@ -153,6 +154,31 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
             style={{ transform: `scale(${1.04 + intro * 0.06})` }}
             aria-hidden
           >
+            <div
+              className="absolute inset-0"
+              style={{
+                opacity: introPlateOpacity,
+                visibility: introPlateOpacity > 0.02 ? "visible" : "hidden",
+              }}
+            >
+              {/*
+                `.cine-grade` forces `position: relative` — keep it on an
+                inner shell so the outer plate can stay `absolute inset-0`
+                and actually fill the sticky stage (otherwise height
+                collapses to 0 and every Image disappears).
+              */}
+              <div className="cine-grade cine-grade--lift h-full w-full">
+                <Image
+                  src={introPlate}
+                  alt=""
+                  fill
+                  className="object-cover object-right"
+                  sizes="100vw"
+                  quality={92}
+                  priority
+                />
+              </div>
+            </div>
             {criteria.map((criterion, i) => {
               const src = plates[i % plates.length]!;
               const opacity = plateOpacity(i);
@@ -165,13 +191,7 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
                     visibility: opacity > 0.02 ? "visible" : "hidden",
                   }}
                 >
-                  {/*
-                    `.cine-grade` forces `position: relative` — keep it on an
-                    inner shell so the outer plate can stay `absolute inset-0`
-                    and actually fill the sticky stage (otherwise height
-                    collapses to 0 and every Image disappears).
-                  */}
-                  <div className="cine-grade h-full w-full">
+                  <div className="cine-grade cine-grade--lift h-full w-full">
                     <Image
                       src={src}
                       alt=""
@@ -186,8 +206,13 @@ export function RnDCinemaCriteria({ cms }: { cms?: ContentBlock } = {}) {
               );
             })}
           </div>
+          {/*
+            Left-weighted scrim: cream copy needs contrast on the text
+            column, while the product (object-right) stays open. A flat
+            /72 navy wash crushed these already low-key studio plates.
+          */}
           <div
-            className="pointer-events-none absolute inset-0 bg-brand-navy-deep/72"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-brand-navy-deep/70 via-brand-navy-deep/38 to-brand-navy-deep/18"
             aria-hidden
           />
           <div className="grain-layer" aria-hidden />

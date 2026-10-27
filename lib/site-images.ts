@@ -8,13 +8,15 @@ export const SITE_IMAGES = {
   philosophyLongRod: "/images/philosophy-long-rod-v2.jpg",
   philosophyPost: "/images/philosophy-post-insulator-v2.png",
   /**
-   * Blog R&D — Pollution performance cinema runway (one plate per IEC
-   * 60815-3 criterion, in order 01–06).
+   * Blog R&D — Pollution performance cinema runway.
+   * Intro plate is separate so the title beat does not reuse criterion 01.
+   * Then one plate per IEC 60815-3 criterion, in order 01–06.
    */
+  pollutionCriteriaIntro: "/images/rnd/pollution-00-intro.jpg",
   pollutionCriteria: [
     "/images/rnd/pollution-01-alternating-shed.jpg",
     "/images/rnd/pollution-02-spacing-overhang.jpg",
-    "/images/rnd/pollution-03-minimum-distance.jpg",
+    "/images/rnd/pollution-03-minimum-distance-v2.jpg",
     "/images/rnd/pollution-04-creepage-clearance.jpg",
     "/images/rnd/pollution-05-shed-angle.jpg",
     "/images/rnd/pollution-06-creepage-factor.jpg",
@@ -54,7 +56,7 @@ export const SITE_IMAGES = {
       alt: "Phase to phase spacer for overhead transmission lines",
     },
     {
-      src: "/images/product-gallery-cutout-fuses.png",
+      src: "/images/product-gallery-cutout-fuses-v2.png",
       alt: "Composite cutout fuses Type A and Type B",
     },
     {

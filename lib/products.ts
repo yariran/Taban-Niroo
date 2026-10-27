@@ -179,7 +179,7 @@ export const FAMILY_THUMBNAIL: Record<ProductFamilyId, string> = {
   "Hybrid Insulators": "/images/HYBRIDINSULATORS.jpg",
   "Transformer Bushings": "/images/TRANSFORMERBUSHINGS.png",
   "Cable Accessories": "/images/featured-cable-accessories-home.jpg",
-  "Overhead Feeder Line Composite": "/images/product-gallery-cutout-fuses.png",
+  "Overhead Feeder Line Composite": "/images/product-gallery-cutout-fuses-v2.png",
   "Creepage Extenders & Covers": "/images/featured-creepage-extenders.jpg",
 };
 
@@ -205,7 +205,7 @@ export function resolveProductImage(
     return "/images/product-gallery-phase-spacer.png";
   }
   if (id.includes("cutout") || id.includes("surge")) {
-    return "/images/product-gallery-cutout-fuses.png";
+    return "/images/product-gallery-cutout-fuses-v2.png";
   }
   if (
     id.includes("line-post") ||
@@ -3899,9 +3899,9 @@ export const PRODUCTS: readonly Product[] = [
   // ── 05 · Overhead Feeder Line Composite ──
   {
     id: "cutout-fuse-type-a",
-    name: "Composite Cut Out Fuse — Type A",
+    name: "Composite Cutout Fuse — Type A",
     family: "Overhead Feeder Line Composite",
-    subFamily: "Cut Out Fuse",
+    subFamily: "Cutout Fuse",
     catalogueRef: "DPL 20-1345-100 CU · DPL 33-1850-100 CU",
     summary:
       "Composite-housed cutout fuse protecting transformers and lines from overcurrent events. Weather-resistant body, serves as manual isolator during maintenance.",
@@ -3918,12 +3918,12 @@ export const PRODUCTS: readonly Product[] = [
   },
   {
     id: "cutout-fuse-type-b",
-    name: "Composite Cut Out Fuse — Type B",
+    name: "Composite Cutout Fuse — Type B",
     family: "Overhead Feeder Line Composite",
-    subFamily: "Cut Out Fuse",
+    subFamily: "Cutout Fuse",
     catalogueRef: "DPL 20-1450-100 CU · DPL 33-1850-100 CU",
     summary:
-      "Type B variant of the composite cut out fuse family with extended creepage for polluted distribution feeders.",
+      "Type B variant of the composite cutout fuse family with extended creepage for polluted distribution feeders.",
     applications: "Distribution protection · Polluted zones",
     voltageClass: "20 – 33 kV",
     standard: "IEC standards",
@@ -3937,16 +3937,16 @@ export const PRODUCTS: readonly Product[] = [
   },
   {
     id: "cutout-fuse-24-36",
-    name: "24 kV & 36 kV Composite Cut Out Fuse",
+    name: "24 kV & 36 kV Composite Cutout Fuse",
     family: "Silicone Composite Insulators",
-    subFamily: "Cut Out Fuse",
+    subFamily: "Cutout Fuse",
     catalogueRef: "DPL24-1440-100CO · DPL36-1850-100CO — Type A / Type B",
     summary:
       "Composite-housed cutout fuse for 24–36 kV distribution feeders. Type A and Type B geometries protect transformers and lines from overcurrent, with 100 A continuous rating and 8 kA breaking capacity.",
     applications: "Distribution protection · Isolation · Transformer & line",
     voltageClass: "24 · 36 kV",
     standard: "IEC standards",
-    image: "/images/product-gallery-cutout-fuses.png",
+    image: "/images/product-gallery-cutout-fuses-v2.png",
     drawing: "/images/product-drawings/drawing-cutout-fuse-24-36.png",
     order: 12,
     hidden: false,
