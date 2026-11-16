@@ -15,11 +15,11 @@ import styles from "./cinematic-hero.module.css";
  * background loop with words on top. Four lines of copy claim bands of
  * the same runway and cross-fade in place.
  *
- *   0 %  …  12 %   silence — the wide establishing shot, no words on it
- *  12 % …  38 %   Built for the elements
- *  34 % …  58 %   Engineered for reliability
- *  55 % …  80 %   Composite insulation + the one factual line
- *  77 % … 100 %   Taban Niroo + the only link in the frame
+ *   0 %  …   5 %   silence — the wide establishing shot, no words on it
+ *   5 % …  30 %   Built for the elements
+ *  29 % …  54 %   Engineered for reliability
+ *  53 % …  77 %   Composite insulation + the one factual line
+ *  76 % … 100 %   Taban Niroo + the only link in the frame
  *
  * ─── Why this does not use `useScrollScene` ───────────────────────────
  *
@@ -84,11 +84,28 @@ type Band = {
  * short to read as a page that has stopped working, and the product is
  * still on screen throughout it.
  */
+/**
+ * The opening silence is 5 %, and that number is physical rather than
+ * aesthetic.
+ *
+ * It was 12 %, set when the runway was 200svh — on a 900px viewport that
+ * is 108px of wordless scroll, about one trackpad flick, which is what
+ * "a breath before the first line" was measured to be. Lengthening the
+ * track to 320svh did not change the fraction, so the same breath became
+ * ~264px: the hero opened on a quarter-screen of nothing happening and
+ * read as a page that had not finished loading. 5 % of the longer runway
+ * is ~110px — the original breath, restored in pixels instead of in
+ * percent.
+ *
+ * Everything after it moves up by the same ~7 points, so the handoffs
+ * keep their ~1-2 % crossover and the holds stay 9-11 % each. The last
+ * band still runs to 100 %, which is where the extra room went.
+ */
 const BANDS: readonly Band[] = [
-  { enter: [0.12, 0.21], exit: [0.3, 0.36] },
-  { enter: [0.35, 0.44], exit: [0.51, 0.57] },
-  { enter: [0.56, 0.65], exit: [0.72, 0.78] },
-  { enter: [0.77, 0.86] },
+  { enter: [0.05, 0.13], exit: [0.24, 0.3] },
+  { enter: [0.29, 0.38], exit: [0.48, 0.54] },
+  { enter: [0.53, 0.62], exit: [0.71, 0.77] },
+  { enter: [0.76, 0.85] },
 ] as const;
 
 /** Entrance travel, px. Enough to read as a lift; short of a slide. */
@@ -142,8 +159,15 @@ export function CinematicHeroSection() {
 
     /**
      * Full mp4 download waits for the first meaningful scroll into the
-     * runway. Metadata-only first paint keeps the ~0.5MB film off LCP;
+     * runway. Metadata-only first paint keeps the ~1.7MB film off LCP;
      * Save-Data / 2G never upgrades past metadata.
+     *
+     * The film is encoded with a 12-frame GOP (a keyframe every half
+     * second) rather than the sparse one an upload-grade mp4 ships with.
+     * That is what the scrubbing costs: a seek inside a long GOP has to
+     * decode forward from the last keyframe, so a flick through the
+     * runway stalls. Dense keyframes trade file size for a playhead that
+     * actually lands where the reader put it.
      */
     const upgradeToFull = () => {
       if (cancelled || saveData || slowNet) return;
@@ -320,7 +344,7 @@ export function CinematicHeroSection() {
       }
 
       if (cueRef.current) {
-        cueRef.current.style.opacity = (1 - smoothstep01(p / 0.06)).toFixed(3);
+        cueRef.current.style.opacity = (1 - smoothstep01(p / 0.035)).toFixed(3);
       }
 
       /* Light header text for as long as the dark stage is under it. */
@@ -386,12 +410,12 @@ export function CinematicHeroSection() {
       loop={false}
       playsInline
       preload="metadata"
-      poster="/images/taban-hero-poster.jpg"
+      poster="/images/taban-hero-dena-poster.jpg"
       disablePictureInPicture
       aria-hidden="true"
       tabIndex={-1}
     >
-      <source src="/videos/taban-hero.mp4" type="video/mp4" />
+      <source src="/videos/taban-hero-dena.mp4" type="video/mp4" />
     </video>
   );
 

@@ -19,7 +19,7 @@ const EXIT_MS = 560;
 /** Absolute ceiling — unlock even if readiness stalls (e.g. background tab). */
 const CEILING_MS = 2200;
 
-const HERO_POSTER = "/images/taban-hero-poster.jpg";
+const HERO_POSTER = "/images/taban-hero-dena-poster.jpg";
 
 type Phase = "in" | "out" | "done";
 

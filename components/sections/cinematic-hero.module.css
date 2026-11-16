@@ -21,9 +21,20 @@
 /* ─── Runway ──────────────────────────────────────────────────────────── */
 
 /**
- * 200svh of track for 100svh of stage → exactly one viewport of scroll
- * drives the whole 10s film. Less than ~180svh and the four scenes cut
- * into each other; more than ~220svh and the pin outstays its welcome.
+ * 320svh of track for 100svh of stage → 2.2 viewports of scroll drive
+ * the whole 10s film, so each of the four scenes owns roughly half a
+ * viewport of travel.
+ *
+ * This was 200svh — one viewport for the whole film — and it read as
+ * sprinting: a single trackpad flick crossed two headlines and most of
+ * the push-in. The band fractions in the component are fractions of the
+ * runway, not absolute distances, so lengthening the track slows the
+ * film AND the copy together and nothing else had to move. Scroll-snap
+ * is off on this page (`scroll-snap-type: none`), so a taller track has
+ * no snapping to fight.
+ *
+ * This is the one number to turn if the hero still feels fast or starts
+ * to outstay its welcome: higher is slower.
  *
  * `svh`, and the unit is the whole difference between this working on a
  * phone and not. The pair used to be `height: 100vh; min-height: 100dvh`,
@@ -41,7 +52,7 @@
  */
 .track {
   position: relative;
-  height: 200svh;
+  height: 320svh;
 }
 
 .stage {
@@ -357,10 +368,11 @@
 /* ─── Scroll affordance ───────────────────────────────────────────────── */
 
 /**
- * The first tenth of the runway is deliberately wordless, which on a
- * pinned stage is indistinguishable from a page that has stopped
+ * The first twentieth of the runway is deliberately wordless, which on
+ * a pinned stage is indistinguishable from a page that has stopped
  * working. One 28px hairline says "there is more below" and then gets
- * out of the way — it fades out for good once the film starts moving.
+ * out of the way — it fades out for good once the film starts moving,
+ * before the first headline arrives (see `BANDS` in the component).
  *
  * It hangs off the copy column rather than the centre of the frame: the
  * centre is the lit face of the insulator, where a 1px white line is
