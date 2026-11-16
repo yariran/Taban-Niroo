@@ -130,29 +130,69 @@ export function MaterialsScrollytellingSection({
   const [active, setActive] = useState(0);
   const stepRefs = useRef<(HTMLElement | null)[]>([]);
   const rafRef = useRef<number | null>(null);
+  /** Step centres in DOCUMENT space — see `measure` below. */
+  const centresRef = useRef<number[]>([]);
+  const activeRef = useRef(0);
 
   /** Reduced motion draws every layer lit and skips scroll driving. */
   const staticLayout = reduceMotion;
   const driving = !reduceMotion;
 
-  const update = useCallback(() => {
-    const mid = window.innerHeight / 2;
-    let best = 0;
-    let bestD = Infinity;
-    stepRefs.current.forEach((node, i) => {
-      if (!node) return;
+  /**
+   * Step centres are measured once per layout change, not per scroll frame.
+   *
+   * The previous version read `getBoundingClientRect()` for all four steps
+   * inside the scroll rAF. Three rAF callbacks already run per frame on this
+   * page (Lenis writes the scroll position, the parallax engine reads rects
+   * and writes transforms, this one read four more), so the frame alternated
+   * read → write → read and forced a synchronous layout each time. Step
+   * geometry only depends on the viewport, so cache it and let the scroll
+   * path do arithmetic alone.
+   */
+  const measure = useCallback(() => {
+    const y = window.scrollY;
+    centresRef.current = stepRefs.current.map((node) => {
+      if (!node) return Number.POSITIVE_INFINITY;
       const r = node.getBoundingClientRect();
-      const d = Math.abs(r.top + r.height / 2 - mid);
+      return r.top + y + r.height / 2;
+    });
+  }, []);
+
+  const update = useCallback(() => {
+    const centres = centresRef.current;
+    if (centres.length === 0) return;
+    const mid = window.scrollY + window.innerHeight / 2;
+
+    let best = 0;
+    let bestD = Number.POSITIVE_INFINITY;
+    centres.forEach((c, i) => {
+      const d = Math.abs(c - mid);
       if (d < bestD) {
         bestD = d;
         best = i;
       }
     });
+
+    /**
+     * Deadband. Exactly at a boundary the two neighbours are within a
+     * fraction of a pixel of each other, and Lenis settles on fractional
+     * scroll positions that dither either side of it. Without this, parking
+     * on a boundary flips `active` back and forth and each flip restarts a
+     * 500ms crossfade in the opposite direction — the stage visibly
+     * trembles while the page is barely moving. The incumbent has to be
+     * beaten by a clear margin before the stage switches.
+     */
+    const current = activeRef.current;
+    const currentD = Math.abs((centres[current] ?? Infinity) - mid);
+    if (best !== current && currentD - bestD < 24) return;
+
+    activeRef.current = best;
     setActive(best);
   }, []);
 
   useEffect(() => {
     if (!driving) {
+      activeRef.current = 0;
       setActive(0);
       return;
     }
@@ -160,15 +200,32 @@ export function MaterialsScrollytellingSection({
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(update);
     };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+
+    /**
+     * Steps are sized in `vh`, so `resize` covers nearly everything — but
+     * this section is lazy-mounted and its web font and four renders land
+     * after first paint, any of which can reflow the list without a resize
+     * event. Re-measuring on the list's own box keeps the cache honest.
+     */
+    const list = stepRefs.current[0]?.parentElement;
+    const ro = list ? new ResizeObserver(onResize) : null;
+    if (list && ro) ro.observe(list);
+
+    measure();
     update();
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
+      ro?.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [update, driving]);
+  }, [update, measure, driving]);
 
   const live = STEPS[active];
   /** Reduced motion draws every layer lit; otherwise exactly one is. */
@@ -237,13 +294,19 @@ export function MaterialsScrollytellingSection({
           <div
             className={cn(
               "order-first",
+              !staticLayout && styles.stickyStage,
               !staticLayout &&
                 // Stick below the fixed header on phones; full viewport
                 // column on desktop. `top` must clear SiteHeader (~3.5–4rem).
                 "sticky top-[4.25rem] z-[5] -mx-1 bg-background px-1 pb-3 pt-1 md:top-[4.75rem] lg:order-last lg:top-0 lg:mx-0 lg:flex lg:h-[100dvh] lg:items-center lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0",
             )}
           >
-            <div className="cine-grade relative aspect-[16/9] max-h-[min(48vh,22rem)] w-full overflow-hidden rounded-[1.25rem] bg-brand-navy-deep shadow-elevate md:max-h-[min(52vh,26rem)] lg:max-h-none">
+            <div
+              className={cn(
+                styles.stage,
+                "cine-grade relative aspect-[16/9] max-h-[min(48vh,22rem)] w-full overflow-hidden rounded-[1.25rem] bg-brand-navy-deep shadow-elevate md:max-h-[min(52vh,26rem)] lg:max-h-none",
+              )}
+            >
               {/* technical grid, masked to centre — house vocabulary, not a gradient */}
               <div
                 aria-hidden
@@ -258,13 +321,34 @@ export function MaterialsScrollytellingSection({
                 points. They are stacked rather than swapped so the metal
                 body never blinks between beats.
 
-                The sources were re-registered before import. The raw
-                renders were framed slightly differently — content centre
-                drifting up to 30px and scale by ~3% — which read as the
-                part twitching on every crossfade. The files in
-                `public/images/insulator/` are normalised to a common
-                2000x640 canvas with the solid content centred, so only the
-                highlight changes.
+                REGISTRATION IS LOAD-BEARING. The files must stay aligned
+                to each other pixel for pixel; a crossfade is the one thing
+                that makes a misregistered pair impossible to miss.
+
+                This was wrong once and shipped. The earlier pass centred
+                each render by its SOLID BOUNDING BOX, which looked right —
+                all four boxes came out within a few px — but the box is set
+                by the end fittings, and those differ per render. The shed
+                stack, which is what the eye actually tracks, was still off:
+                measured by cross-correlating the shed comb, core sat 26px
+                and housing 13px to the right of junction, with up to 3px
+                vertically. On the desktop stage that is ~9px of sideways
+                travel, and because the sheds are a periodic comb of thin
+                fins, two combs a few px out of phase beat against each
+                other as the opacities cross. It does not read as a slide;
+                it reads as the part vibrating in place. That was the bug.
+
+                So the files in `public/images/insulator/` are now registered
+                ON THE SHED COMB, not the bounding box: integer-pixel
+                translations only (no resampling) onto the shared 2000x640
+                canvas, junction as the reference. Residual comb offset is
+                0px for all four; alpha-mask disagreement against junction
+                fell from 12.2%/7.6%/6.8% to 5.3%/3.8%/6.7% (what is left is
+                genuine — the gold glow each render adds around the layer it
+                highlights).
+
+                If a render is ever re-exported, re-check the comb offset
+                before committing it. Matching bounding boxes is not enough.
 
                 The SVG callouts that used to live here went with the
                 drawing: their leader lines were positioned against the old
@@ -279,7 +363,18 @@ export function MaterialsScrollytellingSection({
                 {STEPS.map((step) => (
                   <Image
                     key={step.id}
-                    src={`/images/insulator/${step.id}.webp`}
+                    /*
+                      `-v3` is the registration pass, and the suffix is the
+                      point: Next's image optimiser keys its cache on the
+                      SOURCE PATH, not the file's bytes or mtime. Re-saving
+                      `core.webp` in place left every running dev server and
+                      every CDN edge serving the old, misregistered render —
+                      verified here, the optimiser still returned the 26px
+                      offset from a file that no longer had it, even at a
+                      width it had never served before. Bump the suffix
+                      whenever these renders are re-exported.
+                    */
+                    src={`/images/insulator/${step.id}-v3.webp`}
                     alt=""
                     aria-hidden
                     fill
@@ -297,8 +392,38 @@ export function MaterialsScrollytellingSection({
                     */
                     priority={step.id === "core"}
                     loading={step.id === "core" ? undefined : "eager"}
+                    /*
+                      THE SWAP IS A CUT, NOT A DISSOLVE. Exactly one render
+                      is visible at any instant, and that is the whole point
+                      — do not reintroduce `transition-opacity` here.
+
+                      These four files are separate 3D renders, not one
+                      render recoloured. Registration (see the note on the
+                      stack below) got their shed combs onto the same x and
+                      the same vertical extent, but the residual is ~1–2px
+                      at display size and it is not removable by any single
+                      transform: the renders disagree non-uniformly along
+                      the body, so a global fit halves the error and then
+                      stalls. Measured along four windows of the body, the
+                      shed top edge still spreads 4–9 source px.
+
+                      A dissolve makes that residual impossible to hide,
+                      because for ~500ms BOTH shed combs are on screen at
+                      partial opacity, 1–2px apart. On a stack of thin fins
+                      that doubles every tip, and as the opacities cross the
+                      doubling slides — which reads as the part trembling up
+                      and down. It is only ever visible at a layer change,
+                      which is exactly when the dissolve runs.
+
+                      Cutting removes the superimposition entirely, so the
+                      artefact cannot occur at any residual. What is left is
+                      a single-frame silhouette change of 1–2px, with no
+                      second copy on screen to measure it against — which is
+                      why the cut reads as the highlight moving rather than
+                      as the part moving.
+                    */
                     className={cn(
-                      "object-contain transition-opacity duration-500 motion-reduce:transition-none",
+                      "object-contain",
                       on(step.id) ? "opacity-100" : "opacity-0",
                     )}
                   />

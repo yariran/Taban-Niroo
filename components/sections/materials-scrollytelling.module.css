@@ -49,3 +49,49 @@
     transition: none;
   }
 }
+
+/**
+ * The stage plate — its own compositor layer.
+ *
+ * The frame carries two blended layers: `.cine-grade::after` (multiply) and
+ * `.grain-layer` (overlay, a 240px noise tile). A blended descendant stops
+ * the compositor from reusing a raster for the subtree, so the sticky stage
+ * was re-rasterising a full-width plate — image, grid, vignette and noise —
+ * on every scroll frame, while Lenis moved the page in sub-pixel steps. The
+ * noise tile resampling against a shifting raster origin is what made the
+ * part look like it was vibrating in place rather than holding still.
+ *
+ * `isolation` keeps both blends inside this box instead of reaching for a
+ * backdrop that scrolls past behind it, and the promotion hint gives the
+ * frame a layer the compositor can simply move. Applied to the frame, which
+ * is INSIDE the sticky node — never to the sticky node or an ancestor of it
+ * (invariant 1 in the component).
+ */
+.stage {
+  isolation: isolate;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/**
+ * The sticky node itself — its own compositor layer.
+ *
+ * `.stage` below promotes the FRAME, but the frame is not the thing that has
+ * to be repositioned on every scroll frame; the sticky node is. Left
+ * unpromoted, the engine recomputes the sticky offset on the main thread and
+ * re-rasterises the subtree, and because `lg:items-center` centres a frame of
+ * fractional height (284.016px in a 900px column -> top 307.992px) the result
+ * lands between device pixel rows. On a 1x display that rounds to a different
+ * row from frame to frame, which reads as the plate twitching up and down a
+ * pixel while the page scrolls — on a 2x display it mostly disappears, which
+ * is why it reproduces on some machines and not others.
+ *
+ * Promoting the sticky node lets it be rasterised once and merely moved,
+ * so the sub-pixel offset stays frozen instead of being re-resolved per
+ * frame. Safe on the sticky element itself: a transform on an ANCESTOR is
+ * what breaks sticky (invariant 1), not one on the sticky box.
+ */
+.stickyStage {
+  will-change: transform;
+  transform: translateZ(0);
+}
