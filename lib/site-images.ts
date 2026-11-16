@@ -33,7 +33,7 @@ export const SITE_IMAGES = {
     longRod: "/images/featured-long-rod-v2.jpg",
     post: "/images/featured-post-insulators-v5.jpg",
     hybrid: "/images/featured-hybrid-post-insulators-v2.jpg",
-    transformerBushings: "/images/featured-transformer-bushings-v2.jpg",
+    transformerBushings: "/images/featured-transformer-bushings-v3.jpg",
     hollowCoreBushing: "/images/featured-hollow-core-bushing.jpg",
     cableAccessories: "/images/featured-cable-accessories-home.jpg",
     creepageExtenders: "/images/featured-creepage-extenders.jpg",

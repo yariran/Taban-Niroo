@@ -57,7 +57,7 @@ const bushings: Feature = {
   description: "Polymer housed",
   image: SITE_IMAGES.featured.transformerBushings,
   width: 1024,
-  height: 853,
+  height: 679,
 };
 
 const creepage: Feature = {

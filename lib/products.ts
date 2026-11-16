@@ -177,7 +177,7 @@ export const FAMILY_ANCHOR: Record<ProductFamilyId, string> = {
 export const FAMILY_THUMBNAIL: Record<ProductFamilyId, string> = {
   "Silicone Composite Insulators": "/images/LONGROD_INSULATORS.jpg",
   "Hybrid Insulators": "/images/HYBRIDINSULATORS.jpg",
-  "Transformer Bushings": "/images/TRANSFORMERBUSHINGS.png",
+  "Transformer Bushings": "/images/TRANSFORMERBUSHINGS-v3.jpg",
   "Cable Accessories": "/images/featured-cable-accessories-home.jpg",
   "Overhead Feeder Line Composite": "/images/product-gallery-cutout-fuses-v2.png",
   "Creepage Extenders & Covers": "/images/featured-creepage-extenders.jpg",
@@ -238,7 +238,7 @@ export function resolveProductImage(
     id.includes("polymer") ||
     id.includes("plug-in")
   ) {
-    return "/images/TRANSFORMERBUSHINGS.png";
+    return "/images/TRANSFORMERBUSHINGS-v3.jpg";
   }
   if (id.includes("long-rod") || id.includes("suspension")) {
     return "/images/LONGROD_INSULATORS.jpg";
