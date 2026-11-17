@@ -7,10 +7,9 @@ import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 import { stripLocalePrefix } from "@/lib/i18n";
 import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import { useLocale } from "@/components/locale-link";
+import { INTRO_ENABLED } from "@/lib/site-intro-config";
 
 const STORAGE_KEY = "tn-intro-v2";
-/** Kill switch — set `true` to re-enable the cinematic brand intro. */
-const INTRO_ENABLED = false;
 /** Soft floor so the brand beat can land — not an artificial long hold. */
 const MIN_MS = 850;
 /** Prefer completing near this mark when critical assets are ready. */

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { INTRO_ENABLED } from "../lib/site-intro-config";
 import {
   bodyLockSnapshot,
   declineConsent,
@@ -11,6 +12,7 @@ test.describe("site intro scroll lock", () => {
   test("after a normal intro, body is unlocked and the page scrolls", async ({
     page,
   }) => {
+    test.skip(!INTRO_ENABLED, "Intro parked (INTRO_ENABLED=false)");
     await declineConsent(page);
     await forceIntro(page);
     await page.goto("/en", { waitUntil: "domcontentloaded" });
@@ -35,6 +37,7 @@ test.describe("site intro scroll lock", () => {
   test("interrupted intro (reload mid-plate) still unlocks after", async ({
     page,
   }) => {
+    test.skip(!INTRO_ENABLED, "Intro parked (INTRO_ENABLED=false)");
     await declineConsent(page);
     await forceIntro(page);
     await page.goto("/en", { waitUntil: "domcontentloaded" });
