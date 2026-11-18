@@ -129,25 +129,27 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
             </RevealText>
           </h2>
 
-          {/* Cropped from the top, not the centre: the tallest column's
-              corona ring sits ~3% down the frame, so a centred 16:9 crop
-              decapitates it. Everything surrendered at the bottom is
-              ground clutter — parked cars, the compound fence. */}
-          <figure className="mt-10 md:mt-12">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl ring-1 ring-inset ring-brand-navy/10 md:aspect-[16/9] dark:ring-white/10">
-              <ImageReveal className="absolute inset-0">
-                <div className="cine-grade h-full w-full">
-                  <Image
-                    src={plate}
-                    alt="Composite post insulators, bushings and corona rings standing in an energised high-voltage switchyard at dusk"
-                    fill
-                    className="object-cover object-top"
-                    sizes="90vw"
-                    quality={92}
-                  />
-                </div>
-              </ImageReveal>
-            </div>
+          {/* Intrinsic sizing, no aspect box — the frame is never cropped.
+              A 16:9 plate was tried here first and read as broken: the
+              source is 4:3, so a letterbox cuts a quarter of the height,
+              and the columns lost the bases they stand on. The photograph
+              is of plant standing in a yard; cut its feet off and it stops
+              being that picture. Width is capped instead, so a 4:3 frame
+              at 1440 does not swallow the whole viewport. */}
+          <figure className="mt-10 max-w-4xl md:mt-12">
+            <ImageReveal className="overflow-hidden rounded-2xl ring-1 ring-inset ring-brand-navy/10 dark:ring-white/10">
+              <div className="cine-grade">
+                <Image
+                  src={plate}
+                  alt="Composite post insulators, bushings and corona rings standing in an energised high-voltage switchyard at dusk"
+                  width={1525}
+                  height={1135}
+                  className="block h-auto w-full"
+                  sizes="(max-width: 896px) 92vw, 896px"
+                  quality={92}
+                />
+              </div>
+            </ImageReveal>
             <figcaption className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
               In service — composite insulation on an energised switchyard
             </figcaption>
