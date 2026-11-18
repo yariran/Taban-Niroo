@@ -68,30 +68,127 @@
  * (invariant 1 in the component).
  */
 .stage {
+  /**
+   * `isolation` STAYS — it is about blend containment, not position. The
+   * frame carries `.cine-grade::after` (multiply) and `.grain-layer`
+   * (overlay); without isolation both reach for a backdrop that scrolls
+   * past behind them.
+   *
+   * The promotion that used to sit here does NOT stay. See the note on
+   * `.stickyStage` below — same reasoning, same removal.
+   */
   isolation: isolate;
-  transform: translateZ(0);
-  will-change: transform;
+
+  /**
+   * Whole-pixel width, at every viewport.
+   *
+   * The column is `(content - gap) * 1.15 / 2.15`, which is fractional at
+   * essentially every width — 504.93px inside the capped container, and
+   * something equally untidy below it. `aspect-ratio` then derives a
+   * fractional height (284.016px), and `object-contain` fits the 2000x640
+   * render by WIDTH, so the part is drawn at 504.93 x 161.577 and the whole
+   * comb sits on a fractional sub-pixel phase.
+   *
+   * Promotion (above) freezes that phase while the layer is only being
+   * moved, which is why this holds still during a scroll on a 2x display
+   * and measures pixel-identical there. It does not survive a re-raster:
+   * the layer is re-resolved against the device grid, the comb lands on a
+   * different phase, and the fins jump. On a display whose backing scale is
+   * not an integer — a scaled macOS mode, most phones — re-rasters are
+   * frequent enough that it reads as a continuous tremble.
+   *
+   * Snapping the width removes the cause rather than freezing it: an
+   * integer box width makes the rendered image an integer width too, so
+   * there is no fractional phase left to re-resolve. A 1px quantum is
+   * invisible in layout and works at any size, which a fixed px width
+   * would not.
+   *
+   * The unprefixed declaration first is the fallback: a browser without
+   * stepped-value functions ignores the second and keeps full width.
+   */
+  width: 100%;
+  width: round(down, 100%, 1px);
+  margin-inline: auto;
 }
 
 /**
- * The sticky node itself — its own compositor layer.
+ * The sticky node is deliberately NOT promoted. This reverses the previous
+ * pass, and the reversal is the point.
  *
- * `.stage` below promotes the FRAME, but the frame is not the thing that has
- * to be repositioned on every scroll frame; the sticky node is. Left
- * unpromoted, the engine recomputes the sticky offset on the main thread and
- * re-rasterises the subtree, and because `lg:items-center` centres a frame of
- * fractional height (284.016px in a 900px column -> top 307.992px) the result
- * lands between device pixel rows. On a 1x display that rounds to a different
- * row from frame to frame, which reads as the plate twitching up and down a
- * pixel while the page scrolls — on a 2x display it mostly disappears, which
- * is why it reproduces on some machines and not others.
+ * Both this rule and `.stage` used to carry `will-change: transform` plus
+ * `translateZ(0)`, added to stop the plate twitching. That reasoning had it
+ * backwards. An unpromoted element is PAINTED, and paint is snapped to the
+ * device pixel grid; a promoted element becomes a compositor layer that is
+ * TRANSLATED, and a translation is applied at sub-pixel precision. Because
+ * `lg:items-center` centres a frame of fractional height, the sticky offset
+ * is fractional at essentially every scroll position — so promoting the
+ * node did not freeze the sub-pixel phase, it granted it. The comb of thin
+ * silicone fins is a near-Nyquist periodic pattern and resolves differently
+ * at each phase, which is the trembling.
  *
- * Promoting the sticky node lets it be rasterised once and merely moved,
- * so the sub-pixel offset stays frozen instead of being re-resolved per
- * frame. Safe on the sticky element itself: a transform on an ANCESTOR is
- * what breaks sticky (invariant 1), not one on the sticky box.
+ * That also explains the two things the old note could not. It reproduced
+ * on phones as well as desktops, although Lenis is configured
+ * `syncTouch: false` and does not drive touch scroll at all — so a
+ * smooth-scroll library was never the common factor; the promotion was,
+ * and it is in the stylesheet on every platform. And the symptom kept
+ * coming back after each fix, because each fix added more promotion.
+ *
+ * Cost of removing it: the blended descendants are repainted while the
+ * section scrolls rather than being composited from a cached raster. That
+ * is affordable here — the renders are now served at ~1:1 for the box
+ * (see `sizes` in the component), so the repaint is close to a blit.
+ *
+ * If this is ever re-promoted, the fractional centring has to go first, or
+ * the tremble comes back with it.
  */
 .stickyStage {
-  will-change: transform;
-  transform: translateZ(0);
+  /**
+   * Both are initial values, written out rather than deleted. An empty rule
+   * can be dropped by a minifier, and CSS Modules would then stop exporting
+   * `stickyStage`, putting `undefined` into the element's class list. Stating
+   * them also makes the intent legible to the next person and refuses any
+   * promotion a later global rule might hand this node.
+   */
+  transform: none;
+  will-change: auto;
+}
+
+/**
+ * The pinned offset, at `lg` and up.
+ *
+ * This is the third and last mechanism that was moving the plate, and the
+ * only one that moved it VERTICALLY by construction rather than by
+ * rounding. The column used to be `h-[100dvh]` with `items-center`:
+ *
+ *   offset = (100dvh - frameHeight) / 2
+ *
+ * Every term in that is hostile. `dvh` is the DYNAMIC viewport: on a phone
+ * it changes the moment the address bar collapses or returns, so the
+ * column resized mid-scroll and the centred frame slid up and down with
+ * it — which is the symptom, on the platform where it was most obvious.
+ * `frameHeight` is `width * 9/16` and fractional. And the division by two
+ * turns any odd viewport height into a half-pixel offset, which no amount
+ * of pixel-snapping elsewhere can remove, because the fraction is created
+ * after the snap.
+ *
+ * So the offset is no longer derived from anything. It is a constant,
+ * snapped to a whole pixel by `round()`, holding the frame near the
+ * vertical middle on a normal laptop without ever being recomputed from
+ * the viewport as it scrolls. `svh` — the SMALL viewport, which is static
+ * — is used rather than `dvh`, so a collapsing toolbar cannot reach it
+ * even through the snap.
+ *
+ * 142px is half the frame at the capped column width (504 * 9/16 / 2 =
+ * 141.75). Between 1024px and 1152px the column is narrower and the frame
+ * sits a little above centre; that is a fixed, invisible offset, and it is
+ * worth it for a pin that cannot move.
+ *
+ * The plain `top` first is the fallback for a browser without
+ * stepped-value functions: still an integer, just not centred.
+ */
+@media (min-width: 1024px) {
+  .stickyStage {
+    top: 112px;
+    top: round(down, calc(50svh - 142px), 1px);
+  }
 }

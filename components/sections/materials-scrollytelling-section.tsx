@@ -296,15 +296,29 @@ export function MaterialsScrollytellingSection({
               "order-first",
               !staticLayout && styles.stickyStage,
               !staticLayout &&
-                // Stick below the fixed header on phones; full viewport
-                // column on desktop. `top` must clear SiteHeader (~3.5–4rem).
-                "sticky top-[4.25rem] z-[5] -mx-1 bg-background px-1 pb-3 pt-1 md:top-[4.75rem] lg:order-last lg:top-0 lg:mx-0 lg:flex lg:h-[100dvh] lg:items-center lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0",
+                /*
+                  Stick below the fixed header on phones; `top` must clear
+                  SiteHeader (~3.5-4rem). Those offsets are whole rem, so
+                  the pinned position below `lg` is already an integer.
+
+                  At `lg` this used to be `h-[100dvh] flex items-center`:
+                  a dynamic-height column with the frame centred in it.
+                  Both halves moved the frame. `dvh` IS the dynamic
+                  viewport, so every time a mobile toolbar collapsed the
+                  column resized and the centred frame slid; and centring
+                  divides by two, so on any odd viewport height the offset
+                  landed on a half pixel. The pin is now a plain snapped
+                  `top` in the module — no dynamic unit, no division.
+                */
+                "sticky top-[4.25rem] z-[5] -mx-1 bg-background px-1 pb-3 pt-1 md:top-[4.75rem] lg:order-last lg:mx-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0",
             )}
           >
             <div
               className={cn(
                 styles.stage,
-                "cine-grade relative aspect-[16/9] max-h-[min(48vh,22rem)] w-full overflow-hidden rounded-[1.25rem] bg-brand-navy-deep shadow-elevate md:max-h-[min(52vh,26rem)] lg:max-h-none",
+                /* No `w-full` — `.stage` owns width so it can snap it to
+                   whole pixels at any viewport. See the module. */
+                "cine-grade relative aspect-[16/9] max-h-[min(48vh,22rem)] overflow-hidden rounded-[1.25rem] bg-brand-navy-deep shadow-elevate md:max-h-[min(52vh,26rem)] lg:max-h-none",
               )}
             >
               {/* technical grid, masked to centre — house vocabulary, not a gradient */}
@@ -405,7 +419,25 @@ export function MaterialsScrollytellingSection({
                     alt=""
                     aria-hidden
                     fill
-                    sizes="(min-width: 1024px) 45vw, 92vw"
+                    /*
+                      Measured, not guessed. The stage column is
+                      (content - gap) * 1.15/2.15, and `max-w-6xl` caps
+                      the container, so above ~1312px the box STOPS
+                      growing at ~505px — it does not keep tracking the
+                      viewport. `45vw` claimed 648px at 1440 and 864px at
+                      1920, so the optimiser served w=1600 into a 505px
+                      box and the compositor re-reduced it 1600 -> 1010
+                      (0.63x) on every raster. A shed comb is a periodic
+                      row of thin fins near the sampling limit; reducing
+                      it by a fractional ratio aliases, and the alias
+                      pattern moves with the raster's sub-pixel phase —
+                      which is the trembling, and why it depends on the
+                      display's backing scale rather than on the code.
+                      Stating the real width lets the optimiser do the
+                      reduction once, offline, with a proper filter, and
+                      leaves the compositor at ~1:1.
+                    */
+                    sizes="(min-width: 1152px) 504px, (min-width: 1024px) calc(53.5vw - 110px), 92vw"
                     quality={92}
                     /*
                       All four load with the section, not on intersection.
@@ -420,38 +452,55 @@ export function MaterialsScrollytellingSection({
                     priority={step.id === "core"}
                     loading={step.id === "core" ? undefined : "eager"}
                     /*
-                      THE SWAP IS A CUT, NOT A DISSOLVE. Exactly one render
-                      is visible at any instant, and that is the whole point
-                      — do not reintroduce `transition-opacity` here.
+                      THE SWAP IS A RELAY, NOT A CUT AND NOT A DISSOLVE.
+                      The outgoing render fades to nothing first; only once
+                      it is gone does the incoming one fade up. The delay on
+                      the lit state is exactly the fade-out duration, so the
+                      two are never on screen together at partial opacity.
 
-                      These four files are separate 3D renders, not one
-                      render recoloured. Registration (see the note on the
-                      stack below) got their shed combs onto the same x and
-                      the same vertical extent, but the residual is ~1–2px
-                      at display size and it is not removable by any single
-                      transform: the renders disagree non-uniformly along
-                      the body, so a global fit halves the error and then
-                      stalls. Measured along four windows of the body, the
-                      shed top edge still spreads 4–9 source px.
+                      This replaces the cut deliberately, and the note that
+                      used to stand here — "do not reintroduce
+                      transition-opacity" — was right about the hazard and
+                      wrong about the remedy.
 
-                      A dissolve makes that residual impossible to hide,
-                      because for ~500ms BOTH shed combs are on screen at
-                      partial opacity, 1–2px apart. On a stack of thin fins
-                      that doubles every tip, and as the opacities cross the
-                      doubling slides — which reads as the part trembling up
-                      and down. It is only ever visible at a layer change,
-                      which is exactly when the dissolve runs.
+                      The hazard it named is real: these four files are
+                      separate 3D renders, not one render recoloured, and a
+                      conventional dissolve puts BOTH shed combs on screen
+                      at partial opacity for the whole crossfade. On a stack
+                      of thin fins a few px out of register that doubles
+                      every tip, and the doubling slides as the opacities
+                      cross. A relay cannot do that: at every instant at
+                      most one render is above zero opacity.
 
-                      Cutting removes the superimposition entirely, so the
-                      artefact cannot occur at any residual. What is left is
-                      a single-frame silhouette change of 1–2px, with no
-                      second copy on screen to measure it against — which is
-                      why the cut reads as the highlight moving rather than
-                      as the part moving.
+                      The cut avoided the doubling but kept the comparison.
+                      Measured here with the highlight glow excluded
+                      (alpha > 200, so a soft halo cannot skew it), the
+                      renders disagree far more than the old note assumed —
+                      the drawn body spans 229 to 244 source px across the
+                      four, with per-column edge deviations above 100px,
+                      because each render cuts away a different layer. They
+                      are not one part in four colours, so no transform
+                      registers them; a scale fitted to the soft silhouette
+                      just fits the halo. With a cut, those two different
+                      pictures occupy consecutive frames at the same place,
+                      and consecutive frames are exactly what the eye reads
+                      as motion. That is the jump.
+
+                      The relay removes the thing the eye needs. Between the
+                      two renders there is a beat with nothing on the plate,
+                      so there is no frame-to-frame correspondence to
+                      interpret as the part moving — and still no instant
+                      where two combs overlap.
+
+                      If these are ever re-exported from one camera with
+                      only the highlight changing, a plain cut becomes
+                      correct again and this can go.
                     */
                     className={cn(
-                      "object-contain",
-                      on(step.id) ? "opacity-100" : "opacity-0",
+                      "object-contain motion-reduce:transition-none",
+                      on(step.id)
+                        ? "opacity-100 transition-opacity duration-150 ease-in [transition-delay:150ms]"
+                        : "opacity-0 transition-opacity duration-150 ease-out [transition-delay:0ms]",
                     )}
                   />
                 ))}
