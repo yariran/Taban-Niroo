@@ -1,10 +1,14 @@
 "use client";
 
+import Image from "next/image";
+
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
+import { ImageReveal } from "@/components/ui/image-reveal";
 import { useLocale } from "@/components/locale-link";
 import type { ContentBlock } from "@/lib/cms-content";
-import { cmsText } from "@/lib/cms-resolve";
+import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
+import { SITE_IMAGES } from "@/lib/site-images";
 import { cn } from "@/lib/utils";
 
 /**
@@ -20,6 +24,17 @@ import { cn } from "@/lib/utils";
  * `WhyTabanSection`: eyebrow + display heading, then a hairline-divided
  * list. Vision and Mission read as two long-form statements; Values sit
  * underneath as a numbered grid.
+ *
+ * One establishing plate sits between the heading and that body — the
+ * client's switchyard photograph, which is the headline's literal
+ * subject. It is placed here rather than beside the heading because the
+ * source is 4:3 and a side-by-side column would stand roughly twice the
+ * height of the display lockup; and rather than lower down, because a
+ * plate dropped between Mission and Values reads as a divider instead
+ * of as the chapter's opening image. `CEOSection` closes directly above
+ * on a full-bleed frame that dissolves into the background, so this one
+ * stays contained, hairlined and captioned — a different object, not a
+ * second band.
  */
 
 type Value = {
@@ -79,6 +94,7 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
   );
   /** `ContentBlock` has a single body slot — vision owns it, mission stays fixed. */
   const mission = MISSION;
+  const plate = cmsImage(cms, SITE_IMAGES.visionSwitchyard) ?? SITE_IMAGES.visionSwitchyard;
 
   const cmsItems = cms?.items?.filter((i) => i.label.trim() && i.body?.trim()) ?? [];
   const values: readonly Value[] =
@@ -112,6 +128,30 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
               {title}
             </RevealText>
           </h2>
+
+          {/* Cropped from the top, not the centre: the tallest column's
+              corona ring sits ~3% down the frame, so a centred 16:9 crop
+              decapitates it. Everything surrendered at the bottom is
+              ground clutter — parked cars, the compound fence. */}
+          <figure className="mt-10 md:mt-12">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl ring-1 ring-inset ring-brand-navy/10 md:aspect-[16/9] dark:ring-white/10">
+              <ImageReveal className="absolute inset-0">
+                <div className="cine-grade h-full w-full">
+                  <Image
+                    src={plate}
+                    alt="Composite post insulators, bushings and corona rings standing in an energised high-voltage switchyard at dusk"
+                    fill
+                    className="object-cover object-top"
+                    sizes="90vw"
+                    quality={92}
+                  />
+                </div>
+              </ImageReveal>
+            </div>
+            <figcaption className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              In service — composite insulation on an energised switchyard
+            </figcaption>
+          </figure>
 
           <div className="mt-12 grid gap-10 border-t border-border pt-10 md:mt-16 md:grid-cols-2 md:gap-16 md:pt-12">
             <RevealBlock>

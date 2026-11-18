@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { HOME_CHAPTERS } from "../lib/home-chapters";
+import { INTRO_ENABLED } from "../lib/site-intro-config";
 import { declineConsent, forceIntro, skipIntroViaTestFlag } from "./helpers/intro";
 
 /**
@@ -79,11 +80,21 @@ test.describe("sticky sections", () => {
   test("philosophy stage sticks to the viewport top", async ({ page }) => {
     // Exercise the real intro unlock path, then assert sticky — do not
     // sessionStorage-skip the plate (that hid the scroll-lock bug).
+    //
+    // While the plate is parked (`INTRO_ENABLED=false`) there is no unlock
+    // path to exercise and `[data-site-intro]` never mounts, so that preamble
+    // is skipped rather than asserted. The sticky checks below are the point
+    // of this test and must keep running either way — they guard the
+    // `overflow-x: clip` / `overflow-y: visible` pairing, which has nothing to
+    // do with the intro.
     await declineConsent(page);
-    await forceIntro(page);
+    if (INTRO_ENABLED) await forceIntro(page);
+    else await skipIntroViaTestFlag(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
-    await expect(page.locator("[data-site-intro]")).toBeVisible();
+    if (INTRO_ENABLED) {
+      await expect(page.locator("[data-site-intro]")).toBeVisible();
+    }
     await expect(page.locator("[data-site-intro]")).toHaveCount(0, {
       timeout: 12_000,
     });
@@ -115,12 +126,15 @@ test.describe("sticky sections", () => {
 
     const top = await page.evaluate(() => {
       const phil = document.querySelector("#philosophy") as HTMLElement;
-      const track = phil.querySelector(
-        'div[style*="160vh"]',
-      ) as HTMLElement | null;
-      if (!track) return null;
-      const stage = track.querySelector(".sticky") as HTMLElement | null;
+      // Find the sticky stage first and take the runway from it, rather than
+      // matching the runway's inline height. That string has already drifted
+      // once — the track is sized in `svh` now, so the old
+      // `div[style*="160vh"]` selector matched nothing and this probe
+      // returned null instead of failing on the sticky offset it guards.
+      const stage = phil?.querySelector(".sticky") as HTMLElement | null;
       if (!stage) return null;
+      const track = stage.parentElement as HTMLElement | null;
+      if (!track) return null;
       const trackTop = window.scrollY + track.getBoundingClientRect().top;
       // 30% into the runway is comfortably inside the stick window.
       const target = trackTop + track.offsetHeight * 0.3;

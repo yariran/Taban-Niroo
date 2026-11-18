@@ -83,9 +83,11 @@ test.describe("i18n locale switch", () => {
   }) => {
     test.skip(FA_LOCALE_ENABLED, "Only applies while FA is parked");
     await gotoReady(page, "/en/products");
-    const persian = page
-      .getByLabel("Persian version is coming soon")
-      .first();
+    // The parked control is a `<button lang="fa">` whose accessible name is
+    // Persian too ("the Persian version is coming soon") — see
+    // `components/language-switcher.tsx`. Matching the English sentence the
+    // control never carried is what made this test fail.
+    const persian = page.getByLabel("نسخه فارسی به زودی").first();
     await expect(persian).toBeVisible();
     await expect(persian).not.toHaveAttribute("href");
     await expect(

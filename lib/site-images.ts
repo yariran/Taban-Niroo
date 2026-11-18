@@ -26,6 +26,15 @@ export const SITE_IMAGES = {
   projectServices: "/images/project-services-panel.png",
   projectsHero: "/images/hero-main.jpg",
   aboutHero: "/images/about-hero-towers.jpg",
+  /**
+   * Company page, Vision chapter. Supplied by the client for the
+   * "Built to carry the grid, not the quarter." spread — composite
+   * insulation standing in a live switchyard, which is the headline's
+   * literal subject. Source arrived with a baked-in white picture
+   * frame; the file here is trimmed to the photograph itself, so the
+   * plate's own ring is the only border on screen.
+   */
+  visionSwitchyard: "/images/vision-switchyard.jpg",
   testimonials: "/images/ceo-closing-factory-v2.jpg",
   ceoPortrait: "/images/ceo-letter-portrait-v5.jpg",
   newRelease: "/images/new-release-line-post-insulator.jpg",

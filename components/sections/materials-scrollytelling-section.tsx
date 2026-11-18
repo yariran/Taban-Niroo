@@ -338,17 +338,43 @@ export function MaterialsScrollytellingSection({
                 other as the opacities cross. It does not read as a slide;
                 it reads as the part vibrating in place. That was the bug.
 
-                So the files in `public/images/insulator/` are now registered
+                So the files in `public/images/insulator/` are registered
                 ON THE SHED COMB, not the bounding box: integer-pixel
                 translations only (no resampling) onto the shared 2000x640
-                canvas, junction as the reference. Residual comb offset is
-                0px for all four; alpha-mask disagreement against junction
-                fell from 12.2%/7.6%/6.8% to 5.3%/3.8%/6.7% (what is left is
-                genuine — the gold glow each render adds around the layer it
-                highlights).
+                canvas.
 
-                If a render is ever re-exported, re-check the comb offset
-                before committing it. Matching bounding boxes is not enough.
+                That pass fixed the horizontal axis and left the vertical
+                one. It was verified with an ALPHA-MASK DISAGREEMENT scan,
+                and that metric cannot register these renders: each one adds
+                a gold glow around the layer it highlights, so the masks
+                differ by 8-14% whatever the offset, and the minimum sits
+                wherever the glow is — not where the part is. Scanning
+                +/-14px moved junction's disagreement from 14.2% to 14.0%.
+                A flat basin like that is not a measurement.
+
+                Measure the COMB'S ALPHA MID-LINE instead — the midpoint
+                between the first and last row carrying shed, over a fixed
+                column window (x 560-1440) that excludes the end fittings,
+                since those legitimately differ per render. On `-v3` that
+                read core 315, housing 316, fittings 318, junction 320: the
+                shed stack drifted 5px down across the four, ~1.3 CSS px on
+                the desktop stage and 3 device px on a 2x display. Because
+                the swap is a cut, the whole part appeared to tick downward
+                at each layer change — reported as the stage shaking, and
+                the reason this file has been edited for that symptom more
+                than once.
+
+                `-v4` shifts housing/fittings/junction up by 1/3/5px (core
+                unchanged, re-encoded through the same settings so all four
+                match). Comb mid is now 315 for all four; comb top spans
+                88/87/88/89 and bottom 542/543/542/541, down from a 6px
+                spread to 2px. What is left is shed DIAMETER, not position —
+                the renders are not the same size, and no translation fixes
+                that.
+
+                If a render is ever re-exported, re-check the comb mid-line
+                before committing it. Matching bounding boxes is not enough,
+                and neither is alpha-mask overlap.
 
                 The SVG callouts that used to live here went with the
                 drawing: their leader lines were positioned against the old
@@ -364,7 +390,8 @@ export function MaterialsScrollytellingSection({
                   <Image
                     key={step.id}
                     /*
-                      `-v3` is the registration pass, and the suffix is the
+                      `-v4` is the vertical registration pass, and the
+                      suffix is the
                       point: Next's image optimiser keys its cache on the
                       SOURCE PATH, not the file's bytes or mtime. Re-saving
                       `core.webp` in place left every running dev server and
@@ -374,7 +401,7 @@ export function MaterialsScrollytellingSection({
                       width it had never served before. Bump the suffix
                       whenever these renders are re-exported.
                     */
-                    src={`/images/insulator/${step.id}-v3.webp`}
+                    src={`/images/insulator/${step.id}-v4.webp`}
                     alt=""
                     aria-hidden
                     fill
