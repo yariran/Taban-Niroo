@@ -143,7 +143,7 @@ export function VisionValuesSection({ cms }: { cms?: ContentBlock } = {}) {
                     fill
                     className="object-cover object-top"
                     sizes="90vw"
-                    quality={88}
+                    quality={92}
                   />
                 </div>
               </ImageReveal>
