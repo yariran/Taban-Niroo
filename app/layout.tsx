@@ -22,11 +22,30 @@ const inter = Inter({
   preload: true,
 });
 
+/**
+ * No `weight` here, deliberately.
+ *
+ * Oswald is a VARIABLE font (`wght` 200-700). Asking Google for static
+ * instances of a variable family — which `weight: ["500","600","700"]`
+ * did — makes the CSS API answer with dynamic-subset URLs of the form
+ * `fonts.gstatic.com/l/font?kit=...&skey=...&v=v57`. Turbopack's font
+ * replacer only understands the static `/s/<family>/...woff2` form and
+ * rejects anything carrying more than one query entry, so every cold
+ * dev start filled the console with
+ * "Can't resolve '@vercel/turbopack-next/internal/font/google/font'".
+ * It survived a while only because an older, static response was cached
+ * in `.next`.
+ *
+ * Omitting `weight` requests the variable file instead, served from the
+ * static path. Nothing is lost: the three weights this site actually
+ * uses on the Oswald role — 500, 600 and 700 — all sit inside the axis.
+ * `Inter` above is variable and already declared this way, which is why
+ * it never produced the error.
+ */
 const oswald = Oswald({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-oswald",
-  weight: ["500", "600", "700"],
   preload: true,
 });
 
@@ -242,8 +261,30 @@ export default async function RootLayout({
       className={`${inter.variable} ${oswald.variable} ${estedad.variable} ${vazirmatnLocal.variable} ${locale === "fa" ? vazirmatnLocal.className : inter.className}`}
       suppressHydrationWarning
     >
+      {/*
+        `suppressHydrationWarning` here is for BROWSER EXTENSIONS, not for
+        anything this app renders. Grammarly and friends write their own
+        attributes onto <body> (`data-gr-ext-installed`,
+        `data-new-gr-c-s-check-loaded`) before React hydrates, and React
+        reports the difference as a hydration mismatch in every console
+        that has one installed. Nothing in the page is actually wrong, and
+        there is no way to stop an extension touching the document.
+
+        The flag on <html> above does not cover this: it is ONE LEVEL deep
+        — an element's own attributes and its direct text children — so it
+        guards <html> (which `ThemeProvider` writes a theme class onto
+        before hydration) and nothing below it. <body> needs its own.
+
+        What this costs: a genuine mismatch in <body>'s OWN attributes
+        would no longer warn. That is a narrow blind spot — the only
+        attribute here is a className derived from `locale`, which is
+        resolved on the server from the route segment and cannot differ on
+        the client. Mismatches anywhere inside the body still report
+        normally.
+      */}
       <body
         className={locale === "fa" ? "font-fa antialiased" : "font-sans antialiased"}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"
