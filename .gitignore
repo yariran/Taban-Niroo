@@ -49,3 +49,6 @@ next-env.d.ts
 
 # local debug screenshots
 .tmp-*.png
+
+# local Claude Code scratch
+/.claude/pr-body.md
