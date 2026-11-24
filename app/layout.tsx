@@ -1,6 +1,5 @@
 import React from "react";
 import type { Metadata, Viewport } from "next";
-import { Inter, Oswald } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/lenis-provider";
 import { CookieConsent } from "@/components/cookie-consent";
@@ -12,42 +11,8 @@ import { ORGANIZATION_SAME_AS, brandMark, hreflangAlternates, pageSeoCopy } from
 import { getLocale } from "@/lib/i18n/get-dictionary";
 import { dirFor, localeHtmlLang, localeOg } from "@/lib/i18n";
 import { estedad, vazirmatnLocal } from "@/lib/fonts-fa";
+import { inter, oswald } from "@/lib/fonts-latin";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-  adjustFontFallback: true,
-  preload: true,
-});
-
-/**
- * No `weight` here, deliberately.
- *
- * Oswald is a VARIABLE font (`wght` 200-700). Asking Google for static
- * instances of a variable family — which `weight: ["500","600","700"]`
- * did — makes the CSS API answer with dynamic-subset URLs of the form
- * `fonts.gstatic.com/l/font?kit=...&skey=...&v=v57`. Turbopack's font
- * replacer only understands the static `/s/<family>/...woff2` form and
- * rejects anything carrying more than one query entry, so every cold
- * dev start filled the console with
- * "Can't resolve '@vercel/turbopack-next/internal/font/google/font'".
- * It survived a while only because an older, static response was cached
- * in `.next`.
- *
- * Omitting `weight` requests the variable file instead, served from the
- * static path. Nothing is lost: the three weights this site actually
- * uses on the Oswald role — 500, 600 and 700 — all sit inside the axis.
- * `Inter` above is variable and already declared this way, which is why
- * it never produced the error.
- */
-const oswald = Oswald({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-oswald",
-  preload: true,
-});
 
 const siteUrl = getSiteUrl();
 
