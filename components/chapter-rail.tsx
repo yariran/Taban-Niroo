@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 type Chapter = {
   /** Sentinel id to look for in the DOM (a `[data-chapter-id]` element). */
@@ -43,6 +45,7 @@ type Chapter = {
  */
 export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
   const [active, setActive] = useState(0);
+  const dict = getDictionarySync(useLocale());
   const [reduceMotion, setReduceMotion] = useState(false);
   const rafRef = useRef<number | null>(null);
 
@@ -100,7 +103,7 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
 
   return (
     <aside
-      aria-label="Chapter navigation"
+      aria-label={dict.ui.chapterNavAria}
       className="pointer-events-none fixed end-5 top-1/2 z-40 hidden -translate-y-1/2 lg:block"
     >
       <ul className="flex flex-col gap-3">
@@ -157,7 +160,7 @@ export function ChapterRail({ chapters }: { chapters: readonly Chapter[] }) {
               <button
                 type="button"
                 onClick={() => handleJump(c.id)}
-                aria-label={`Jump to ${c.title}`}
+                aria-label={dict.ui.jumpTo.replace("{title}", c.title)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "pointer-events-auto block h-[1.5px] rounded-full",

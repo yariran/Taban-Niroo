@@ -8,6 +8,7 @@ import { RevealUp } from "@/components/ui/reveal-words";
 import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE, STATEMENT } from "@/lib/motion-roles";
 import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
@@ -29,6 +30,7 @@ const GALLERY_ALTS = [
 
 export function PlantSection({ cms }: { cms?: ContentBlock } = {}) {
   const locale = useLocale();
+  const dict = getDictionarySync(locale);
 
   const eyebrow = cmsText(cms, "eyebrow", "Manufacturing");
   const title = cmsText(cms, "title", "On the factory floor.");
@@ -44,7 +46,7 @@ export function PlantSection({ cms }: { cms?: ContentBlock } = {}) {
   }));
 
   return (
-    <section id="plant" className="bg-background" aria-label="On the factory floor">
+    <section id="plant" className="bg-background" aria-label={dict.sections.plantAria}>
       <Beat className="px-6 pb-10 pt-16 md:px-12 md:pb-12 md:pt-24 lg:px-20">
         <div className="mx-auto max-w-5xl">
           <RevealBlock delayMs={BEAT.first} distance={EVIDENCE.distance}>
@@ -117,7 +119,7 @@ export function PlantSection({ cms }: { cms?: ContentBlock } = {}) {
 
         <div className="mt-5 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground md:text-xs">
           <span aria-hidden className="inline-block h-px w-6 bg-current opacity-60" />
-          <span>Scroll or drag to pan</span>
+          <span>{dict.sections.panHint}</span>
           <span aria-hidden className="inline-block h-px w-6 bg-current opacity-60" />
         </div>
       </Beat>

@@ -27,6 +27,8 @@ import {
 } from "./map-geometry";
 import { MAP_MARKER, MAP_MOTION, MAP_VIEWBOX } from "./map-config";
 import styles from "./industrial-world-map.module.css";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 /** The eleven markets, in atlas order, for the marker and label layers. */
 const MARKET_SHAPES = COUNTRY_SHAPES.filter((shape) => shape.interactiveKey);
@@ -59,6 +61,7 @@ export function IndustrialWorldMap({
   idPrefix = "tn-world-map",
   markets = COUNTRY_DATA,
 }: IndustrialWorldMapProps) {
+  const dict = getDictionarySync(useLocale());
   const [activeCountryKey, setActiveCountryKey] =
     useState<InteractiveCountryKey | null>(null);
   /*
@@ -163,10 +166,10 @@ export function IndustrialWorldMap({
         {!embedded ? (
           <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-6 pt-8 md:px-12 lg:px-20">
             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-brand-orange/80">
-              Global delivery footprint
+              {dict.map.title}
             </p>
             <h2 className="mt-2 max-w-3xl text-2xl font-semibold tracking-tight text-white sm:text-3xl lg:text-4xl">
-              Power infrastructure cooperation network
+              {dict.map.subtitle}
             </h2>
           </div>
         ) : null}
@@ -197,7 +200,7 @@ export function IndustrialWorldMap({
               viewBox={`0 0 ${MAP_VIEWBOX.width} ${MAP_VIEWBOX.height}`}
               preserveAspectRatio="xMidYMid meet"
               role="group"
-              aria-label="Interactive world map showing selected project markets"
+              aria-label={dict.map.aria}
               onClick={onMapClick}
             >
               <defs>
@@ -387,7 +390,7 @@ export function IndustrialWorldMap({
           {!activeCountryKey ? (
             <p className="pointer-events-none absolute bottom-3 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-slate-300 sm:flex">
               <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-brand-orange" />
-              Select a highlighted market
+              {dict.map.selectHint}
             </p>
           ) : null}
 

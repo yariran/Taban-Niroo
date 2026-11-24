@@ -9,6 +9,7 @@ import { cmsText } from "@/lib/cms-resolve";
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { ImageReveal } from "@/components/ui/image-reveal";
 import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import {
   philosophyStaticClamp,
   philosophyStickyClamp,
@@ -27,6 +28,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
   const stageRef = useRef<HTMLDivElement>(null);
   const reduceMotion = usePrefersReducedMotion();
   const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const isRtl = locale === "fa";
   const enterOuter = isRtl ? 100 : -100;
   const enterInner = isRtl ? -100 : 100;
@@ -172,7 +174,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                     <ImageReveal className="absolute inset-0" delayMs={120}>
                       <Image
                         src={SITE_IMAGES.philosophyLongRod}
-                        alt="Long rod and transmission network insulators"
+                        alt={dict.sections.longRodAlt}
                         fill
                         className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                         sizes="45vw"
@@ -182,7 +184,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                   ) : (
                     <Image
                       src={SITE_IMAGES.philosophyLongRod}
-                      alt="Long rod and transmission network insulators"
+                      alt={dict.sections.longRodAlt}
                       fill
                       className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                       sizes="45vw"
@@ -209,7 +211,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                     <ImageReveal className="absolute inset-0" delayMs={220}>
                       <Image
                         src={SITE_IMAGES.philosophyPost}
-                        alt="Post and hybrid insulators"
+                        alt={dict.sections.postHybridAlt}
                         fill
                         className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                         sizes="45vw"
@@ -219,7 +221,7 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
                   ) : (
                     <Image
                       src={SITE_IMAGES.philosophyPost}
-                      alt="Post and hybrid insulators"
+                      alt={dict.sections.postHybridAlt}
                       fill
                       className="object-contain object-center p-1.5 sm:p-2 md:p-3"
                       sizes="45vw"
@@ -245,11 +247,10 @@ export function PhilosophySection({ cms }: { cms?: ContentBlock } = {}) {
           stagger={90}
         >
           <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-            Product range
+            {dict.productsUi.rangeLabel}
           </p>
           <p className="mt-6 text-balance text-lg leading-relaxed text-muted-foreground md:mt-8 md:text-xl lg:text-2xl">
-            High-voltage composite accessories. Long rod, post, hybrid
-            insulators. Transformer bushings. IEC-tested. 6-1000 kV.
+            {dict.sections.philosophySummary}
           </p>
         </RevealBlock>
       </div>

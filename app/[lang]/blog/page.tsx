@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink } from "@/components/locale-link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { RnDCinemaOpening } from "@/components/sections/rnd-cinema-opening";
@@ -11,7 +11,8 @@ import { PatentsSection } from "@/components/sections/patents-section";
 import { getPublishedPosts } from "@/lib/cms-blog";
 import { getSiteContent } from "@/lib/cms-content";
 import { pageSocialFor } from "@/lib/seo";
-import { localeFromParams } from "@/lib/i18n";
+import { isBlogEnabledForLocale, localeFromParams } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 
 export async function generateMetadata({
   params,
@@ -19,7 +20,10 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const lang = await localeFromParams(params);
-  return pageSocialFor("blog", lang);
+  // The page stays reachable, but an empty index should not be indexed.
+  return pageSocialFor("blog", lang, {
+    noIndex: !isBlogEnabledForLocale(lang),
+  });
 }
 
 export default async function BlogPage({
@@ -28,9 +32,10 @@ export default async function BlogPage({
   params: Promise<{ lang: string }>;
 }) {
   const lang = await localeFromParams(params);
-  const [posts, content] = await Promise.all([
+  const [posts, content, dict] = await Promise.all([
     getPublishedPosts(lang),
     getSiteContent(lang),
+    getDictionary(lang),
   ]);
   return (
     <main id="main-content" className="min-h-screen bg-background">
@@ -65,7 +70,7 @@ export default async function BlogPage({
                   key={post.id}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-background/60 backdrop-blur"
                 >
-                  <Link
+                  <LocaleLink
                     href={`/blog/${post.slug}`}
                     className="relative block aspect-[16/10] overflow-hidden bg-brand-navy-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-burgundy"
                     aria-label={post.title}
@@ -84,7 +89,7 @@ export default async function BlogPage({
                         aria-hidden
                       />
                     )}
-                  </Link>
+                  </LocaleLink>
                   <div className="flex flex-1 flex-col justify-between p-6">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-widest text-brand-burgundy">
@@ -100,12 +105,12 @@ export default async function BlogPage({
                           : "Article"}
                       </p>
                       <h2 className="mt-3 text-xl font-semibold text-brand-navy">
-                        <Link
+                        <LocaleLink
                           href={`/blog/${post.slug}`}
                           className="hover:underline underline-offset-2"
                         >
                           {post.title}
-                        </Link>
+                        </LocaleLink>
                       </h2>
                       {post.excerpt ? (
                         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -113,12 +118,12 @@ export default async function BlogPage({
                         </p>
                       ) : null}
                     </div>
-                    <Link
+                    <LocaleLink
                       href={`/blog/${post.slug}`}
                       className="mt-6 text-xs font-medium uppercase tracking-wider text-brand-burgundy hover:text-brand-burgundy-strong"
                     >
                       Read article →
-                    </Link>
+                    </LocaleLink>
                   </div>
                 </article>
               ))}
@@ -126,26 +131,24 @@ export default async function BlogPage({
           ) : (
             <div className="mx-auto max-w-xl rounded-2xl border border-border/80 px-6 py-14 text-center">
               <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                R&amp;D notes
+                {dict.sections.blogEmptyEyebrow}
               </p>
               <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                Technical articles on composite insulation, IEC testing, and
-                field performance will appear here. Meanwhile, explore the
-                product catalogue or send a project enquiry.
+                {dict.sections.blogEmptyBody}
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Link
+                <LocaleLink
                   href="/products"
                   className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
                 >
-                  View products
-                </Link>
-                <Link
+                  {dict.home.explore}
+                </LocaleLink>
+                <LocaleLink
                   href="/contact"
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-brand-navy/25 px-5 py-2.5 text-sm font-medium text-brand-navy transition-colors hover:border-brand-navy/50 hover:bg-brand-navy-soft"
                 >
-                  Contact engineering
-                </Link>
+                  {dict.sections.contactEngineering}
+                </LocaleLink>
               </div>
             </div>
           )}

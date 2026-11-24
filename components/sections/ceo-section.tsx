@@ -8,6 +8,7 @@ import { ImageReveal } from "@/components/ui/image-reveal";
 import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE, STATEMENT } from "@/lib/motion-roles";
 import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
@@ -39,6 +40,7 @@ export function CEOSection({
   withClosing?: boolean;
 } = {}) {
   const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const eyebrow = cmsText(cms, "eyebrow", "Leadership");
   const title = cmsText(cms, "title", "A Message from the CEO");
   const defaultBody = [
@@ -105,7 +107,7 @@ export function CEOSection({
               >
                 <Image
                   src={image}
-                  alt="Asadollah Zamani, CEO of Taban Niroo"
+                  alt={dict.ceo.portraitAlt}
                   fill
                   className="object-cover object-top"
                   sizes="(max-width: 1024px) 400px, 420px"
@@ -115,10 +117,10 @@ export function CEOSection({
               </div>
               <figcaption className="mt-5 border-t border-border/50 pt-4 dark:border-white/[0.08]">
                 <p className="font-hero-slogan text-sm font-semibold uppercase tracking-[0.14em] text-brand-navy">
-                  Asadollah Zamani
+                  {dict.ceo.name}
                 </p>
                 <p className="mt-1.5 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-                  Chief Executive Officer
+                  {dict.ceo.role}
                 </p>
                 {/* `/80` measured 3.75:1 light on 10px — under 4.5. */}
                 <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -163,10 +165,10 @@ export function CEOSection({
               />
               <div>
                 <p className="font-hero-slogan text-base italic tracking-tight text-brand-navy md:text-lg">
-                  Asadollah Zamani
+                  {dict.ceo.name}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  CEO, Taban Niroo
+                  {dict.ceo.roleShort}
                 </p>
               </div>
             </footer>
@@ -213,13 +215,13 @@ export function CEOSection({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={closingImage}
-                    alt="Taban Niroo manufacturing, Shiraz Especial Economic Zone"
+                    alt={dict.ceo.plantAlt}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   <Image
                     src={closingImage}
-                    alt="Taban Niroo manufacturing, Shiraz Especial Economic Zone"
+                    alt={dict.ceo.plantAlt}
                     fill
                     className="object-cover"
                     sizes="100vw"

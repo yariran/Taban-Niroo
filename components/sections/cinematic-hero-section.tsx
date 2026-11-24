@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { LocaleLink } from "@/components/locale-link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import { usePrefersReducedMotion } from "@/lib/use-prefers-reduced-motion";
 import { smoothstep01 } from "@/lib/use-scroll-scene";
 import styles from "./cinematic-hero.module.css";
@@ -116,6 +117,11 @@ const EXIT_LIFT = 16;
 const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
 
 export function CinematicHeroSection() {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
+  /** Latin copy needs an LTR island inside the RTL page; Persian does not. */
+  const copyDir = locale === "fa" ? undefined : "ltr";
+
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -420,10 +426,7 @@ export function CinematicHeroSection() {
   );
 
   const heading = (
-    <h1 className="sr-only">
-      Taban Niroo — composite insulators, hybrid insulators and transformer
-      bushings for high-voltage power transmission
-    </h1>
+    <h1 className="sr-only">{dict.sections.heroSrHeading}</h1>
   );
 
   /* Copy is English inside an RTL document on /fa — same as the proof
@@ -431,26 +434,30 @@ export function CinematicHeroSection() {
      correct side until the translations land. */
   if (reduceMotion) {
     return (
-      <section className="relative" dir="ltr">
+      <section className="relative" dir={copyDir}>
         {heading}
         <div className={styles.staticStage}>
           <div className={styles.videoWrap}>{videoEl}</div>
           <div className={styles.overlayBase} aria-hidden />
           <div className={styles.staticCopy}>
             <p className={styles.headline}>
-              <span className={styles.line}>Built for </span>
-              <span className={styles.lineSoft}>the elements</span>
+              <span className={styles.line}>{dict.sections.builtFor}</span>
+              <span className={styles.lineSoft}>
+                {dict.sections.heroElements}
+              </span>
             </p>
-            <p className={styles.staticLine}>Engineered for reliability</p>
-            <p className={styles.staticLine}>Composite insulation</p>
-            <p className={styles.support}>
-              Designed for demanding power transmission environments.
+            <p className={styles.staticLine}>
+              {dict.sections.engineeredForReliability}
             </p>
+            <p className={styles.staticLine}>
+              {dict.sections.compositeInsulation}
+            </p>
+            <p className={styles.support}>{dict.sections.heroLede}</p>
             <div className={styles.staticBrand}>
-              <p className={styles.brandmark}>Taban Niroo</p>
+              <p className={styles.brandmark}>{dict.brand}</p>
               <div className={styles.ctaRow}>
                 <LocaleLink href="/products" className={styles.cta}>
-                  Explore our solutions
+                  {dict.sections.exploreSolutions}
                   <CtaArrow />
                 </LocaleLink>
               </div>
@@ -462,7 +469,7 @@ export function CinematicHeroSection() {
   }
 
   return (
-    <section className="relative" dir="ltr">
+    <section className="relative" dir={copyDir}>
       {heading}
 
       <div ref={trackRef} className={styles.track}>
@@ -491,8 +498,10 @@ export function CinematicHeroSection() {
                   correct only if it is there.
                 */}
                 <p className={styles.headline}>
-                  <span className={styles.line}>Built for </span>
-                  <span className={styles.lineSoft}>the elements</span>
+                  <span className={styles.line}>{dict.sections.builtFor}</span>
+                  <span className={styles.lineSoft}>
+                    {dict.sections.heroElements}
+                  </span>
                 </p>
               </div>
             </div>
@@ -505,8 +514,12 @@ export function CinematicHeroSection() {
             >
               <div className={styles.sceneInner}>
                 <p className={styles.headline}>
-                  <span className={styles.line}>Engineered for </span>
-                  <span className={styles.lineSoft}>reliability</span>
+                  <span className={styles.line}>
+                    {dict.sections.engineeredFor}
+                  </span>
+                  <span className={styles.lineSoft}>
+                    {dict.sections.heroReliability}
+                  </span>
                 </p>
               </div>
             </div>
@@ -529,12 +542,12 @@ export function CinematicHeroSection() {
                   the scenes either side of it.
                 */}
                 <h2 className={styles.headline}>
-                  <span className={styles.line}>Composite </span>
-                  <span className={styles.lineSoft}>insulation</span>
+                  <span className={styles.line}>{dict.sections.composite}</span>
+                  <span className={styles.lineSoft}>
+                    {dict.sections.heroInsulation}
+                  </span>
                 </h2>
-                <p className={styles.support}>
-                  Designed for demanding power transmission environments.
-                </p>
+                <p className={styles.support}>{dict.sections.heroLede}</p>
               </div>
             </div>
 
@@ -545,10 +558,10 @@ export function CinematicHeroSection() {
               className={styles.scene}
             >
               <div className={styles.sceneInner}>
-                <p className={styles.brandmark}>Taban Niroo</p>
+                <p className={styles.brandmark}>{dict.brand}</p>
                 <div className={styles.ctaRow}>
                   <LocaleLink href="/products" className={styles.cta}>
-                    Explore our solutions
+                    {dict.sections.exploreSolutions}
                     <CtaArrow />
                   </LocaleLink>
                 </div>

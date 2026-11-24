@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { COMPANY_CHAPTERS } from "@/lib/company-chapters";
+import { companyChapters } from "@/lib/company-chapters";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 /**
  * Company page chapter index — the contents strip at the top of the route.
@@ -45,14 +47,17 @@ function useCurrentHash(): string {
 
 export function CompanyChapterIndex({ className }: { className?: string }) {
   const activeId = useCurrentHash();
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
+  const chapters = companyChapters(locale);
 
   return (
     <nav
-      aria-label="Company chapters"
+      aria-label={dict.ui.companyChaptersAria}
       className={cn("border-y border-border", className)}
     >
       <ul className="flex flex-wrap items-stretch gap-x-7 md:gap-x-10 lg:gap-x-12">
-        {COMPANY_CHAPTERS.map((chapter) => {
+        {chapters.map((chapter) => {
           const isActive = activeId === chapter.id;
           return (
             <li key={chapter.id} className="min-w-0">

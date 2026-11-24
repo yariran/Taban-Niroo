@@ -1,12 +1,15 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { LocaleLink } from "@/components/locale-link";
 import { ChevronRight } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { RevealUp, RevealWords } from "@/components/ui/reveal-words";
 import type { ContentBlock } from "@/lib/cms-content";
+import type { Locale } from "@/lib/i18n";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 type LegalPageShellProps = {
+  locale: Locale;
   eyebrow: string;
   title: string;
   lede?: string;
@@ -16,6 +19,7 @@ type LegalPageShellProps = {
 };
 
 export function LegalPageShell({
+  locale,
   eyebrow,
   title,
   lede,
@@ -23,6 +27,8 @@ export function LegalPageShell({
   children,
   footerCms,
 }: LegalPageShellProps) {
+  const dict = getDictionarySync(locale);
+
   return (
     <main id="main-content" className="min-h-screen bg-background">
       <SiteHeader />
@@ -40,14 +46,17 @@ export function LegalPageShell({
 
         <div className="relative mx-auto w-full max-w-4xl px-6 md:px-12 lg:px-20">
           <nav
-            aria-label="Breadcrumb"
+            aria-label={dict.ui.breadcrumbAria}
             className="mb-8 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
           >
-            <Link href="/" className="transition-colors hover:text-foreground">
-              Home
-            </Link>
+            <LocaleLink
+              href="/"
+              className="transition-colors hover:text-foreground"
+            >
+              {dict.ui.home}
+            </LocaleLink>
             <ChevronRight size={11} aria-hidden strokeWidth={1.7} />
-            <span className="text-foreground/80">Legal</span>
+            <span className="text-foreground/80">{dict.ui.legal}</span>
           </nav>
 
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
@@ -71,7 +80,8 @@ export function LegalPageShell({
 
           <RevealUp delay={220}>
             <p className="mt-8 font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground/85">
-              Last updated · <span className="tabular">{lastUpdated}</span>
+              {dict.ui.lastUpdated}{" "}
+              <span className="tabular">{lastUpdated}</span>
             </p>
           </RevealUp>
         </div>

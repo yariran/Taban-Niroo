@@ -4,6 +4,7 @@ import { getSiteContent } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { pageSocialFor } from "@/lib/seo";
 import { localeFromParams } from "@/lib/i18n";
+import { legalLastUpdated } from "@/lib/legal-dates";
 
 export async function generateMetadata({
   params,
@@ -14,7 +15,6 @@ export async function generateMetadata({
   return pageSocialFor("imprint", lang);
 }
 
-const LAST_UPDATED = "31 March 2026";
 
 export default async function ImprintPage({
   params,
@@ -26,15 +26,22 @@ export default async function ImprintPage({
   const block = content.legal?.imprint;
   const eyebrow = cmsText(block, "eyebrow", '03 · Imprint');
   const title = cmsText(block, "title", 'Imprint.');
-  const lede = cmsText(block, "titleLine2", 'Legal information about the operator of this website, in line with international transparency expectations.');
+  const lede = cmsText(
+    block,
+    "titleLine2",
+    lang === "fa"
+      ? "اطلاعات حقوقی دربارهٔ گردانندهٔ این وبسایت، مطابق انتظارهای بین‌المللی شفافیت."
+      : "Legal information about the operator of this website, in line with international transparency expectations.",
+  );
   const cmsBody = block?.body?.trim();
 
   return (
     <LegalPageShell
+      locale={lang}
       eyebrow={eyebrow}
       title={title}
       lede={lede}
-      lastUpdated={LAST_UPDATED}
+      lastUpdated={legalLastUpdated(lang)}
       footerCms={content.footer}
     >
       {cmsBody ? <CmsProseBody body={cmsBody} /> : (

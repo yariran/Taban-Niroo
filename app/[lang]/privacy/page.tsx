@@ -4,6 +4,7 @@ import { getSiteContent } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { pageSocialFor } from "@/lib/seo";
 import { localeFromParams } from "@/lib/i18n";
+import { legalLastUpdated } from "@/lib/legal-dates";
 
 export async function generateMetadata({
   params,
@@ -14,7 +15,6 @@ export async function generateMetadata({
   return pageSocialFor("privacy", lang);
 }
 
-const LAST_UPDATED = "31 March 2026";
 
 export default async function PrivacyPage({
   params,
@@ -26,15 +26,22 @@ export default async function PrivacyPage({
   const block = content.legal?.privacy;
   const eyebrow = cmsText(block, "eyebrow", '01 · Privacy');
   const title = cmsText(block, "title", 'Privacy notice.');
-  const lede = cmsText(block, "titleLine2", 'We keep things minimal: first-party analytics for traffic, encrypted enquiry forms, and zero ad tracking — full stop.');
+  const lede = cmsText(
+    block,
+    "titleLine2",
+    lang === "fa"
+      ? "کمینه نگه داشته‌ایم: آمار بازدید اول‌شخص، فرم استعلام رمزنگاری‌شده و صفر ردیابی تبلیغاتی. همین."
+      : "We keep things minimal: first-party analytics for traffic, encrypted enquiry forms, and zero ad tracking — full stop.",
+  );
   const cmsBody = block?.body?.trim();
 
   return (
     <LegalPageShell
+      locale={lang}
       eyebrow={eyebrow}
       title={title}
       lede={lede}
-      lastUpdated={LAST_UPDATED}
+      lastUpdated={legalLastUpdated(lang)}
       footerCms={content.footer}
     >
       {cmsBody ? <CmsProseBody body={cmsBody} /> : (

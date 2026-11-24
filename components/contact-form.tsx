@@ -129,7 +129,7 @@ export function ContactForm({
         aria-hidden="true"
         className="pointer-events-none absolute start-[-9999px] top-auto h-0 w-0 overflow-hidden"
       >
-        <label htmlFor="_hp">Leave this field empty</label>
+        <label htmlFor="_hp">{dict.ui.honeypot}</label>
         <input
           id="_hp"
           name="_hp"

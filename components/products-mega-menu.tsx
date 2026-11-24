@@ -8,7 +8,9 @@ import {
 } from "react";
 import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { LocaleLink } from "@/components/locale-link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
+import { familyLabel } from "@/lib/i18n/family-labels";
 import { cn } from "@/lib/utils";
 import {
   FAMILY_ANCHOR,
@@ -131,6 +133,9 @@ export function ProductsMegaMenu({
     }
   };
 
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
+
   const grouped: Record<ProductFamilyId, string[]> = {} as Record<
     ProductFamilyId,
     string[]
@@ -189,7 +194,7 @@ export function ProductsMegaMenu({
         ref={panelRef}
         id="products-mega-panel"
         role="region"
-        aria-label="Product range"
+        aria-label={dict.productsUi.rangeAria}
         aria-labelledby="products-mega-trigger"
         aria-hidden={!open}
         // When closed, inert removes the panel from keyboard focus and a11y tree
@@ -210,14 +215,14 @@ export function ProductsMegaMenu({
         <div className="p-6 md:p-8">
           <div className="mb-5 flex items-center justify-between gap-4">
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-              Product range
+              {dict.productsUi.rangeLabel}
             </p>
             <LocaleLink
               href="/products"
               onClick={() => setOpen(false)}
               className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:text-foreground/70"
             >
-              See all
+              {dict.productsUi.seeAll}
               <ArrowRight size={12} aria-hidden />
             </LocaleLink>
           </div>
@@ -236,7 +241,7 @@ export function ProductsMegaMenu({
                     <div className="relative aspect-[4/5] w-16 shrink-0 overflow-hidden rounded-md bg-muted dark:bg-white/[0.03]">
                       <Image
                         src={FAMILY_THUMBNAIL[family]}
-                        alt={`${family} — Taban Niroo product family`}
+                        alt={`${familyLabel(family, locale)} — ${dict.brand}`}
                         fill
                         sizes="64px"
                         className="object-cover grayscale transition-all duration-700 group-hover:scale-[1.06] group-hover:grayscale-0"
@@ -244,16 +249,17 @@ export function ProductsMegaMenu({
                     </div>
                     <div className="flex flex-1 flex-col">
                       <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                        {FAMILY_INDEX[family]} · {count} ref.
+                        {FAMILY_INDEX[family]} · {count}{" "}
+                        {dict.productsUi.refsSuffix}
                       </p>
                       <p className="mt-1 text-sm font-semibold leading-snug tracking-tight text-foreground">
-                        {family}
+                        {familyLabel(family, locale)}
                       </p>
                       <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-muted-foreground">
                         {grouped[family].slice(0, 2).join(" · ")}
                       </p>
                       <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[10.5px] font-medium uppercase tracking-[0.18em] text-foreground/70 transition-colors group-hover:text-foreground">
-                        Browse family
+                        {dict.productsUi.browseFamily}
                         <ArrowRight
                           size={10}
                           aria-hidden

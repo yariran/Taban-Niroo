@@ -147,7 +147,7 @@ export function HeroSection({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={heroImage}
-            alt="Taban Niroo high-voltage composite insulators and power transmission equipment"
+            alt={dict.sections.heroAlt}
             className={cn(
               "absolute inset-0 h-full w-full object-cover",
               !staticLayout && "hero-ken-burns",
@@ -156,7 +156,7 @@ export function HeroSection({
         ) : (
           <Image
             src={heroImage}
-            alt="Taban Niroo high-voltage composite insulators and power transmission equipment"
+            alt={dict.sections.heroAlt}
             fill
             className={cn("object-cover", !staticLayout && "hero-ken-burns")}
             priority
@@ -332,15 +332,14 @@ export function HeroSection({
           <p className="type-hig-title col-span-12 text-brand-heading lg:col-span-8">
             {tagline}
           </p>
-          {/* Hardcoded English, same as the proof band's lede — `dir="ltr"`
-              so the sentence stops rendering with its full stop on the
-              wrong side inside the RTL page. It still needs translating. */}
+          {/* Latin copy needs an LTR island so its full stop stays on the
+              correct side inside the RTL page; Persian renders natively. */}
           <p
-            dir="ltr"
+            dir={locale === "fa" ? undefined : "ltr"}
             className="type-hig-body col-span-12 text-muted-foreground lg:col-span-3 lg:col-start-10"
             style={staticLayout ? undefined : { opacity: copyB }}
           >
-            High-voltage composite insulators for power transmission.
+            {dict.sections.heroSubline}
           </p>
         </div>
       </div>

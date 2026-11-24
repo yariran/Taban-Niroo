@@ -350,7 +350,7 @@ export function SiteIntro() {
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(progress * 100)}
-          aria-label="Loading"
+          aria-label={dict.ui.loading}
         >
           <div
             className="h-full origin-left bg-brand-orange"

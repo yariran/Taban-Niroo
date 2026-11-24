@@ -64,7 +64,7 @@ export function CookieConsent() {
   return (
     <div
       role="region"
-      aria-label="Cookie & analytics notice"
+      aria-label={dict.ui.cookieNoticeAria}
       data-animate={reduceMotion ? "off" : animating ? "in" : "out"}
       className="cookie-consent-shell pointer-events-none fixed inset-x-0 bottom-0 z-[70] flex justify-center px-4 pb-[max(1rem,var(--sab))] sm:px-6 sm:pb-[max(1.5rem,var(--sab))]"
     >

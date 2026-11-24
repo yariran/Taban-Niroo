@@ -10,6 +10,7 @@ import { ScrollRevealText } from "@/components/ui/scroll-reveal-text";
 import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE, STATEMENT as STATEMENT_ROLE } from "@/lib/motion-roles";
 import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
@@ -43,6 +44,7 @@ const STATEMENT =
 
 export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
   const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const image = cmsImage(cms, SITE_IMAGES.technology) ?? SITE_IMAGES.technology;
   const eyebrow = cmsText(cms, "eyebrow", "Standards · 2025 — 2026");
   const title = cmsText(cms, "title", "Type-tested. Field-proven.");
@@ -52,7 +54,7 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
     <section
       id="technology"
       className="relative bg-background"
-      aria-label="IEC standards and industrial insulator technology"
+      aria-label={dict.sections.technologyAria}
     >
       {/* Act I — the plate: a frame opens, the title card lifts over it */}
       <Beat>
@@ -71,7 +73,7 @@ export function TechnologySection({ cms }: { cms?: ContentBlock } = {}) {
             <ImageReveal className="absolute inset-0">
               <Image
                 src={image}
-                alt="High-voltage transmission line with composite insulation"
+                alt={dict.sections.technologyAlt}
                 fill
                 className="object-cover object-[58%_42%]"
                 sizes="(min-width: 1280px) 1280px, 100vw"

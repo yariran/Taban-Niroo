@@ -14,6 +14,10 @@ import {
   techTableHeadCellClass,
   techTableHeadStickyClass,
 } from "@/components/ui/tech-table";
+import { useLocale } from "@/components/locale-link";
+import { localeHref } from "@/lib/i18n";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
+import { techHeaders } from "@/lib/i18n/tech-table-labels";
 
 /**
  * Technical specification row for one catalogue reference.
@@ -107,9 +111,7 @@ export type ProductSpec = {
 /** Combined drawing + table view. Legacy `table` / `drawing` map to datasheet. */
 export type ProductModalView = "picker" | "datasheet" | "table" | "drawing";
 
-function resolveModalView(
-  view: ProductModalView,
-): "picker" | "datasheet" {
+function resolveModalView(view: ProductModalView): "picker" | "datasheet" {
   return view === "picker" ? "picker" : "datasheet";
 }
 
@@ -180,6 +182,8 @@ export function ProductModal({
   initialView = "datasheet",
   onClose,
 }: ProductModalProps) {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const [view, setView] = useState<"picker" | "datasheet">(
     resolveModalView(initialView),
   );
@@ -285,7 +289,7 @@ export function ProductModal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close product details"
+            aria-label={dict.productsUi.closeDetails}
             className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border/70 bg-background text-foreground transition-colors hover:border-foreground"
           >
             <X size={16} aria-hidden />
@@ -302,10 +306,7 @@ export function ProductModal({
             <PickerView onPickDatasheet={() => setView("datasheet")} />
           )}
           {view === "datasheet" && (
-            <DatasheetView
-              product={product}
-              onBack={() => setView("picker")}
-            />
+            <DatasheetView product={product} onBack={() => setView("picker")} />
           )}
         </div>
 
@@ -316,18 +317,24 @@ export function ProductModal({
           </p>
           <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             <a
-              href={`/contact?ref=${encodeURIComponent(product.id)}`}
+              href={localeHref(
+                locale,
+                `/contact?ref=${encodeURIComponent(product.id)}`,
+              )}
               className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-medium uppercase tracking-wider text-foreground transition-colors hover:border-foreground sm:flex-initial"
             >
               <Mail size={14} aria-hidden />
-              Enquire
+              {dict.productsUi.enquire}
             </a>
             <a
-              href={`/contact?ref=${encodeURIComponent(product.id)}`}
+              href={localeHref(
+                locale,
+                `/contact?ref=${encodeURIComponent(product.id)}`,
+              )}
               className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium uppercase tracking-wider text-primary-foreground transition-colors hover:bg-brand-burgundy sm:flex-initial"
             >
               <Mail size={14} aria-hidden />
-              Request datasheet
+              {dict.productsUi.requestDatasheet}
             </a>
           </div>
         </footer>
@@ -343,14 +350,16 @@ export function ProductModal({
  * Drawing art is withheld for now — the labelled slot stays for later assets.
  */
 function PickerView({ onPickDatasheet }: { onPickDatasheet: () => void }) {
+  const dict = getDictionarySync(useLocale());
+
   return (
     <div className="px-5 py-8 md:px-8 md:py-10">
       <div className="mx-auto max-w-xl text-center">
         <p className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-          Product documentation
+          {dict.productsUi.documentation}
         </p>
         <h3 className="font-hero-slogan mt-3 text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
-          Drawing and technical table
+          {dict.productsUi.documentationLede}
         </h3>
       </div>
 
@@ -358,8 +367,8 @@ function PickerView({ onPickDatasheet }: { onPickDatasheet: () => void }) {
         <PickerCard
           icon={<LayoutTemplate size={26} aria-hidden strokeWidth={1.5} />}
           label="01"
-          title="Table & drawing"
-          description="Sectional drawing on top, full ratings table underneath."
+          title={dict.productsUi.tableAndDrawing}
+          description={dict.productsUi.pickerDescription}
           onClick={onPickDatasheet}
         />
       </div>
@@ -429,6 +438,8 @@ function PickerCard({
 }
 
 function BackBar({ onBack, label }: { onBack: () => void; label: string }) {
+  const dict = getDictionarySync(useLocale());
+
   return (
     <div className="flex items-center justify-between gap-4 border-b border-border/60 bg-muted/20 px-5 py-3 md:px-7">
       <button
@@ -437,7 +448,7 @@ function BackBar({ onBack, label }: { onBack: () => void; label: string }) {
         className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-foreground transition-colors hover:border-foreground"
       >
         <ArrowLeft size={12} aria-hidden />
-        Back
+        {dict.ui.back}
       </button>
       <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
         {label}
@@ -463,6 +474,9 @@ function buildTechRows(product: ProductSpec): DatasheetRow[] {
  * All other products: Lightning + Power group titles only (Pos + Wet values).
  */
 function TechnicalDataTable({ product }: { product: ProductSpec }) {
+  const locale = useLocale();
+  const th = techHeaders();
+  const dict = getDictionarySync(locale);
   const rows = buildTechRows(product);
   const isCutout = CUTOUT_TECH_IDS.has(product.id);
   const fullElectrical =
@@ -474,7 +488,7 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
   if (isCutout) {
     return (
       <ScrollPan
-        ariaLabel={`${product.name} technical data`}
+        ariaLabel={`${product.name} ${dict.productsUi.technicalDataSuffix}`}
         fadeFrom="from-card"
         className="rounded-2xl border border-border/70"
         passVerticalScroll
@@ -483,43 +497,43 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
           <thead>
             <tr>
               <th rowSpan={2} scope="col" className={techTableHeadStickyClass}>
-                Catalog No.
+                {th.catalogNo}
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
                 Rated System Voltage (kV)
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-                Rated Current (A)
+                {th.ratedCurrent}
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-                Breaking (A)
+                {th.breaking}
               </th>
               <th
                 colSpan={2}
                 scope="colgroup"
                 className={techTableHeadCellClass}
               >
-                Leakage To Ground Metal To Metal
+                {th.leakageToGround}
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-                Creepage Distance (mm)
+                {th.creepageDistance}
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-                Impulse Voltage (BIL) (kV)
+                {th.impulseBil}
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-                Power Frequency Withstand Voltage (kV)
+                {th.powerFreqWithstand}
               </th>
               <th rowSpan={2} scope="col" className={techTableHeadCellClass}>
-                Mechanical Durability items
+                {th.mechanicalDurability}
               </th>
             </tr>
             <tr>
               <th scope="col" className={techTableHeadCellClass}>
-                Up (mm)
+                {th.up}
               </th>
               <th scope="col" className={techTableHeadCellClass}>
-                Down (mm)
+                {th.down}
               </th>
             </tr>
           </thead>
@@ -572,7 +586,7 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
 
   return (
     <ScrollPan
-      ariaLabel={`${product.name} technical data`}
+      ariaLabel={`${product.name} ${dict.productsUi.technicalDataSuffix}`}
       fadeFrom="from-card"
       className="rounded-2xl border border-border/70"
       passVerticalScroll
@@ -585,25 +599,53 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
       >
         <thead>
           <tr>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadStickyClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadStickyClass}
+            >
               Type
             </th>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
               Rated System Voltage (kV)
             </th>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
               Specified mechanical load (kN)
             </th>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
               Section length (mm)
             </th>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
               Arcing distance (mm)
             </th>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
               Diameter of shed (mm)
             </th>
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
               Creepage distance (mm)
             </th>
             {fullElectrical ? (
@@ -638,23 +680,27 @@ function TechnicalDataTable({ product }: { product: ProductSpec }) {
                 </th>
               </>
             )}
-            <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-              Weight
+            <th
+              rowSpan={rowSpan}
+              scope="col"
+              className={techTableHeadCellClass}
+            >
+              {th.weight}
             </th>
           </tr>
           {fullElectrical ? (
             <tr>
               <th scope="col" className={techTableHeadCellClass}>
-                Positive
+                {th.positive}
               </th>
               <th scope="col" className={techTableHeadCellClass}>
-                Negative
+                {th.negative}
               </th>
               <th scope="col" className={techTableHeadCellClass}>
-                Dry
+                {th.dry}
               </th>
               <th scope="col" className={techTableHeadCellClass}>
-                Wet
+                {th.wet}
               </th>
             </tr>
           ) : null}
@@ -714,6 +760,8 @@ function DatasheetView({
   product: ProductSpec;
   onBack: () => void;
 }) {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const variants = product.variants ?? [];
   const hasVariants = variants.length > 0;
   /** When false, all drawings stay as labelled placeholders. */
@@ -724,7 +772,7 @@ function DatasheetView({
 
   return (
     <div>
-      <BackBar onBack={onBack} label="Table & drawing" />
+      <BackBar onBack={onBack} label={dict.productsUi.tableAndDrawing} />
       <div className="space-y-10 p-5 md:p-7">
         {/* Drawing — top (placeholder until assets are ready) */}
         <section aria-labelledby="product-drawing-heading">
@@ -734,10 +782,10 @@ function DatasheetView({
                 id="product-drawing-heading"
                 className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
               >
-                Product drawing
+                {dict.productsUi.productDrawing}
               </p>
               <p className="mt-1 text-sm text-foreground/85">
-                Sectional diagram and reference geometry.
+                {dict.productsUi.productDrawingLede}
               </p>
             </div>
           </div>
@@ -757,7 +805,7 @@ function DatasheetView({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={drawingSrc}
-                alt={`${product.name} engineering drawing`}
+                alt={`${product.name} ${dict.productsUi.drawingAltSuffix}`}
                 className="mx-auto max-h-[min(52vh,420px)] w-full object-contain p-4 md:p-6"
               />
             ) : (
@@ -766,20 +814,22 @@ function DatasheetView({
                   <LayoutTemplate size={18} aria-hidden />
                 </span>
                 <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  Drawing coming soon
+                  {dict.productsUi.drawingSoon}
                 </p>
                 <p className="max-w-md text-sm text-muted-foreground">
-                  The sectional drawing for{" "}
-                  <span className="text-foreground">{product.name}</span> will
-                  appear here. Request it from our engineering team in the
-                  meantime.
+                  {dict.productsUi.drawingSoonBefore}{" "}
+                  <span className="text-foreground">{product.name}</span>{" "}
+                  {dict.productsUi.drawingSoonAfter}
                 </p>
                 <a
-                  href={`/contact?ref=${encodeURIComponent(product.id)}`}
+                  href={localeHref(
+                    locale,
+                    `/contact?ref=${encodeURIComponent(product.id)}`,
+                  )}
                   className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-primary-foreground transition-colors hover:bg-brand-burgundy"
                 >
                   <Mail size={14} aria-hidden />
-                  Request drawing
+                  {dict.productsUi.requestDrawing}
                 </a>
               </div>
             )}
@@ -794,17 +844,15 @@ function DatasheetView({
                 id="product-table-heading"
                 className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
               >
-                Technical table
+                {dict.productsUi.technicalTable}
               </p>
               <p className="mt-1 text-sm text-foreground/85">
-                {hasVariants ? (
-                  <>
-                    {variants.length} product reference
-                    {variants.length === 1 ? "" : "s"} in datasheet.
-                  </>
-                ) : (
-                  <>No variant rows defined for this product yet.</>
-                )}
+                {hasVariants
+                  ? (variants.length === 1
+                      ? dict.productsUi.datasheetRefsOne
+                      : dict.productsUi.datasheetRefsMany
+                    ).replace("{count}", String(variants.length))
+                  : dict.productsUi.noVariants}
               </p>
             </div>
             {product.standard && (
@@ -817,9 +865,7 @@ function DatasheetView({
           <TechnicalDataTable product={product} />
 
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-            Drag, swipe, or use the scrollbar to see all columns. All
-            dimensions in millimetres (mm) unless stated otherwise; voltages in
-            kilovolts (kV); mechanical loads in kilonewtons (kN).
+            {dict.productsUi.tableFootnote}
           </p>
         </section>
       </div>

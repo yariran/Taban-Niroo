@@ -216,6 +216,12 @@ export function ContentAdminClient({ initial }: { initial: SiteContent }) {
               </span>
               {" · "}
               فیلد خالی = متن پیش‌فرض / fallback انگلیسی ·{" "}
+              {locale === "fa" ? (
+                <>
+                  ارقام: فارسی در متن روایی (سال، تعداد)، لاتین در مقادیر فنی
+                  (6–1000 kV، IEC 61109، DPL 33-1180) ·{" "}
+                </>
+              ) : null}
               {dirty ? (
                 <span className="font-medium text-amber-700">تغییرات ذخیره‌نشده</span>
               ) : (

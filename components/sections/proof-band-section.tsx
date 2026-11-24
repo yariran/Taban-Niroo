@@ -8,6 +8,8 @@ import { BEAT, EVIDENCE, STATEMENT } from "@/lib/motion-roles";
 import type { ContentBlock } from "@/lib/cms-content";
 import { resolveKpis, type Kpi } from "@/lib/home-kpis";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 /**
  * Proof band — editorial metrics under the hero.
@@ -52,6 +54,10 @@ export function ProofBandSection({
   /** `home.whyTaban` — pre-split fallback source for the KPI items. */
   legacy?: ContentBlock;
 } = {}) {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
+  /** Latin copy needs an LTR island inside the RTL page; Persian does not. */
+  const copyDir = locale === "fa" ? undefined : "ltr";
   const kpis = resolveKpis(cms, legacy);
 
   return (
@@ -66,21 +72,22 @@ export function ProofBandSection({
         <div className="mx-auto max-w-6xl">
           {/*
             Hardcoded English editorial copy (same stance as the previous
-            lede). `dir="ltr"` keeps word reveals correct on the FA page.
+            lede). The LTR island is for Latin copy only — Persian figures
+            and labels read natively, so `copyDir` is undefined on /fa.
           */}
-          <header className="max-w-xl" dir="ltr">
+          <header className="max-w-xl" dir={copyDir}>
             <RevealBlock
               delayMs={BEAT.first}
               durationMs={EVIDENCE.duration}
               distance={EVIDENCE.distance}
             >
               <p className="type-hig-label text-brand-orange">
-                Engineering record
+                {dict.sections.engineeringRecord}
               </p>
             </RevealBlock>
 
             <span id="proof-heading" className="sr-only">
-              +24 Years of Engineering
+              {dict.sections.proofHeadline}
             </span>
             <RevealWords
               as="h2"
@@ -89,7 +96,7 @@ export function ProofBandSection({
               stagger={72}
               className="type-hig-title mt-5 block text-brand-cream"
             >
-              +24 Years of Engineering
+              {dict.sections.proofHeadline}
             </RevealWords>
 
             <BlurReveal
@@ -100,7 +107,7 @@ export function ProofBandSection({
               blurPx={8}
               className="type-hig-lede mt-5 max-w-md text-brand-cream/65"
             >
-              Proven on energised networks across markets.
+              {dict.sections.provenLine}
             </BlurReveal>
           </header>
 
@@ -115,7 +122,7 @@ export function ProofBandSection({
               "sm:grid-cols-2 sm:gap-x-16 sm:gap-y-16",
               "md:mt-24 md:gap-x-24 md:gap-y-20 lg:gap-x-32",
             )}
-            dir="ltr"
+            dir={copyDir}
           >
             {kpis.map((kpi) => {
               const { figure, unit } = figureParts(kpi);

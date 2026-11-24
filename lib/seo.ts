@@ -3,8 +3,9 @@ import { getSiteUrl } from "@/lib/site-url";
 import {
   LOCALES,
   localeOg,
-  withLocale,
+  localesForPath,
   type Locale,
+  withLocale,
 } from "@/lib/i18n";
 import { pageSeoCopy, type PageSeoKey } from "@/lib/seo-copy";
 
@@ -48,14 +49,22 @@ type PageSocialInput = {
 
 /**
  * hreflang map: `en`, `fa-IR`, `x-default` (default → English tree).
+ *
+ * `fa-IR` is omitted for paths with no Persian edition — today that is the
+ * blog, whose posts are per-locale documents rather than translations.
+ * Pointing hreflang at an empty `/fa/blog` would advertise a page with no
+ * content as the Persian equivalent of one that has it.
  */
 export function hreflangAlternates(barePath: string): Record<string, string> {
   const path = barePath || "/";
-  return {
+  const languages: Record<string, string> = {
     en: withLocale(path, "en"),
-    "fa-IR": withLocale(path, "fa"),
-    "x-default": withLocale(path, "en"),
   };
+  if (localesForPath(path).includes("fa")) {
+    languages["fa-IR"] = withLocale(path, "fa");
+  }
+  languages["x-default"] = withLocale(path, "en");
+  return languages;
 }
 
 /**

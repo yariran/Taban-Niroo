@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 /**
  * Route-level error boundary.
@@ -20,6 +21,8 @@ export default function RouteError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const dict = getDictionarySync(useLocale());
+
   useEffect(() => {
     console.error("[route-error]", error);
     void import("@/lib/report-error").then(({ reportError }) =>
@@ -42,17 +45,15 @@ export default function RouteError({
       />
       <div className="relative z-10 mx-auto max-w-xl text-center">
         <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
-          Error · interrupt
+          {dict.ui.errorEyebrow}
         </p>
 
         <h1 className="mt-6 font-medium leading-[1.05] tracking-tight text-[clamp(2.25rem,6vw,3.5rem)]">
-          Something interrupted the signal.
+          {dict.ui.errorTitle}
         </h1>
 
         <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
-          A part of this page failed to render. Our log already received the
-          incident — you can retry, return to the homepage, or write to us
-          directly.
+          {dict.ui.errorBody}
         </p>
 
         {/* `/80` measured 3.75:1 light on 10.5px — under 4.5. This is the
@@ -60,7 +61,8 @@ export default function RouteError({
             code to be legible. */}
         {error?.digest && (
           <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.22em] text-muted-foreground">
-            Reference · <span className="tabular">{error.digest}</span>
+            {dict.ui.errorReference}{" "}
+            <span className="tabular">{error.digest}</span>
           </p>
         )}
 
@@ -70,20 +72,20 @@ export default function RouteError({
             onClick={() => reset()}
             className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
           >
-            Retry
+            {dict.ui.retry}
           </button>
-          <Link
+          <LocaleLink
             href="/"
             className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground"
           >
-            Go to homepage
-          </Link>
-          <Link
+            {dict.ui.goHome}
+          </LocaleLink>
+          <LocaleLink
             href="/contact"
             className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
-            Contact support
-          </Link>
+            {dict.ui.contactSupport}
+          </LocaleLink>
         </div>
       </div>
     </main>

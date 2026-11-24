@@ -2,6 +2,8 @@
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 type InterludeSectionProps = {
   quote: string;
@@ -36,6 +38,7 @@ export function InterludeSection({
   tone = "dark",
 }: InterludeSectionProps) {
   const ref = useRef<HTMLElement | null>(null);
+  const dict = getDictionarySync(useLocale());
   const [progress, setProgress] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -104,7 +107,7 @@ export function InterludeSection({
         "relative overflow-hidden",
         isDark ? "bg-black text-white" : "bg-white text-black"
       )}
-      aria-label="Interlude"
+      aria-label={dict.ui.interludeAria}
     >
       <div className="mx-auto flex min-h-[min(80dvh,80vh)] max-w-4xl items-center px-6 py-24 md:px-12 md:py-32 lg:px-20">
         <div className="w-full">

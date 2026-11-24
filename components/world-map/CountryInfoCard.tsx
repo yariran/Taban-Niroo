@@ -2,6 +2,8 @@ import { AnimatePresence, m, useReducedMotion } from "motion/react";
 
 import type { CountryDetails } from "./country-data";
 import styles from "./industrial-world-map.module.css";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 type CountryInfoCardProps = {
   country: CountryDetails | null;
@@ -9,6 +11,7 @@ type CountryInfoCardProps = {
 };
 
 export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
+  const dict = getDictionarySync(useLocale());
   const reduceMotion = useReducedMotion();
 
   return (
@@ -52,7 +55,10 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
               <button
                 type="button"
                 onClick={onClose}
-                aria-label={`Close ${country.name} details`}
+                aria-label={dict.map.closeAria.replace(
+                  "{name}",
+                  country.name,
+                )}
                 className={`${styles.closeGlyph} -me-1 -mt-1 grid h-7 w-7 flex-none place-items-center rounded-sm text-base leading-none`}
               >
                 <span aria-hidden="true">×</span>
@@ -65,7 +71,7 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
                   +{country.projects}
                 </p>
                 <p className="mt-1.5 text-[10px] uppercase tracking-[0.16em] text-slate-400">
-                  Projects
+                  {dict.map.projects}
                 </p>
               </div>
               <div className={`${styles.statSplit} ps-4`}>
@@ -73,14 +79,14 @@ export function CountryInfoCard({ country, onClose }: CountryInfoCardProps) {
                   {country.firstCooperation}
                 </p>
                 <p className="mt-1.5 text-[10px] uppercase tracking-[0.16em] text-slate-400">
-                  Since
+                  {dict.map.since}
                 </p>
               </div>
             </div>
 
             <div className={`${styles.panelRule} mt-4 pt-4`}>
               <p className="text-[10px] uppercase tracking-[0.16em] text-slate-400">
-                Products
+                {dict.map.products}
               </p>
               <ul className="mt-2.5 space-y-1.5">
                 {country.products.map((product) => (

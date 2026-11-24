@@ -1,25 +1,36 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { isBlogEnabledForLocale, type Locale } from "@/lib/i18n";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 
-const footerLinks = [
-  { label: "About", href: "/about" },
-  { label: "Products", href: "/products" },
-  { label: "Projects", href: "/projects" },
-  { label: "Blog – R&D", href: "/blog" },
-  { label: "Contact", href: "/contact" },
-] as const;
+/** Nav and policy labels reuse the shared dictionary — no second copy to drift. */
+function footerNavLinks(dict: Dictionary, locale: Locale) {
+  return [
+    { label: dict.nav.company, href: "/about" },
+    { label: dict.nav.products, href: "/products" },
+    { label: dict.nav.projects, href: "/projects" },
+    ...(isBlogEnabledForLocale(locale)
+      ? [{ label: dict.nav.blog, href: "/blog" }]
+      : []),
+    { label: dict.nav.contact, href: "/contact" },
+  ];
+}
 
-const policyLinks = [
-  { label: "Privacy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
-  { label: "Imprint", href: "/imprint" },
-] as const;
+function footerPolicyLinks(dict: Dictionary) {
+  return [
+    { label: dict.footer.privacy, href: "/privacy" },
+    { label: dict.footer.terms, href: "/terms" },
+    { label: dict.footer.imprint, href: "/imprint" },
+  ];
+}
 
 function NewsletterSignup() {
+  const dict = getDictionarySync(useLocale());
   const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
   const [errorText, setErrorText] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -79,14 +90,14 @@ function NewsletterSignup() {
     <form onSubmit={onSubmit} className="mt-3 max-w-[220px]" noValidate>
       <div className="flex items-center gap-2 border-b border-border/80 pb-1.5">
         <label htmlFor="newsletter-email" className="sr-only">
-          Email
+          {dict.ui.email}
         </label>
         <input
           id="newsletter-email"
           type="email"
           inputMode="email"
           autoComplete="email"
-          placeholder="Email"
+          placeholder={dict.ui.email}
           value={email}
           onChange={(e) => setEmail(e.currentTarget.value)}
           disabled={isSending}
@@ -99,7 +110,7 @@ function NewsletterSignup() {
           disabled={isSending}
           className="min-h-11 shrink-0 px-1 text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50 md:min-h-0 md:text-[10px]"
         >
-          {isSending ? "…" : state === "ok" ? "Done" : "Join"}
+          {isSending ? "…" : state === "ok" ? dict.ui.done : dict.ui.join}
         </button>
       </div>
       {state === "err" && errorText && (
@@ -110,12 +121,14 @@ function NewsletterSignup() {
 }
 
 function OfficeCol({
+  dict,
   label,
   lines,
   phone,
   fax,
   email,
 }: {
+  dict: Dictionary;
   label: string;
   lines: readonly string[];
   phone: { display: string; href: string };
@@ -143,9 +156,11 @@ function OfficeCol({
           </span>
         ))}
         <a href={phone.href} className="block tabular-nums text-white/80 transition-colors hover:text-brand-orange">
-          Landline: {phone.display}
+          {dict.ui.landline} {phone.display}
         </a>
-        <span className="block tabular-nums">Fax: {fax}</span>
+        <span className="block tabular-nums">
+          {dict.ui.fax} {fax}
+        </span>
         {emails.map((item) => (
           <a
             key={item.href}
@@ -163,14 +178,13 @@ function OfficeCol({
 export function FooterSection({
   cms,
 }: { cms?: ContentBlock } = {}) {
+  const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const year = new Date().getFullYear();
-  const brandBlurb = cmsText(
-    cms,
-    "body",
-    "Composite insulators · IEC-tested · Since 1997",
-  );
-  const brandName = cmsText(cms, "title", "Taban Niroo");
-  const links = footerLinks;
+  const brandBlurb = cmsText(cms, "body", dict.sections.footerBlurb);
+  const brandName = cmsText(cms, "title", dict.brand);
+  const links = footerNavLinks(dict, locale);
+  const policies = footerPolicyLinks(dict);
   return (
     <footer className="border-t border-white/10 bg-brand-navy-deep text-white" role="contentinfo">
       <div className="mx-auto max-w-6xl px-6 py-10 md:px-12 md:py-11 lg:px-20">
@@ -178,12 +192,12 @@ export function FooterSection({
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-10">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1">
-            <Link
+            <LocaleLink
               href="/"
               className="text-sm font-medium text-white hover:text-brand-orange"
             >
               {brandName}
-            </Link>
+            </LocaleLink>
             <p className="mt-1.5 text-xs leading-snug text-white/60">
               {brandBlurb}
             </p>
@@ -195,35 +209,37 @@ export function FooterSection({
           </div>
 
           {/* Nav */}
-          <nav aria-label="Footer navigation">
+          <nav aria-label={dict.ui.footerNavAria}>
             <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-brand-orange/90">
-              Site
+              {dict.ui.siteLinks}
             </p>
             <ul className="mt-2 space-y-1">
               {links.map((link) => (
                 <li key={link.href}>
-                  <Link
+                  <LocaleLink
                     href={link.href}
                     className="text-xs text-white/65 transition-colors hover:text-brand-orange"
                   >
                     {link.label}
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
           </nav>
 
           <OfficeCol
-            label="Shiraz"
-            lines={["Taban Niroo Bldg", "Shiraz Especial Economic Zone, Iran"]}
+            dict={dict}
+            label={dict.offices.shiraz}
+            lines={dict.offices.shirazLines}
             phone={{ display: "+98 713 717 5115-7", href: "tel:+987137175115" }}
             fax="+98 21 2264 4237"
             email={{ display: "info@taban-niroo.com", href: "mailto:info@taban-niroo.com" }}
           />
 
           <OfficeCol
-            label="Tehran"
-            lines={["Office 9, No. 64, Saeedi Ave", "Africa Blvd, Tehran"]}
+            dict={dict}
+            label={dict.offices.tehran}
+            lines={dict.offices.tehranLines}
             phone={{ display: "+98 21 8821 6952", href: "tel:+982188216952" }}
             fax="+98 21 2264 4237"
             email={[
@@ -242,11 +258,11 @@ export function FooterSection({
           </p>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-white/55">
-            <span>© {year} Taban Niroo</span>
-            {policyLinks.map((p) => (
-              <Link key={p.href} href={p.href} className="hover:text-brand-orange">
+            <span>© {year} {dict.brand}</span>
+            {policies.map((p) => (
+              <LocaleLink key={p.href} href={p.href} className="hover:text-brand-orange">
                 {p.label}
-              </Link>
+              </LocaleLink>
             ))}
             <a
               href="https://www.linkedin.com/company/taban-niroo"
@@ -256,8 +272,11 @@ export function FooterSection({
             >
               LinkedIn
             </a>
-            <a href="mailto:info@taban-niroo.com" className="hover:text-brand-orange">
-              Email
+            <a
+              href="mailto:info@taban-niroo.com"
+              className="hover:text-brand-orange"
+            >
+              {dict.ui.email}
             </a>
           </div>
         </div>

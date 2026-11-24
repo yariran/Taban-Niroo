@@ -9,6 +9,35 @@ export const LOCALE_COOKIE = "tn_locale";
  */
 export const FA_LOCALE_ENABLED = false;
 
+/**
+ * Persian blog. Blog posts are per-locale documents, not translations of each
+ * other (`lib/cms-blog.ts`), and there are no Persian posts yet — so `/fa/blog`
+ * renders its empty state. Keep `false` to drop the blog from Persian
+ * navigation, the sitemap and the hreflang map while the route itself stays
+ * reachable for anyone holding a link. Flip to `true` once FA posts exist.
+ */
+export const FA_BLOG_ENABLED = false;
+
+export function isBlogEnabledForLocale(locale: Locale): boolean {
+  if (locale === "fa") return FA_BLOG_ENABLED;
+  return true;
+}
+
+function isBlogPath(barePath: string): boolean {
+  return barePath === "/blog" || barePath.startsWith("/blog/");
+}
+
+/**
+ * Locales a bare path is actually published in.
+ *
+ * Everything is bilingual except the blog, so an hreflang pointing at an
+ * empty `/fa/blog` is the one case this guards against.
+ */
+export function localesForPath(barePath: string): Locale[] {
+  if (!isBlogPath(barePath)) return [...LOCALES];
+  return LOCALES.filter(isBlogEnabledForLocale);
+}
+
 export function isLocale(value: string): value is Locale {
   return (LOCALES as readonly string[]).includes(value);
 }

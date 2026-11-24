@@ -2,14 +2,18 @@
 
 import { ScrollPan } from "@/components/ui/scroll-pan";
 import type { GalleryItem } from "@/lib/gallery-cms";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 export function ProductGalleryRail({
   items,
-  panHint = "Scroll or drag to pan",
+  panHint,
 }: {
   items: GalleryItem[];
   panHint?: string;
 }) {
+  const dict = getDictionarySync(useLocale());
+  const hint = panHint ?? dict.sections.panHint;
   const display =
     items.length > 0
       ? items
@@ -24,7 +28,7 @@ export function ProductGalleryRail({
     <section
       id="product-gallery"
       className="bg-background py-12 md:py-16"
-      aria-label="Product gallery"
+      aria-label={dict.productsUi.galleryAria}
     >
       <div className="relative">
         <ScrollPan
@@ -59,7 +63,7 @@ export function ProductGalleryRail({
                     aria-hidden
                     className="text-xs uppercase tracking-[0.22em] text-muted-foreground/60"
                   >
-                    Add image
+                    {dict.productsUi.addImage}
                   </span>
                 </div>
               ),
@@ -73,7 +77,7 @@ export function ProductGalleryRail({
           aria-hidden
           className="inline-block h-px w-6 bg-current opacity-60"
         />
-        <span>{panHint}</span>
+        <span>{hint}</span>
         <span
           aria-hidden
           className="inline-block h-px w-6 bg-current opacity-60"

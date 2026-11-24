@@ -2,6 +2,7 @@
 
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
@@ -72,6 +73,7 @@ export function PollutionPerformanceSection({
   cms,
 }: { cms?: ContentBlock } = {}) {
   const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const eyebrow = cmsText(cms, "eyebrow", "Pollution performance engineering");
   const title = cmsText(cms, "title", "Every shed profile,");
   const titleLine2 = cmsText(
@@ -133,7 +135,7 @@ export function PollutionPerformanceSection({
           </RevealBlock>
 
           <p className="mt-14 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-burgundy md:mt-16">
-            Profile criteria
+            {dict.productsUi.profileCriteria}
           </p>
           <RevealBlock as="ul" className="mt-6">
             {criteria.map((criterion) => (

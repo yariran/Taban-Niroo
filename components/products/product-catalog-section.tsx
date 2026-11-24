@@ -20,6 +20,8 @@ import {
 } from "@/lib/products";
 import { TechRef } from "@/components/ui/tech-ref";
 import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
+import { familyLabel, familyShortLabel } from "@/lib/i18n/family-labels";
 import { CATALOGUE_UI, pickLocale } from "@/lib/i18n/section-copy";
 
 type ProductItem = {
@@ -84,15 +86,6 @@ const FAMILY_INDEX: Record<string, string> = {
   "Cable Accessories": "04",
   "Overhead Feeder Line Composite": "05",
   "Creepage Extenders & Covers": "06",
-};
-
-const FAMILY_SHORT: Record<string, string> = {
-  "Silicone Composite Insulators": "Composite",
-  "Hybrid Insulators": "Hybrid",
-  "Transformer Bushings": "Bushings",
-  "Cable Accessories": "Cable",
-  "Overhead Feeder Line Composite": "Feeder line",
-  "Creepage Extenders & Covers": "Creepage",
 };
 
 const FAMILY_ANCHOR: Record<string, string> = {
@@ -206,12 +199,17 @@ function ProductCard({
   onOpen: (item: ProductItem, view?: ProductModalView) => void;
   ui: (typeof CATALOGUE_UI)["en"] | (typeof CATALOGUE_UI)["fa"];
 }) {
+  const dict = getDictionarySync(useLocale());
+
   return (
     <article className="group interactive-lift relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/90 text-start shadow-elevate dark:border-white/[0.08] dark:bg-card/50">
       <button
         type="button"
         onClick={() => onOpen(item, "datasheet")}
-        aria-label={`Open ${item.name} overview`}
+        aria-label={dict.productsUi.openOverviewAria.replace(
+          "{name}",
+          item.name,
+        )}
         className="relative block aspect-[4/3] w-full overflow-hidden rounded-t-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
       >
         <ProductVisual item={item} codeLabel={codeLabel} />
@@ -259,9 +257,12 @@ function ProductCard({
         <Link
           href={`/products/${item.id}`}
           className="mt-2 inline-flex min-h-11 items-center gap-1 self-start py-2 text-[10.5px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground md:min-h-0 md:py-0"
-          aria-label={`Open detail page for ${item.name}`}
+          aria-label={dict.productsUi.openDetailAria.replace(
+            "{name}",
+            item.name,
+          )}
         >
-          Detail page
+          {dict.productsUi.detailPage}
           <ArrowUpRight
             size={11}
             aria-hidden
@@ -427,7 +428,7 @@ export function ProductCatalogSection({
                             {FAMILY_INDEX[family]}
                           </span>
                           <span className="font-medium leading-snug">
-                            {family}
+                            {familyLabel(family, locale)}
                           </span>
                         </span>
                         <span className="font-mono text-[11px] text-muted-foreground">
@@ -517,7 +518,8 @@ export function ProductCatalogSection({
                     )}
                     aria-pressed={isActive}
                   >
-                    {FAMILY_SHORT[family] ?? family} · {familyCounts[family] ?? 0}
+                    {familyShortLabel(family, locale)} ·{" "}
+                    {familyCounts[family] ?? 0}
                   </button>
                 );
               })}
@@ -606,7 +608,7 @@ export function ProductCatalogSection({
                                 </span>
                                 <h4 className="font-hero-slogan text-xl font-bold uppercase tracking-tight text-foreground md:text-2xl">
                                   <TechRef className="font-bold font-sans uppercase">
-                                    {family}
+                                    {familyLabel(family, locale)}
                                   </TechRef>
                                 </h4>
                               </div>

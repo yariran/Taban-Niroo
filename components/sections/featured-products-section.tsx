@@ -1,7 +1,8 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import Link from "next/link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { SITE_IMAGES } from "@/lib/site-images";
@@ -11,6 +12,7 @@ import { Beat } from "@/components/ui/beat";
 import { BEAT, EVIDENCE } from "@/lib/motion-roles";
 import type { ContentBlock } from "@/lib/cms-content-types";
 import { cmsText } from "@/lib/cms-resolve";
+import type { Dictionary } from "@/lib/i18n/dictionaries/en";
 
 type Feature = {
   title: string;
@@ -28,45 +30,45 @@ type Feature = {
  * 2. Station products — Hybrid + Transformer, equal weight
  * 3. Patented close — Creepage (wide) + catalogue CTA
  */
-const longRod: Feature = {
+const longRod = (d: Dictionary): Feature => ({
   title: "Long Rod Insulators",
-  description: "Distribution & Transmission",
+  description: d.productsUi.capDistributionTransmission,
   image: SITE_IMAGES.featured.longRod,
   width: 1024,
   height: 895,
-};
+});
 
-const post: Feature = {
+const post = (d: Dictionary): Feature => ({
   title: "Post Insulators",
-  description: "Line Post, Station Post, Railway",
+  description: d.productsUi.capPostTypes,
   image: SITE_IMAGES.featured.post,
   width: 1024,
   height: 768,
-};
+});
 
-const hybrid: Feature = {
+const hybrid = (d: Dictionary): Feature => ({
   title: "Hybrid Post Insulators",
-  description: "Silicone & porcelain",
+  description: d.productsUi.capSiliconePorcelain,
   image: SITE_IMAGES.featured.hybrid,
   width: 1024,
   height: 768,
-};
+});
 
-const bushings: Feature = {
+const bushings = (d: Dictionary): Feature => ({
   title: "Transformer Bushings",
-  description: "Polymer housed",
+  description: d.productsUi.capPolymerHoused,
   image: SITE_IMAGES.featured.transformerBushings,
   width: 1024,
   height: 679,
-};
+});
 
-const creepage: Feature = {
+const creepage = (d: Dictionary): Feature => ({
   title: "Creepage Extenders & Covers",
-  description: "Patented product",
+  description: d.productsUi.capPatented,
   image: SITE_IMAGES.featured.creepageExtenders,
   width: 1024,
   height: 1024,
-};
+});
 
 function ProductCard({
   feature,
@@ -150,6 +152,7 @@ function ProductCard({
 }
 
 export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
+  const dict = getDictionarySync(useLocale());
   const eyebrow = cmsText(cms, "eyebrow", "Standards");
   const title = cmsText(cms, "title", "IEC-tested. | Accredited laboratories.");
   const titleForReveal = title.includes("|")
@@ -205,13 +208,13 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
           {/* Band 1 — line products: wide flagship + companion */}
           <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3 md:gap-5">
             <ProductCard
-              feature={longRod}
+              feature={longRod(dict)}
               wide
               className="md:col-span-2"
               mediaClassName="aspect-[16/10]"
             />
             <ProductCard
-              feature={post}
+              feature={post(dict)}
               cover
               className="md:col-span-1"
               /* Keep a real aspect on Safari — `flex-1` + `aspect-auto`
@@ -223,11 +226,11 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
           {/* Band 2 — station products: equal pair */}
           <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 md:gap-5">
             <ProductCard
-              feature={hybrid}
+              feature={hybrid(dict)}
               mediaClassName="aspect-[4/3]"
             />
             <ProductCard
-              feature={bushings}
+              feature={bushings(dict)}
               mediaClassName="aspect-[4/3]"
             />
           </div>
@@ -235,18 +238,20 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
           {/* Band 3 — patented close + catalogue CTA */}
           <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-3 md:gap-5">
             <ProductCard
-              feature={creepage}
+              feature={creepage(dict)}
               wide
               className="md:col-span-2"
               mediaClassName="aspect-[16/10]"
             />
-            <Link
+            <LocaleLink
               href="/products"
               className="group interactive-lift flex h-full min-h-[14rem] flex-col justify-between rounded-[var(--hig-radius-card)] border border-brand-navy/10 bg-white p-6 shadow-card-rest transition-shadow duration-300 hover:shadow-card-hover dark:border-white/[0.08] dark:bg-card/60 md:col-span-1 md:min-h-0 md:p-8 lg:p-10"
             >
-              <p className="type-hig-label text-brand-burgundy">Full catalogue</p>
+              <p className="type-hig-label text-brand-burgundy">
+                {dict.productsUi.fullCatalogue}
+              </p>
               <span className="type-hig-title mt-[var(--hig-10)] inline-flex items-baseline gap-[var(--hig-2)] text-[1.5rem] text-brand-navy md:mt-auto md:text-[1.75rem] lg:text-[1.875rem]">
-                All product categories
+                {dict.productsUi.allCategories}
                 <span
                   aria-hidden
                   className="text-brand-burgundy transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1"
@@ -254,7 +259,7 @@ export function FeaturedProductsSection({ cms }: { cms?: ContentBlock } = {}) {
                   →
                 </span>
               </span>
-            </Link>
+            </LocaleLink>
           </div>
         </RevealBlock>
       </Beat>

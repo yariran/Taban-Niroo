@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink } from "@/components/locale-link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -12,6 +12,7 @@ import { getSiteContent } from "@/lib/cms-content";
 import { absoluteUrl, pageSocial, pageSocialFor } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import { localeFromParams } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { cn } from "@/lib/utils";
 
@@ -47,9 +48,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const lang = await localeFromParams(params);
-  const [post, content] = await Promise.all([
+  const [post, content, dict] = await Promise.all([
     getPostBySlug(slug, lang),
     getSiteContent(lang),
+    getDictionary(lang),
   ]);
   if (!post) notFound();
 
@@ -91,9 +93,9 @@ export default async function BlogPostPage({ params }: Props) {
 
       <article className="px-6 pt-28 pb-20 md:px-12 md:pt-32 md:pb-24 lg:px-20 lg:pt-36 lg:pb-28">
         <nav className="mb-10 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-          <Link href="/blog" className="hover:text-foreground">
-            Blog – R&amp;D
-          </Link>
+          <LocaleLink href="/blog" className="hover:text-foreground">
+            {dict.nav.blog}
+          </LocaleLink>
           <span aria-hidden> / </span>
           <span className="text-foreground">{post.title}</span>
         </nav>

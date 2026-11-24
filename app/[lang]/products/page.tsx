@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocaleLink } from "@/components/locale-link";
 import { ArrowRight, LayoutGrid, Search } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { CodingGuideSection } from "@/components/products/coding-guide-section";
@@ -13,6 +13,7 @@ import { RevealWords } from "@/components/ui/reveal-words";
 import { pageSocialFor } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import { localeFromParams } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 
 export async function generateMetadata({
   params,
@@ -38,9 +39,10 @@ export default async function ProductsPage({
   params: Promise<{ lang: string }>;
 }) {
   const lang = await localeFromParams(params);
-  const [products, content] = await Promise.all([
+  const [products, content, dict] = await Promise.all([
     getPublicProducts(lang),
     getSiteContent(lang),
+    getDictionary(lang),
   ]);
   const hero = content.products?.hero;
   const standards = content.products?.standards;
@@ -61,12 +63,12 @@ export default async function ProductsPage({
   const cta2Href = cmsText(hero, "ctaHref2", "/contact");
   const stdEyebrow = cmsText(standards, "eyebrow", "Standards & testing");
   const stdTitle = cmsText(standards, "title", "Type-tested.\nRoutine-tested.");
-  const stdBody = cmsText(
+  const stdBody = cmsText(standards, "body", dict.productsUi.standardsBody);
+  const stdCta = cmsText(
     standards,
-    "body",
-    "Products are designed, type-tested and routine-tested at accredited laboratories. Performance is verified under pollution, mechanical strength and electrical withstand conditions for each family.",
+    "ctaLabel",
+    dict.productsUi.requestTestReports,
   );
-  const stdCta = cmsText(standards, "ctaLabel", "Request test reports");
   const stdCtaHref = cmsText(standards, "ctaHref", "/contact");
   const stdItems =
     standards?.items?.length && standards.items.some((i) => i.label.trim())
@@ -109,14 +111,17 @@ export default async function ProductsPage({
 
         <div className="relative px-6 pt-32 pb-16 md:px-12 md:pt-40 md:pb-20 lg:px-20 lg:pt-44 lg:pb-24">
           <nav
-            aria-label="Breadcrumb"
+            aria-label={dict.ui.breadcrumbAria}
             className="mb-10 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:mb-14"
           >
-            <Link href="/" className="transition-colors hover:text-foreground">
-              Taban Niroo
-            </Link>
+            <LocaleLink
+              href="/"
+              className="transition-colors hover:text-foreground"
+            >
+              {dict.brand}
+            </LocaleLink>
             <span aria-hidden>/</span>
-            <span className="text-foreground">Products</span>
+            <span className="text-foreground">{dict.nav.products}</span>
           </nav>
 
           <div className="max-w-3xl">
@@ -150,7 +155,7 @@ export default async function ProductsPage({
             </p>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Link
+              <LocaleLink
                 href={cta1Href}
                 className="group pill-elevate inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium uppercase tracking-wider text-primary-foreground transition-all hover:bg-brand-burgundy"
               >
@@ -161,18 +166,21 @@ export default async function ProductsPage({
                   aria-hidden
                   className="transition-transform group-hover:translate-x-0.5"
                 />
-              </Link>
-              <Link
+              </LocaleLink>
+              <LocaleLink
                 href={cta2Href}
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-navy/25 bg-transparent px-6 py-3 text-sm font-medium uppercase tracking-wider text-brand-navy transition-all hover:border-brand-navy/50 hover:bg-brand-navy-soft"
               >
                 {cta2}
-              </Link>
+              </LocaleLink>
             </div>
 
             <p className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
               <Search size={12} aria-hidden />
-              28 product references · Search by voltage, DPL code or family
+              {dict.productsUi.catalogueSearchHint.replace(
+                "{count}",
+                String(products.length),
+              )}
             </p>
           </div>
         </div>
@@ -181,10 +189,10 @@ export default async function ProductsPage({
       <ProductCatalogSection products={products} />
 
       {/* DPL coding guide — helps procurement read any DPL reference */}
-      <CodingGuideSection />
+      <CodingGuideSection locale={lang} />
 
       {/* IEC end-fittings / couplings available across insulator families */}
-      <FittingsSection />
+      <FittingsSection locale={lang} />
 
       {/* Standards */}
       <section className="border-t border-border/50 bg-background dark:border-white/[0.06]">
@@ -206,13 +214,13 @@ export default async function ProductsPage({
               <p className="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
                 {stdBody}
               </p>
-              <Link
+              <LocaleLink
                 href={stdCtaHref}
                 className="mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-brand-navy transition-colors hover:text-brand-burgundy"
               >
                 {stdCta}
                 <ArrowRight size={16} aria-hidden />
-              </Link>
+              </LocaleLink>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -222,7 +230,7 @@ export default async function ProductsPage({
                   className="interactive-lift rounded-2xl border border-border/40 bg-card/90 p-5 shadow-elevate dark:border-white/[0.08] dark:bg-card/50 md:p-6"
                 >
                   <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                    Standard
+                    {dict.productsUi.standard}
                   </p>
                   <p className="font-hero-slogan mt-2 text-2xl font-bold tracking-tight text-foreground">
                     {s.code}

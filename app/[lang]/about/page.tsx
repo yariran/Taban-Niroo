@@ -9,13 +9,14 @@ import { VisionValuesSection } from "@/components/sections/vision-values-section
 import { TimelineSection } from "@/components/sections/timeline-section";
 import { CompanyChapterIndex } from "@/components/company-section-nav";
 import { ChapterRail } from "@/components/chapter-rail";
-import { COMPANY_CHAPTERS } from "@/lib/company-chapters";
+import { companyChapters } from "@/lib/company-chapters";
 import { RevealWords, RevealUp } from "@/components/ui/reveal-words";
 import { CountUp } from "@/components/ui/count-up";
 import { getSiteContent } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 import { pageSocialFor } from "@/lib/seo";
-import { localeFromParams } from "@/lib/i18n";
+import { localeFromParams, type Locale } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
 import { cn } from "@/lib/utils";
 
@@ -29,10 +30,12 @@ export async function generateMetadata({
 }
 
 /** `ChapterRail` takes `title`; the index takes `label`. Same five chapters. */
-const COMPANY_RAIL_CHAPTERS = COMPANY_CHAPTERS.map((chapter) => ({
-  id: chapter.id,
-  title: chapter.label,
-}));
+function companyRailChapters(locale: Locale) {
+  return companyChapters(locale).map((chapter) => ({
+    id: chapter.id,
+    title: chapter.label,
+  }));
+}
 
 export default async function AboutPage({
   params,
@@ -40,7 +43,10 @@ export default async function AboutPage({
   params: Promise<{ lang: string }>;
 }) {
   const lang = await localeFromParams(params);
-  const content = await getSiteContent(lang);
+  const [content, dict] = await Promise.all([
+    getSiteContent(lang),
+    getDictionary(lang),
+  ]);
   const hero = content.about?.hero;
   const story = content.about?.story;
   const eyebrow = cmsText(hero, "eyebrow", "About Taban Niroo");
@@ -61,7 +67,7 @@ export default async function AboutPage({
   return (
     <main id="main-content" className="min-h-screen bg-background">
       <SiteHeader />
-      <ChapterRail chapters={COMPANY_RAIL_CHAPTERS} />
+      <ChapterRail chapters={companyRailChapters(lang)} />
 
       {/* Contents strip — first thing on the route, above the story itself.
           Owns the top padding that clears the fixed header. */}
@@ -99,7 +105,7 @@ export default async function AboutPage({
               <div className="mt-8 grid max-w-xl grid-cols-2 gap-6 border-t border-border pt-8 md:grid-cols-4">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                    Founded
+                    {dict.aboutUi.founded}
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
                     <CountUp to={1997} duration={1700} />
@@ -107,7 +113,7 @@ export default async function AboutPage({
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                    Projects
+                    {dict.aboutUi.projects}
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
                     <CountUp to={500} prefix="+" />
@@ -115,7 +121,7 @@ export default async function AboutPage({
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                    RATED VOLTAGE
+                    {dict.aboutUi.ratedVoltage}
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
                     6-1000 kV
@@ -123,7 +129,7 @@ export default async function AboutPage({
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                    Countries
+                    {dict.aboutUi.countries}
                   </p>
                   <p className="mt-2 text-xl font-medium text-brand-navy tabular">
                     <CountUp to={15} prefix="+" />
@@ -140,7 +146,7 @@ export default async function AboutPage({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={heroImage}
-                  alt="High-voltage transmission towers at dawn"
+                  alt={dict.aboutUi.towersAlt}
                   width={819}
                   height={1024}
                   className="block h-auto w-full"
@@ -148,7 +154,7 @@ export default async function AboutPage({
               ) : (
                 <Image
                   src={heroImage}
-                  alt="High-voltage transmission towers at dawn"
+                  alt={dict.aboutUi.towersAlt}
                   width={819}
                   height={1024}
                   priority
@@ -167,26 +173,18 @@ export default async function AboutPage({
           <div className="grid gap-12 border-t border-border pt-12 lg:grid-cols-3 lg:gap-16">
             <div>
               <p className="text-xs uppercase tracking-widest text-brand-burgundy font-semibold">
-                Company profile
+                {dict.aboutUi.companyProfile}
               </p>
               <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-                Under the leadership of Managing Director Asadollah Zamani, Taban Niroo combines
-                engineering discipline with a strong culture of safety and responsibility. Our team
-                of skilled specialists and technocrats focuses on long-term performance and dependable
-                operation in the field.
+                {dict.aboutUi.profileBody}
               </p>
             </div>
             <div className="space-y-4 text-sm leading-relaxed text-muted-foreground lg:col-span-2">
               <p>
-                Our core activities include the design and manufacturing of high-voltage electrical
-                composite accessories, from distribution and transmission line insulators to station
-                post insulators, railway insulators, hybrid insulators, and transformer bushings.
+                {dict.aboutUi.activitiesBody}
               </p>
               <p>
-                Taban Niroo’s culture is built around Excellence in Innovation, Leadership by Example,
-                Integrity and Transparency, a strong client focus, and an employee-centred approach.
-                These principles guide our decisions and ensure that every product is engineered for
-                consistent performance over its service life.
+                {dict.aboutUi.cultureBody}
               </p>
             </div>
           </div>

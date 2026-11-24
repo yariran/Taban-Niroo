@@ -23,6 +23,15 @@ describe("pageSocial hreflang", () => {
     expect(meta.openGraph?.locale).toBe("fa_IR");
   });
 
+  it("omits fa-IR for the blog, which has no Persian edition", () => {
+    const alt = hreflangAlternates("/blog");
+    expect(alt).toEqual({
+      en: "/en/blog",
+      "x-default": "/en/blog",
+    });
+    expect(hreflangAlternates("/blog/some-post")["fa-IR"]).toBeUndefined();
+  });
+
   it("uses independent FA copy via pageSocialFor", () => {
     const fa = pageSocialFor("home", "fa");
     const en = pageSocialFor("home", "en");

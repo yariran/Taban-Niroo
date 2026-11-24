@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 
 /**
  * Hero spec ticker — engineering dashboard strip.
@@ -29,6 +31,7 @@ const TICKER: readonly { label: string; value: string }[] = [
 ];
 
 export function HeroSpecTicker() {
+  const dict = getDictionarySync(useLocale());
   const [i, setI] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -72,7 +75,7 @@ export function HeroSpecTicker() {
     <div className="relative border-y border-border/50 bg-background/95 supports-[backdrop-filter]:bg-background/70 supports-[backdrop-filter]:backdrop-blur-md dark:border-white/[0.06]">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-6 px-5 py-4 sm:px-6 md:px-8 lg:px-10">
         <span className="hidden font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground md:inline">
-          Live spec
+          {dict.sections.liveSpec}
         </span>
         <span
           aria-hidden

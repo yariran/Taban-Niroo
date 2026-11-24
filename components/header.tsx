@@ -6,7 +6,8 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductsMegaMenu } from "@/components/products-mega-menu";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { LocaleLink, useBarePath } from "@/components/locale-link";
+import { LocaleLink, useBarePath, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import { cn } from "@/lib/utils";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/body-scroll-lock";
 import { trapFocusKeydown } from "@/lib/focus-trap";
@@ -40,6 +41,7 @@ export function Header({
   navItems: HeaderNavItem[];
 }) {
   const barePath = useBarePath();
+  const dict = getDictionarySync(useLocale());
   const isHome = barePath === "/";
   const isProjects = barePath === "/projects";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -159,7 +161,7 @@ export function Header({
         </LocaleLink>
 
         <nav
-          aria-label="Primary"
+          aria-label={dict.ui.primaryNavAria}
           className={cn(
             "hidden items-center justify-center md:flex",
             "transition-[gap] duration-500",
@@ -271,7 +273,7 @@ export function Header({
             <button
               type="button"
               className="glass-mobile-scrim pointer-events-auto fixed inset-0 z-[48] md:hidden"
-              aria-label="Close menu"
+              aria-label={dict.ui.closeMenu}
               onClick={closeMobileMenu}
             />
             <div
@@ -290,7 +292,7 @@ export function Header({
               )}
               role="dialog"
               aria-modal="true"
-              aria-label="Site menu"
+              aria-label={dict.ui.siteMenuAria}
               data-lenis-prevent
             >
               <nav
@@ -298,7 +300,7 @@ export function Header({
                   "flex flex-col divide-y",
                   onDarkHero ? "divide-white/10" : "divide-border/50",
                 )}
-                aria-label="Mobile primary"
+                aria-label={dict.ui.mobileNavAria}
               >
                 {navItems.map(({ label, href }, index) => {
                   const isActive =
@@ -341,7 +343,7 @@ export function Header({
                       onDarkHero ? "text-white/55" : "text-muted-foreground",
                     )}
                   >
-                    Language
+                    {dict.language.label}
                   </span>
                   <LanguageSwitcher
                     onDarkHero={onDarkHero}

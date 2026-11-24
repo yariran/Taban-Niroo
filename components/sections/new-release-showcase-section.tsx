@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink, useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import { LayoutTemplate, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRODUCTS } from "@/lib/products";
@@ -10,7 +11,6 @@ import type { ContentBlock } from "@/lib/cms-content";
 import { cmsImage, cmsText } from "@/lib/cms-resolve";
 
 const NEW_PRODUCT_ID = "line-post-pivot-type";
-const NEW_RELEASE_ALT = "New Product: 63 & 132 kV Line Post Insulator";
 
 /** Full catalogue frame (matches /public/images/new-release-line-post-insulator.jpg). */
 const IMG_W = 1024;
@@ -103,6 +103,7 @@ function SpecActions({
   productHref: string;
   compact?: boolean;
 }) {
+  const dict = getDictionarySync(useLocale());
   const itemClass = cn(
     "inline-flex items-center justify-center gap-2 font-medium uppercase tracking-[0.18em] text-brand-navy/70 transition-colors",
     "hover:text-brand-navy",
@@ -113,21 +114,21 @@ function SpecActions({
 
   return (
     <div className="flex items-center justify-center gap-0">
-      <Link href={productHref} className={itemClass}>
+      <LocaleLink href={productHref} className={itemClass}>
         <LayoutTemplate size={compact ? 13 : 14} aria-hidden />
-        Table & drawing
-      </Link>
+        {dict.productsUi.tableAndDrawing}
+      </LocaleLink>
       <span
         className="mx-1 h-3.5 w-px shrink-0 bg-brand-navy/15"
         aria-hidden
       />
-      <Link
+      <LocaleLink
         href={productHref}
         className={cn(itemClass, "text-brand-burgundy hover:text-brand-burgundy-strong")}
       >
-        Details
+        {dict.productsUi.details}
         <ArrowRight size={compact ? 12 : 13} aria-hidden />
-      </Link>
+      </LocaleLink>
     </div>
   );
 }
@@ -142,10 +143,11 @@ export function NewReleaseShowcaseSection({
   productId?: string;
   embedded?: boolean;
 } = {}) {
+  const dict = getDictionarySync(useLocale());
   const id = productId || NEW_PRODUCT_ID;
   const product = PRODUCTS.find((item) => item.id === id) ?? PRODUCTS[0]!;
   const productHref = cmsText(cms, "ctaHref", `/products/${product.id}`);
-  const eyebrow = cmsText(cms, "eyebrow", "New Product");
+  const eyebrow = cmsText(cms, "eyebrow", dict.productsUi.newProduct);
   const title = cmsText(cms, "title", "63 & 132 kV Line Post Insulator");
   const image =
     cmsImage(cms, SITE_IMAGES.newRelease) ?? SITE_IMAGES.newRelease;
@@ -154,7 +156,7 @@ export function NewReleaseShowcaseSection({
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={image}
-      alt={NEW_RELEASE_ALT}
+      alt={dict.productsUi.newProductAlt}
       className={cn(
         "mx-auto h-auto w-full object-contain object-center",
         embedded
@@ -165,7 +167,7 @@ export function NewReleaseShowcaseSection({
   ) : (
     <Image
       src={image}
-      alt={NEW_RELEASE_ALT}
+      alt={dict.productsUi.newProductAlt}
       width={IMG_W}
       height={IMG_H}
       priority={embedded}

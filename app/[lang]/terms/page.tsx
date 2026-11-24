@@ -4,6 +4,7 @@ import { getSiteContent } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { pageSocialFor } from "@/lib/seo";
 import { localeFromParams } from "@/lib/i18n";
+import { legalLastUpdated } from "@/lib/legal-dates";
 
 export async function generateMetadata({
   params,
@@ -14,7 +15,6 @@ export async function generateMetadata({
   return pageSocialFor("terms", lang);
 }
 
-const LAST_UPDATED = "31 March 2026";
 
 export default async function TermsPage({
   params,
@@ -26,15 +26,22 @@ export default async function TermsPage({
   const block = content.legal?.terms;
   const eyebrow = cmsText(block, "eyebrow", '02 · Terms');
   const title = cmsText(block, "title", 'Terms of use.');
-  const lede = cmsText(block, "titleLine2", 'Plain-English rules of the road for browsing this website. By using the site you agree to the terms below.');
+  const lede = cmsText(
+    block,
+    "titleLine2",
+    lang === "fa"
+      ? "قواعد سادهٔ استفاده از این وبسایت. با استفاده از سایت، شرایط زیر را می‌پذیرید."
+      : "Plain-English rules of the road for browsing this website. By using the site you agree to the terms below.",
+  );
   const cmsBody = block?.body?.trim();
 
   return (
     <LegalPageShell
+      locale={lang}
       eyebrow={eyebrow}
       title={title}
       lede={lede}
-      lastUpdated={LAST_UPDATED}
+      lastUpdated={legalLastUpdated(lang)}
       footerCms={content.footer}
     >
       {cmsBody ? <CmsProseBody body={cmsBody} /> : (

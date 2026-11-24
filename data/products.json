@@ -6,10 +6,19 @@
       "id": "suspension-tension-24-36",
       "name": "24 kV & 36 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL11 · DPL15 · DPL24 · DPL36 — TC / BS series",
-      "summary": "Composite suspension and tension insulators for 11–36 kV distribution and sub-transmission lines. Tongue-clevis and ball-and-socket end fittings with 70 kN and 80/120 kN mechanical load classes.",
-      "applications": "Distribution & sub-transmission · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 11–36 kV distribution and sub-transmission lines. Tongue-clevis and ball-and-socket end fittings with 70 kN and 80/120 kN mechanical load classes.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط توزیع و فوق‌توزیع 11–36 kV. یراق انتهایی Tongue-Clevis و Ball-and-Socket در کلاس‌های بار مکانیکی 70 kN و 80/120 kN."
+      },
+      "applications": {
+        "en": "Distribution & sub-transmission · Suspension & tension",
+        "fa": "توزیع و فوق‌توزیع · آویزی و کششی"
+      },
       "voltageClass": "11 · 15 · 24 · 36 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": "/images/product-suspension-tension-24-36.jpg",
@@ -220,10 +229,19 @@
       "id": "line-post-24-36",
       "name": "24 kV & 36 kV Line Post Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Composite Post",
+      "subFamily": {
+        "en": "Composite Post",
+        "fa": "اتکایی کامپوزیتی"
+      },
       "catalogueRef": "DPL11 · DPL15 · DPL24 · DPL36 — 6L / TC / BS series",
-      "summary": "Composite line post insulators for 11–36 kV distribution and sub-transmission networks. Line-post, tongue-clevis and ball-and-socket fittings covering 6 kN and 70–120 kN mechanical load classes.",
-      "applications": "Distribution & sub-transmission · Line post",
+      "summary": {
+        "en": "Composite line post insulators for 11–36 kV distribution and sub-transmission networks. Line-post, tongue-clevis and ball-and-socket fittings covering 6 kN and 70–120 kN mechanical load classes.",
+        "fa": "مقرهٔ Line Post کامپوزیتی برای شبکه‌های توزیع و فوق‌توزیع 11–36 kV. یراق Line Post، Tongue-Clevis و Ball-and-Socket در کلاس‌های بار مکانیکی 6 kN و 70–120 kN."
+      },
+      "applications": {
+        "en": "Distribution & sub-transmission · Line post",
+        "fa": "توزیع و فوق‌توزیع · Line Post"
+      },
       "voltageClass": "11 · 15 · 24 · 36 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": "/images/product-line-post-24-36.jpg",
@@ -399,10 +417,19 @@
       "id": "silicone-post-24-400",
       "name": "24–400 kV Silicone Post Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Composite Post",
+      "subFamily": {
+        "en": "Composite Post",
+        "fa": "اتکایی کامپوزیتی"
+      },
       "catalogueRef": "DPL175 · DPL204 · DPL325 · DPL650 · DPL1050 · DPL1550 — PI series",
-      "summary": "Silicone composite post insulators for distribution through transmission, 24–400 kV. Pin-type and station-class mechanical ratings with IEC type-tested creepage and impulse performance.",
-      "applications": "Line post · Station post · Distribution & transmission",
+      "summary": {
+        "en": "Silicone composite post insulators for distribution through transmission, 24–400 kV. Pin-type and station-class mechanical ratings with IEC type-tested creepage and impulse performance.",
+        "fa": "مقرهٔ اتکایی کامپوزیتی سیلیکونی برای شبکه‌های توزیع تا انتقال، 24–400 kV. رتبه‌های مکانیکی Pin-Type و Station Post، با فاصلهٔ خزشی و عملکرد ضربه‌ای تست‌شدهٔ نوعی بر اساس IEC."
+      },
+      "applications": {
+        "en": "Line post · Station post · Distribution & transmission",
+        "fa": "Line Post · Station Post · توزیع و انتقال"
+      },
       "voltageClass": "24 · 36 · 63 · 132 · 230 · 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -735,10 +762,19 @@
       "id": "suspension-tension-63-110",
       "name": "63 & 110 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL63 · DPL110 — 80/120 BS series",
-      "summary": "Composite suspension and tension insulators for 63 kV and 110 kV lines. Ball-and-socket fittings, 80/120 kN mechanical load class, IEC type-tested creepage and impulse performance.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 63 kV and 110 kV lines. Ball-and-socket fittings, 80/120 kN mechanical load class, IEC type-tested creepage and impulse performance.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط 63 kV و 110 kV. یراق Ball-and-Socket، کلاس بار مکانیکی 80/120 kN، با فاصلهٔ خزشی و عملکرد ضربه‌ای تست‌شدهٔ نوعی بر اساس IEC."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "63 · 110 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": "/images/product-suspension-tension-63-110.jpg",
@@ -942,10 +978,19 @@
       "id": "suspension-tension-132-161",
       "name": "132 & 161 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL132 · DPL161 — 80/120 · 160/210 BS series",
-      "summary": "Composite suspension and tension insulators for 132 kV and 161 kV transmission lines. Ball-and-socket fittings with 80/120 kN and 160/210 kN mechanical load classes.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 132 kV and 161 kV transmission lines. Ball-and-socket fittings with 80/120 kN and 160/210 kN mechanical load classes.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط انتقال 132 kV و 161 kV. یراق Ball-and-Socket در کلاس‌های بار مکانیکی 80/120 kN و 160/210 kN."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "132 · 161 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": null,
@@ -1263,10 +1308,19 @@
       "id": "suspension-tension-220-230",
       "name": "220 & 230 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL220 · DPL230 — 120 · 160/210 BS series",
-      "summary": "Composite suspension and tension insulators for 220 kV and 230 kV transmission lines. Ball-and-socket fittings with 120 kN and 160/210 kN mechanical load classes.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 220 kV and 230 kV transmission lines. Ball-and-socket fittings with 120 kN and 160/210 kN mechanical load classes.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط انتقال 220 kV و 230 kV. یراق Ball-and-Socket در کلاس‌های بار مکانیکی 120 kN و 160/210 kN."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "220 · 230 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": null,
@@ -1774,10 +1828,19 @@
       "id": "suspension-tension-330",
       "name": "330 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL330 — 120 · 160/210 · 300 BS series",
-      "summary": "Composite suspension and tension insulators for 330 kV transmission lines. Ball-and-socket fittings with 120 kN, 160/210 kN, and 300 kN mechanical load classes.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 330 kV transmission lines. Ball-and-socket fittings with 120 kN, 160/210 kN, and 300 kN mechanical load classes.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط انتقال 330 kV. یراق Ball-and-Socket در کلاس‌های بار مکانیکی 120 kN، 160/210 kN و 300 kN."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "330 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": null,
@@ -2133,10 +2196,19 @@
       "id": "suspension-tension-400",
       "name": "400 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL400 — 120 · 160/210 · 300 BS series",
-      "summary": "Composite suspension and tension insulators for 400 kV transmission lines. Ball-and-socket fittings with 120 kN, 160/210 kN, and 300 kN mechanical load classes.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 400 kV transmission lines. Ball-and-socket fittings with 120 kN, 160/210 kN, and 300 kN mechanical load classes.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط انتقال 400 kV. یراق Ball-and-Socket در کلاس‌های بار مکانیکی 120 kN، 160/210 kN و 300 kN."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "400 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": null,
@@ -2667,10 +2739,19 @@
       "id": "suspension-tension-500",
       "name": "500 kV Composite Suspension/Tension Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Suspension / Tension",
+      "subFamily": {
+        "en": "Suspension / Tension",
+        "fa": "آویزی / کششی"
+      },
       "catalogueRef": "DPL500 — 160/210 · 300 BS series",
-      "summary": "Composite suspension and tension insulators for 500 kV transmission lines. Ball-and-socket fittings with 160/210 kN and 300 kN mechanical load classes, IEC type-tested creepage and impulse performance.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "Composite suspension and tension insulators for 500 kV transmission lines. Ball-and-socket fittings with 160/210 kN and 300 kN mechanical load classes, IEC type-tested creepage and impulse performance.",
+        "fa": "مقرهٔ کامپوزیتی آویزی و کششی برای خطوط انتقال 500 kV. یراق Ball-and-Socket در کلاس‌های بار مکانیکی 160/210 kN و 300 kN، با فاصلهٔ خزشی و عملکرد ضربه‌ای تست‌شدهٔ نوعی بر اساس IEC."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "500 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": null,
@@ -3044,10 +3125,19 @@
       "id": "long-rod-distribution",
       "name": "Distribution Network Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Long Rod Insulator",
+      "subFamily": {
+        "en": "Long Rod Insulator",
+        "fa": "مقرهٔ Long Rod"
+      },
       "catalogueRef": "DPL-20 · DPL-33 series",
-      "summary": "Composite long rod insulator for medium-voltage distribution networks. HTV silicone housing over an ECR fiberglass core with hot-dip galvanized forged-steel end fittings.",
-      "applications": "Medium-voltage distribution lines",
+      "summary": {
+        "en": "Composite long rod insulator for medium-voltage distribution networks. HTV silicone housing over an ECR fiberglass core with hot-dip galvanized forged-steel end fittings.",
+        "fa": "مقرهٔ کامپوزیتی Long Rod برای شبکه‌های توزیع فشار متوسط. محفظهٔ سیلیکون HTV روی هستهٔ فایبرگلاس ECR، با یراق انتهایی فولادی فورج‌شدهٔ گالوانیزهٔ گرم."
+      },
+      "applications": {
+        "en": "Medium-voltage distribution lines",
+        "fa": "خطوط توزیع فشار متوسط"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC 61109 · IEC 61466 · IEC 60120 / 60471",
       "image": null,
@@ -3058,10 +3148,19 @@
       "id": "long-rod-transmission",
       "name": "Transmission Network Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Long Rod Insulator",
+      "subFamily": {
+        "en": "Long Rod Insulator",
+        "fa": "مقرهٔ Long Rod"
+      },
       "catalogueRef": "DPL 63 · 132 · 230 · 400 series",
-      "summary": "High-strength composite long rod for transmission corridors up to 400 kV. Homogenized electrical field across end fittings and sealed triple-junction point against moisture infiltration.",
-      "applications": "Transmission lines · Suspension & tension",
+      "summary": {
+        "en": "High-strength composite long rod for transmission corridors up to 400 kV. Homogenized electrical field across end fittings and sealed triple-junction point against moisture infiltration.",
+        "fa": "مقرهٔ Long Rod کامپوزیتی با استحکام بالا برای دالان‌های انتقال تا 400 kV. میدان الکتریکی یکنواخت‌شده در یراق انتهایی و نقطهٔ اتصال سه‌گانهٔ آب‌بند در برابر نفوذ رطوبت."
+      },
+      "applications": {
+        "en": "Transmission lines · Suspension & tension",
+        "fa": "خطوط انتقال · آویزی و کششی"
+      },
       "voltageClass": "63 – 400 kV",
       "standard": "IEC 61109 · IEC 61192",
       "image": null,
@@ -3072,10 +3171,19 @@
       "id": "interphase-spacer-mv",
       "name": "Interphase Spacer — Medium Voltage",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Interphase Spacer",
+      "subFamily": {
+        "en": "Interphase Spacer",
+        "fa": "اسپیسر میان‌فاز"
+      },
       "catalogueRef": "DPL MV · phase-to-phase",
-      "summary": "Medium-voltage phase-to-phase composite spacer with armour grip suspension. Prevents flashover between conductors under galloping, wind and ice loading.",
-      "applications": "Distribution line galloping control",
+      "summary": {
+        "en": "Medium-voltage phase-to-phase composite spacer with armour grip suspension. Prevents flashover between conductors under galloping, wind and ice loading.",
+        "fa": "اسپیسر کامپوزیتی فاز به فاز فشار متوسط با Armour Grip Suspension. از جرقه‌زنی میان هادی‌ها در شرایط گالوپینگ، باد و بار یخ جلوگیری می‌کند."
+      },
+      "applications": {
+        "en": "Distribution line galloping control",
+        "fa": "کنترل گالوپینگ خطوط توزیع"
+      },
       "voltageClass": "up to 33 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3086,10 +3194,19 @@
       "id": "interphase-spacer-hv",
       "name": "Interphase Spacer — High Voltage",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Interphase Spacer",
+      "subFamily": {
+        "en": "Interphase Spacer",
+        "fa": "اسپیسر میان‌فاز"
+      },
       "catalogueRef": "DPL 63 · 132 · 230 · 400 T.T",
-      "summary": "High-voltage phase-to-phase composite spacer. Stabilizes line geometry on long spans, controls galloping amplitude and maintains electrical clearance to earthed structures.",
-      "applications": "Transmission line spacer · AGS mounted",
+      "summary": {
+        "en": "High-voltage phase-to-phase composite spacer. Stabilizes line geometry on long spans, controls galloping amplitude and maintains electrical clearance to earthed structures.",
+        "fa": "اسپیسر کامپوزیتی فاز به فاز فشار قوی. هندسهٔ خط را در دهانه‌های بلند پایدار می‌کند، دامنهٔ گالوپینگ را مهار می‌کند و فاصلهٔ الکتریکی تا سازه‌های زمین‌شده را حفظ می‌کند."
+      },
+      "applications": {
+        "en": "Transmission line spacer · AGS mounted",
+        "fa": "اسپیسر خط انتقال · نصب روی AGS"
+      },
       "voltageClass": "66 – 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3122,10 +3239,19 @@
       "id": "line-post-pin-type",
       "name": "Line Post Insulator (Pin-Type)",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Composite Post",
+      "subFamily": {
+        "en": "Composite Post",
+        "fa": "اتکایی کامپوزیتی"
+      },
       "catalogueRef": "DPL 20-550/620/700 · DPL 33-980/1180/1440",
-      "summary": "Composite pin-type line post for distribution hardware. Large-diameter FRP core absorbs cantilever and bending loads while the silicone housing maintains hydrophobicity.",
-      "applications": "Distribution line post",
+      "summary": {
+        "en": "Composite pin-type line post for distribution hardware. Large-diameter FRP core absorbs cantilever and bending loads while the silicone housing maintains hydrophobicity.",
+        "fa": "مقرهٔ Line Post کامپوزیتی Pin-Type برای یراق شبکهٔ توزیع. هستهٔ FRP با قطر بالا بارهای کنسولی و خمشی را جذب می‌کند و محفظهٔ سیلیکونی آب‌گریزی را حفظ می‌کند."
+      },
+      "applications": {
+        "en": "Distribution line post",
+        "fa": "Line Post توزیع"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC 61109 · IEC 62217 · IEC 60120",
       "image": null,
@@ -3168,10 +3294,19 @@
       "id": "line-post-cross-arm",
       "name": "Line Post Insulator (Cross-Arm)",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Composite Post",
+      "subFamily": {
+        "en": "Composite Post",
+        "fa": "اتکایی کامپوزیتی"
+      },
       "catalogueRef": "Cross-arm line post",
-      "summary": "Insulated cross-arm geometry for compact line configurations. Enables voltage upgrades inside existing corridors and reduces right-of-way requirements.",
-      "applications": "Compact lines · Urban & forest ROW",
+      "summary": {
+        "en": "Insulated cross-arm geometry for compact line configurations. Enables voltage upgrades inside existing corridors and reduces right-of-way requirements.",
+        "fa": "هندسهٔ Cross-Arm عایق برای پیکربندی خطوط فشرده. ارتقای ولتاژ را درون دالان موجود ممکن می‌کند و نیاز به حریم خط را کاهش می‌دهد."
+      },
+      "applications": {
+        "en": "Compact lines · Urban & forest ROW",
+        "fa": "خطوط فشرده · حریم شهری و جنگلی"
+      },
       "voltageClass": "20 · 33 · 63 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3199,10 +3334,19 @@
       "id": "line-post-pivot-type",
       "name": "Line Post Insulator (Pivot Type)",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Composite Post",
+      "subFamily": {
+        "en": "Composite Post",
+        "fa": "اتکایی کامپوزیتی"
+      },
       "catalogueRef": "DPL 63-2340 · 132-4520 · 230-9860 · 400-14120 LP",
-      "summary": "Pivot-type line post engineered for high-voltage overhead lines with fluctuating conductor angles. Combines silicone and fiberglass for severe outdoor duty.",
-      "applications": "HV overhead lines · Flexible angles",
+      "summary": {
+        "en": "Pivot-type line post engineered for high-voltage overhead lines with fluctuating conductor angles. Combines silicone and fiberglass for severe outdoor duty.",
+        "fa": "مقرهٔ Line Post نوع Pivot، مهندسی‌شده برای خطوط هوایی فشار قوی با زاویهٔ متغیر هادی. ترکیب سیلیکون و فایبرگلاس برای کار سنگین در فضای باز."
+      },
+      "applications": {
+        "en": "HV overhead lines · Flexible angles",
+        "fa": "خطوط هوایی فشار قوی · زوایای متغیر"
+      },
       "voltageClass": "63 – 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3235,10 +3379,19 @@
       "id": "station-post-insulator",
       "name": "Station Post Insulator",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Composite Post",
+      "subFamily": {
+        "en": "Composite Post",
+        "fa": "اتکایی کامپوزیتی"
+      },
       "catalogueRef": "DPL 173/204/325/650/1050/1550 PI",
-      "summary": "Busbar and station-class post insulator for substation mechanical support combined with electrical insulation duty up to 420 kV.",
-      "applications": "Substation busbar · Station post",
+      "summary": {
+        "en": "Busbar and station-class post insulator for substation mechanical support combined with electrical insulation duty up to 420 kV.",
+        "fa": "مقرهٔ اتکایی Station Post برای شین‌بندی و پست؛ تکیه‌گاه مکانیکی همراه با وظیفهٔ عایقی تا 420 kV."
+      },
+      "applications": {
+        "en": "Substation busbar · Station post",
+        "fa": "شین‌بندی پست · Station Post"
+      },
       "voltageClass": "20 – 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3281,10 +3434,19 @@
       "id": "railway-insulator-type-1",
       "name": "Railway Insulator — Type 1",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Railway",
+      "subFamily": {
+        "en": "Railway",
+        "fa": "راه‌آهن"
+      },
       "catalogueRef": "Railway Type 1 · 610 / 770 mm",
-      "summary": "Type 1 composite railway insulator for electrified catenary. Short section length with 6 – 8 kN cantilever and 60 – 80 kN tension rating.",
-      "applications": "Railway catenary · Type 1",
+      "summary": {
+        "en": "Type 1 composite railway insulator for electrified catenary. Short section length with 6 – 8 kN cantilever and 60 – 80 kN tension rating.",
+        "fa": "مقرهٔ کامپوزیتی راه‌آهن Type 1 برای شبکهٔ کاتنری برقی. طول مقطع کوتاه با رتبهٔ کنسولی 6 – 8 kN و کششی 60 – 80 kN."
+      },
+      "applications": {
+        "en": "Railway catenary · Type 1",
+        "fa": "کاتنری راه‌آهن · Type 1"
+      },
       "voltageClass": "25 kV AC",
       "standard": "Railway IEC standards",
       "image": null,
@@ -3309,10 +3471,19 @@
       "id": "railway-insulator-type-2",
       "name": "Railway Insulator — Type 2",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Railway",
+      "subFamily": {
+        "en": "Railway",
+        "fa": "راه‌آهن"
+      },
       "catalogueRef": "Railway Type 2 · 820 mm",
-      "summary": "Type 2 railway insulator with increased section length and 12 kN cantilever / 100 kN tension load. Creepage 1400 mm for medium pollution routes.",
-      "applications": "Railway catenary · Type 2",
+      "summary": {
+        "en": "Type 2 railway insulator with increased section length and 12 kN cantilever / 100 kN tension load. Creepage 1400 mm for medium pollution routes.",
+        "fa": "مقرهٔ راه‌آهن Type 2 با طول مقطع بیشتر و بار کنسولی 12 kN / کششی 100 kN. فاصلهٔ خزشی 1400 mm برای مسیرهای با آلودگی متوسط."
+      },
+      "applications": {
+        "en": "Railway catenary · Type 2",
+        "fa": "کاتنری راه‌آهن · Type 2"
+      },
       "voltageClass": "25 kV AC",
       "standard": "Railway IEC standards",
       "image": null,
@@ -3332,10 +3503,19 @@
       "id": "railway-insulator-type-3",
       "name": "Railway Insulator — Type 3",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Railway",
+      "subFamily": {
+        "en": "Railway",
+        "fa": "راه‌آهن"
+      },
       "catalogueRef": "Railway Type 3 · 880 mm",
-      "summary": "Heavy-duty Type 3 railway insulator with 16 kN cantilever and 120 kN tension load. 8,000 N·m torsion rating for severe dynamic rail duty.",
-      "applications": "Railway catenary · Type 3 heavy duty",
+      "summary": {
+        "en": "Heavy-duty Type 3 railway insulator with 16 kN cantilever and 120 kN tension load. 8,000 N·m torsion rating for severe dynamic rail duty.",
+        "fa": "مقرهٔ راه‌آهن Type 3 سنگین‌کار با بار کنسولی 16 kN و کششی 120 kN. رتبهٔ پیچشی 8,000 N·m برای کار دینامیکی سخت ریلی."
+      },
+      "applications": {
+        "en": "Railway catenary · Type 3 heavy duty",
+        "fa": "کاتنری راه‌آهن · Type 3 سنگین‌کار"
+      },
       "voltageClass": "25 kV AC",
       "standard": "Railway IEC standards",
       "image": null,
@@ -3354,10 +3534,19 @@
       "id": "hybrid-pin-type",
       "name": "Hybrid Pin-Type Insulator",
       "family": "Hybrid Insulators",
-      "subFamily": "Silicone – Ceramic",
+      "subFamily": {
+        "en": "Silicone – Ceramic",
+        "fa": "سیلیکون – سرامیک"
+      },
       "catalogueRef": "DPL 20-760/790/880 · DPL 33-990/1080",
-      "summary": "Hybrid line post combining the mechanical rigidity of a porcelain core with silicone hydrophobicity. Patented Taban Niroo family engineered for polluted environments.",
-      "applications": "Distribution pin-type · Polluted zones",
+      "summary": {
+        "en": "Hybrid line post combining the mechanical rigidity of a porcelain core with silicone hydrophobicity. Patented Taban Niroo family engineered for polluted environments.",
+        "fa": "Line Post هیبریدی با ترکیب صلبیت مکانیکی هستهٔ پرسلان و آب‌گریزی سیلیکون. خانوادهٔ ثبت اختراع‌شدهٔ تابان نیرو، مهندسی‌شده برای محیط‌های آلوده."
+      },
+      "applications": {
+        "en": "Distribution pin-type · Polluted zones",
+        "fa": "Pin-Type توزیع · پهنه‌های آلوده"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC 62896 · IEC 62217 · IEC 60383-1",
       "image": null,
@@ -3395,10 +3584,19 @@
       "id": "hybrid-post",
       "name": "Hybrid Post Insulator",
       "family": "Hybrid Insulators",
-      "subFamily": "Silicone – Ceramic",
+      "subFamily": {
+        "en": "Silicone – Ceramic",
+        "fa": "سیلیکون – سرامیک"
+      },
       "catalogueRef": "DPL 325 · 650 · 1050 · 1800 HPI",
-      "summary": "Station-class hybrid post with porcelain core and silicone housing. Thinner sheds, extended creepage and superior pollution performance for industrial, desert and coastal sites.",
-      "applications": "Substation post · Industrial · Coastal",
+      "summary": {
+        "en": "Station-class hybrid post with porcelain core and silicone housing. Thinner sheds, extended creepage and superior pollution performance for industrial, desert and coastal sites.",
+        "fa": "مقرهٔ اتکایی هیبریدی کلاس پست با هستهٔ پرسلان و محفظهٔ سیلیکونی. چترک‌های نازک‌تر، فاصلهٔ خزشی بیشتر و عملکرد برتر در آلودگی، برای سایت‌های صنعتی، کویری و ساحلی."
+      },
+      "applications": {
+        "en": "Substation post · Industrial · Coastal",
+        "fa": "اتکایی پست · صنعتی · ساحلی"
+      },
       "voltageClass": "63 – 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3431,10 +3629,19 @@
       "id": "hybrid-post-63-400",
       "name": "63–400 kV Hybrid (Silicone Ceramic) Post Insulator",
       "family": "Hybrid Insulators",
-      "subFamily": "Silicone – Ceramic",
+      "subFamily": {
+        "en": "Silicone – Ceramic",
+        "fa": "سیلیکون – سرامیک"
+      },
       "catalogueRef": "DPL325 · DPL650 · DPL1050 · DPL1550 — HPI series",
-      "summary": "Hybrid silicone–ceramic post insulators for 63–400 kV. Porcelain core with HTV silicone housing for station and line-post duty in polluted, coastal and industrial environments.",
-      "applications": "Substation post · Line post · Industrial · Coastal",
+      "summary": {
+        "en": "Hybrid silicone–ceramic post insulators for 63–400 kV. Porcelain core with HTV silicone housing for station and line-post duty in polluted, coastal and industrial environments.",
+        "fa": "مقرهٔ اتکایی هیبریدی سیلیکون–سرامیک برای 63–400 kV. هستهٔ پرسلان با محفظهٔ سیلیکون HTV، برای کار Station Post و Line Post در محیط‌های آلوده، ساحلی و صنعتی."
+      },
+      "applications": {
+        "en": "Substation post · Line post · Industrial · Coastal",
+        "fa": "اتکایی پست · Line Post · صنعتی · ساحلی"
+      },
       "voltageClass": "63 · 132 · 230 · 400 kV",
       "standard": "IEC 61109 · IEC 62217",
       "image": null,
@@ -3624,10 +3831,19 @@
       "id": "polymer-bushing",
       "name": "Polymer Bushing",
       "family": "Transformer Bushings",
-      "subFamily": "Polymer",
+      "subFamily": {
+        "en": "Polymer",
+        "fa": "پلیمری"
+      },
       "catalogueRef": "DPL 11-510 · 20-828 · 33-1180 · 52-1570 B",
-      "summary": "Lightweight silicone-housed transformer bushing with excellent anti-pollution, anti-UV and explosion-resistant performance. No surface coating or regular washing required.",
-      "applications": "Transformer interface · Switchgear",
+      "summary": {
+        "en": "Lightweight silicone-housed transformer bushing with excellent anti-pollution, anti-UV and explosion-resistant performance. No surface coating or regular washing required.",
+        "fa": "بوشینگ ترانسفورماتور سبک با محفظهٔ سیلیکونی و عملکرد عالی در برابر آلودگی، UV و انفجار. بدون نیاز به پوشش سطحی یا شست‌وشوی دوره‌ای."
+      },
+      "applications": {
+        "en": "Transformer interface · Switchgear",
+        "fa": "رابط ترانسفورماتور · سوئیچ‌گیر"
+      },
       "voltageClass": "11 – 52 kV",
       "standard": "IEC 60137",
       "image": null,
@@ -3660,10 +3876,19 @@
       "id": "station-post-hybrid-bushing-ceramic",
       "name": "Station Post Hybrid Bushing — Silicone-Ceramic",
       "family": "Transformer Bushings",
-      "subFamily": "Station Post Hybrid",
+      "subFamily": {
+        "en": "Station Post Hybrid",
+        "fa": "Station Post هیبریدی"
+      },
       "catalogueRef": "DPL 20-690 · 33-1012 PB (ceramic)",
-      "summary": "Hybrid bushing combining porcelain and silicone for station posts, power transformers and circuit breakers. UV and pollution resistant with reduced flashover risk.",
-      "applications": "Substation · Power transformer",
+      "summary": {
+        "en": "Hybrid bushing combining porcelain and silicone for station posts, power transformers and circuit breakers. UV and pollution resistant with reduced flashover risk.",
+        "fa": "بوشینگ هیبریدی با ترکیب پرسلان و سیلیکون برای Station Post، ترانسفورماتور قدرت و دیژنکتور. مقاوم در برابر UV و آلودگی، با کاهش خطر جرقه‌زنی."
+      },
+      "applications": {
+        "en": "Substation · Power transformer",
+        "fa": "پست · ترانسفورماتور قدرت"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC 60137",
       "image": null,
@@ -3686,10 +3911,19 @@
       "id": "station-post-hybrid-bushing-resin",
       "name": "Station Post Hybrid Bushing — Silicone-Resin",
       "family": "Transformer Bushings",
-      "subFamily": "Station Post Hybrid",
+      "subFamily": {
+        "en": "Station Post Hybrid",
+        "fa": "Station Post هیبریدی"
+      },
       "catalogueRef": "DPL 20-860-630 · 33-1430-630",
-      "summary": "Silicone-resin variant of the station post hybrid bushing for indoor / outdoor substations with long operational life and low maintenance.",
-      "applications": "Indoor · Outdoor substations",
+      "summary": {
+        "en": "Silicone-resin variant of the station post hybrid bushing for indoor / outdoor substations with long operational life and low maintenance.",
+        "fa": "گونهٔ سیلیکون–رزین بوشینگ هیبریدی Station Post برای پست‌های داخلی و فضای باز، با عمر بهره‌برداری بلند و نگهداری کم."
+      },
+      "applications": {
+        "en": "Indoor · Outdoor substations",
+        "fa": "پست داخلی · پست فضای باز"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC 60137",
       "image": null,
@@ -3714,10 +3948,19 @@
       "id": "plug-in-bushing",
       "name": "Plug In Bushing",
       "family": "Transformer Bushings",
-      "subFamily": "Plug In",
+      "subFamily": {
+        "en": "Plug In",
+        "fa": "Plug-In"
+      },
       "catalogueRef": "Plug in bushing",
-      "summary": "Plug-in transformer bushing for compact switchgear and transformer interfaces. Quick installation geometry and reliable sealing against moisture and dust.",
-      "applications": "Compact switchgear · Transformer plug-in",
+      "summary": {
+        "en": "Plug-in transformer bushing for compact switchgear and transformer interfaces. Quick installation geometry and reliable sealing against moisture and dust.",
+        "fa": "بوشینگ ترانسفورماتور Plug-In برای سوئیچ‌گیر فشرده و رابط ترانسفورماتور. هندسهٔ نصب سریع و آب‌بندی مطمئن در برابر رطوبت و گردوغبار."
+      },
+      "applications": {
+        "en": "Compact switchgear · Transformer plug-in",
+        "fa": "سوئیچ‌گیر فشرده · Plug-In ترانسفورماتور"
+      },
       "voltageClass": "up to 52 kV",
       "standard": "IEC 60137",
       "image": null,
@@ -3728,10 +3971,19 @@
       "id": "hollow-core-insulator",
       "name": "",
       "family": "Transformer Bushings",
-      "subFamily": "Hollow Core",
+      "subFamily": {
+        "en": "Hollow Core",
+        "fa": "Hollow Core"
+      },
       "catalogueRef": "Hollow core insulator",
-      "summary": "Silicone-housed hollow core insulator for instrument transformers, circuit breakers and bushings. Explosion-resistant profile with homogeneous electrical field distribution.",
-      "applications": "Instrument transformers · Circuit breakers",
+      "summary": {
+        "en": "Silicone-housed hollow core insulator for instrument transformers, circuit breakers and bushings. Explosion-resistant profile with homogeneous electrical field distribution.",
+        "fa": "مقرهٔ Hollow Core با محفظهٔ سیلیکونی برای ترانسفورماتور اندازه‌گیری، دیژنکتور و بوشینگ. پروفیل مقاوم در برابر انفجار با توزیع یکنواخت میدان الکتریکی."
+      },
+      "applications": {
+        "en": "Instrument transformers · Circuit breakers",
+        "fa": "ترانسفورماتور اندازه‌گیری · دیژنکتور"
+      },
       "voltageClass": "up to 420 kV",
       "standard": "IEC 60137 · IEC 62155",
       "image": "/images/new-release-hollow-core.jpg",
@@ -3742,10 +3994,19 @@
       "id": "outdoor-termination",
       "name": "Outdoor Termination",
       "family": "Cable Accessories",
-      "subFamily": "Terminations",
+      "subFamily": {
+        "en": "Terminations",
+        "fa": "سرکابل"
+      },
       "catalogueRef": "DPL-TS063 · TS0132 · TS0230",
-      "summary": "Outdoor termination for high-voltage underground cables connecting to overhead lines, switchgears and transformers. Hydrophobic silicone sheds for severe outdoor exposure.",
-      "applications": "HV cable to overhead interface",
+      "summary": {
+        "en": "Outdoor termination for high-voltage underground cables connecting to overhead lines, switchgears and transformers. Hydrophobic silicone sheds for severe outdoor exposure.",
+        "fa": "سرکابل فضای باز برای کابل زیرزمینی فشار قوی در اتصال به خط هوایی، سوئیچ‌گیر و ترانسفورماتور. چترک سیلیکونی آب‌گریز برای شرایط سخت فضای باز."
+      },
+      "applications": {
+        "en": "HV cable to overhead interface",
+        "fa": "رابط کابل فشار قوی به خط هوایی"
+      },
       "voltageClass": "63 – 230 kV",
       "standard": "IEC standards",
       "image": null,
@@ -3773,10 +4034,19 @@
       "id": "silicone-joint",
       "name": "Silicone Joint — Cross-Bonding & Straight",
       "family": "Cable Accessories",
-      "subFamily": "Joints",
+      "subFamily": {
+        "en": "Joints",
+        "fa": "مفصل"
+      },
       "catalogueRef": "DPL JXH / JSH 63-132 · JXH / JSH 230",
-      "summary": "Silicone cross-bonding and straight joints for HV cable networks. Stress-controlled sealing designed for long service under moisture and contamination.",
-      "applications": "HV cable joints",
+      "summary": {
+        "en": "Silicone cross-bonding and straight joints for HV cable networks. Stress-controlled sealing designed for long service under moisture and contamination.",
+        "fa": "مفصل سیلیکونی مستقیم و Cross-Bonding برای شبکه‌های کابل فشار قوی. آب‌بندی با کنترل تنش، طراحی‌شده برای کار بلندمدت در رطوبت و آلودگی."
+      },
+      "applications": {
+        "en": "HV cable joints",
+        "fa": "مفصل کابل فشار قوی"
+      },
       "voltageClass": "132 – 230 kV",
       "standard": "IEC standards",
       "image": null,
@@ -3809,10 +4079,19 @@
       "id": "cutout-fuse-type-a",
       "name": "Composite Cutout Fuse — Type A",
       "family": "Overhead Feeder Line Composite",
-      "subFamily": "Cutout Fuse",
+      "subFamily": {
+        "en": "Cutout Fuse",
+        "fa": "کات‌اوت فیوز"
+      },
       "catalogueRef": "DPL 20-1345-100 CU · DPL 33-1850-100 CU",
-      "summary": "Composite-housed cutout fuse protecting transformers and lines from overcurrent events. Weather-resistant body, serves as manual isolator during maintenance.",
-      "applications": "Distribution protection · Isolation",
+      "summary": {
+        "en": "Composite-housed cutout fuse protecting transformers and lines from overcurrent events. Weather-resistant body, serves as manual isolator during maintenance.",
+        "fa": "کات‌اوت فیوز با محفظهٔ کامپوزیتی برای حفاظت ترانسفورماتور و خط در برابر اضافه‌جریان. بدنهٔ مقاوم به شرایط جوی، که هنگام تعمیرات نقش جداکنندهٔ دستی را هم دارد."
+      },
+      "applications": {
+        "en": "Distribution protection · Isolation",
+        "fa": "حفاظت توزیع · جداسازی"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC standards",
       "image": null,
@@ -3837,10 +4116,19 @@
       "id": "cutout-fuse-type-b",
       "name": "Composite Cutout Fuse — Type B",
       "family": "Overhead Feeder Line Composite",
-      "subFamily": "Cutout Fuse",
+      "subFamily": {
+        "en": "Cutout Fuse",
+        "fa": "کات‌اوت فیوز"
+      },
       "catalogueRef": "DPL 20-1450-100 CU · DPL 33-1850-100 CU",
-      "summary": "Type B variant of the composite cutout fuse family with extended creepage for polluted distribution feeders.",
-      "applications": "Distribution protection · Polluted zones",
+      "summary": {
+        "en": "Type B variant of the composite cutout fuse family with extended creepage for polluted distribution feeders.",
+        "fa": "گونهٔ Type B از خانوادهٔ کات‌اوت فیوز کامپوزیتی، با فاصلهٔ خزشی بیشتر برای فیدرهای توزیع آلوده."
+      },
+      "applications": {
+        "en": "Distribution protection · Polluted zones",
+        "fa": "حفاظت توزیع · پهنه‌های آلوده"
+      },
       "voltageClass": "20 – 33 kV",
       "standard": "IEC standards",
       "image": null,
@@ -3865,10 +4153,19 @@
       "id": "cutout-fuse-24-36",
       "name": "24 kV & 36 kV Composite Cutout Fuse",
       "family": "Silicone Composite Insulators",
-      "subFamily": "Cutout Fuse",
+      "subFamily": {
+        "en": "Cutout Fuse",
+        "fa": "کات‌اوت فیوز"
+      },
       "catalogueRef": "DPL24-1440-100CO · DPL36-1850-100CO — Type A / Type B",
-      "summary": "Composite-housed cutout fuse for 24–36 kV distribution feeders. Type A and Type B geometries protect transformers and lines from overcurrent, with 100 A continuous rating and 8 kA breaking capacity.",
-      "applications": "Distribution protection · Isolation · Transformer & line",
+      "summary": {
+        "en": "Composite-housed cutout fuse for 24–36 kV distribution feeders. Type A and Type B geometries protect transformers and lines from overcurrent, with 100 A continuous rating and 8 kA breaking capacity.",
+        "fa": "کات‌اوت فیوز با محفظهٔ کامپوزیتی برای فیدرهای توزیع 24–36 kV. هندسهٔ Type A و Type B از ترانسفورماتور و خط در برابر اضافه‌جریان حفاظت می‌کند، با جریان دائم 100 A و قدرت قطع 8 kA."
+      },
+      "applications": {
+        "en": "Distribution protection · Isolation · Transformer & line",
+        "fa": "حفاظت توزیع · جداسازی · ترانسفورماتور و خط"
+      },
       "voltageClass": "24 · 36 kV",
       "standard": "IEC standards",
       "image": "/images/product-gallery-cutout-fuses-v2.png",
@@ -3916,10 +4213,19 @@
       "id": "surge-arrester",
       "name": "Composite Surge Arrester (Distribution)",
       "family": "Overhead Feeder Line Composite",
-      "subFamily": "Surge Arrester",
+      "subFamily": {
+        "en": "Surge Arrester",
+        "fa": "برقگیر"
+      },
       "catalogueRef": "Distribution class arrester",
-      "summary": "Distribution-class composite surge arrester protecting equipment from lightning, switching and temporary overvoltage events with ground lead disconnector.",
-      "applications": "Substation · Distribution line protection",
+      "summary": {
+        "en": "Distribution-class composite surge arrester protecting equipment from lightning, switching and temporary overvoltage events with ground lead disconnector.",
+        "fa": "برقگیر کامپوزیتی کلاس توزیع برای حفاظت تجهیزات در برابر صاعقه، کلیدزنی و اضافه‌ولتاژ موقت، مجهز به جداکنندهٔ سیم ارت."
+      },
+      "applications": {
+        "en": "Substation · Distribution line protection",
+        "fa": "پست · حفاظت خط توزیع"
+      },
       "voltageClass": "24 – 36 kV",
       "standard": "IEC 60099-4 · ANSI C62.11",
       "image": null,
@@ -3930,10 +4236,19 @@
       "id": "creepage-line",
       "name": "Creepage Extender — Line Insulator",
       "family": "Creepage Extenders & Covers",
-      "subFamily": "Creepage Extender",
+      "subFamily": {
+        "en": "Creepage Extender",
+        "fa": "افزایندهٔ فاصلهٔ خزشی"
+      },
       "catalogueRef": "Retrofit creepage extender",
-      "summary": "Retrofit creepage extender for line insulators. Increases surface leakage path in polluted or coastal environments without replacing the insulator.",
-      "applications": "Retrofit · Line insulators",
+      "summary": {
+        "en": "Retrofit creepage extender for line insulators. Increases surface leakage path in polluted or coastal environments without replacing the insulator.",
+        "fa": "افزایندهٔ فاصلهٔ خزشی برای نوسازی مقرهٔ خط. مسیر نشتی سطحی را در محیط‌های آلوده یا ساحلی، بدون تعویض مقره افزایش می‌دهد."
+      },
+      "applications": {
+        "en": "Retrofit · Line insulators",
+        "fa": "نوسازی · مقرهٔ خط"
+      },
       "voltageClass": "All classes",
       "standard": "Retrofit accessory",
       "image": null,
@@ -3944,10 +4259,19 @@
       "id": "creepage-post",
       "name": "Creepage Extender — Post Insulator",
       "family": "Creepage Extenders & Covers",
-      "subFamily": "Creepage Extender",
+      "subFamily": {
+        "en": "Creepage Extender",
+        "fa": "افزایندهٔ فاصلهٔ خزشی"
+      },
       "catalogueRef": "Retrofit creepage extender",
-      "summary": "Retrofit creepage extender for post insulators. Extends creepage distance to reduce surface discharges and the risk of flashover.",
-      "applications": "Retrofit · Post insulators",
+      "summary": {
+        "en": "Retrofit creepage extender for post insulators. Extends creepage distance to reduce surface discharges and the risk of flashover.",
+        "fa": "افزایندهٔ فاصلهٔ خزشی برای نوسازی مقرهٔ اتکایی. فاصلهٔ خزشی را بیشتر می‌کند تا تخلیهٔ سطحی و خطر جرقه‌زنی کاهش یابد."
+      },
+      "applications": {
+        "en": "Retrofit · Post insulators",
+        "fa": "نوسازی · مقرهٔ اتکایی"
+      },
       "voltageClass": "All classes",
       "standard": "Retrofit accessory",
       "image": null,
@@ -3958,10 +4282,19 @@
       "id": "silicone-wire-cover",
       "name": "Silicone Wire Cover",
       "family": "Creepage Extenders & Covers",
-      "subFamily": "Covers",
+      "subFamily": {
+        "en": "Covers",
+        "fa": "پوشش"
+      },
       "catalogueRef": "Silicone wire cover",
-      "summary": "Silicone cover for overhead line conductors. Improves insulation at close-proximity points and reduces wildlife-related faults.",
-      "applications": "Conductor protection",
+      "summary": {
+        "en": "Silicone cover for overhead line conductors. Improves insulation at close-proximity points and reduces wildlife-related faults.",
+        "fa": "پوشش سیلیکونی برای هادی خطوط هوایی. عایق‌بندی را در نقاط با فاصلهٔ کم بهبود می‌دهد و خطاهای ناشی از حیات‌وحش را کاهش می‌دهد."
+      },
+      "applications": {
+        "en": "Conductor protection",
+        "fa": "حفاظت هادی"
+      },
       "voltageClass": "All classes",
       "standard": "Retrofit accessory",
       "image": null,
@@ -3972,10 +4305,19 @@
       "id": "bird-repellent-cover",
       "name": "Bird-Repellent Insulator Cover",
       "family": "Creepage Extenders & Covers",
-      "subFamily": "Covers",
+      "subFamily": {
+        "en": "Covers",
+        "fa": "پوشش"
+      },
       "catalogueRef": "Bird repellent cover",
-      "summary": "Protective cover with bird-repellent geometry reducing animal-induced outages on exposed insulators and hardware.",
-      "applications": "Animal-induced outage prevention",
+      "summary": {
+        "en": "Protective cover with bird-repellent geometry reducing animal-induced outages on exposed insulators and hardware.",
+        "fa": "پوشش حفاظتی با هندسهٔ پرنده‌گریز، که خاموشی‌های ناشی از حیوانات روی مقره و یراق بی‌حفاظ را کاهش می‌دهد."
+      },
+      "applications": {
+        "en": "Animal-induced outage prevention",
+        "fa": "پیشگیری از خاموشی ناشی از حیوانات"
+      },
       "voltageClass": "All classes",
       "standard": "Retrofit accessory",
       "image": null,
@@ -3986,10 +4328,19 @@
       "id": "composite-insulator-cover",
       "name": "Composite Insulator Cover",
       "family": "Creepage Extenders & Covers",
-      "subFamily": "Covers",
+      "subFamily": {
+        "en": "Covers",
+        "fa": "پوشش"
+      },
       "catalogueRef": "Composite insulator cover",
-      "summary": "Protective silicone cover for insulators in polluted environments. Extends maintenance intervals and reduces leakage currents.",
-      "applications": "Insulator protection",
+      "summary": {
+        "en": "Protective silicone cover for insulators in polluted environments. Extends maintenance intervals and reduces leakage currents.",
+        "fa": "پوشش سیلیکونی حفاظتی برای مقره در محیط‌های آلوده. فواصل نگهداری را طولانی‌تر و جریان نشتی را کمتر می‌کند."
+      },
+      "applications": {
+        "en": "Insulator protection",
+        "fa": "حفاظت مقره"
+      },
       "voltageClass": "All classes",
       "standard": "Retrofit accessory",
       "image": null,

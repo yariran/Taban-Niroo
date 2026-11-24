@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink } from "@/components/locale-link";
 import { ArrowLeft, ArrowUpRight, ChevronRight, Send } from "lucide-react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -28,7 +28,10 @@ import {
 } from "@/lib/cms-products";
 import { getSiteUrl } from "@/lib/site-url";
 import { absoluteUrl, pageSocial, pageSocialFor } from "@/lib/seo";
-import { localeFromParams, LOCALES } from "@/lib/i18n";
+import { localeFromParams, LOCALES, type Locale } from "@/lib/i18n";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { familyLabel } from "@/lib/i18n/family-labels";
+import { techHeaders } from "@/lib/i18n/tech-table-labels";
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
 
@@ -65,8 +68,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductDetailPage({ params }: Props) {
   const { slug } = await params;
   const lang = await localeFromParams(params);
-  const product = await getProductBySlugAsync(slug, lang);
+  const [product, dict] = await Promise.all([
+    getProductBySlugAsync(slug, lang),
+    getDictionary(lang),
+  ]);
   if (!product) notFound();
+  const th = techHeaders();
 
   const related = await getRelatedProductsAsync(product.id, 3, lang);
   const familyIdx = FAMILY_INDEX[product.family];
@@ -151,7 +158,7 @@ export default async function ProductDetailPage({ params }: Props) {
     ],
   };
 
-  const benefits = deriveBenefits(product);
+  const benefits = deriveBenefits(product, lang);
 
   return (
     <main id="main-content" className="min-h-screen bg-background">
@@ -180,29 +187,29 @@ export default async function ProductDetailPage({ params }: Props) {
         <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-6 md:px-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14 lg:px-20">
           <div>
             <nav
-              aria-label="Breadcrumb"
+              aria-label={dict.ui.breadcrumbAria}
               className="flex flex-wrap items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground"
             >
-              <Link
+              <LocaleLink
                 href="/"
                 className="transition-colors hover:text-foreground"
               >
-                Home
-              </Link>
+                {dict.ui.home}
+              </LocaleLink>
               <ChevronRight size={11} aria-hidden strokeWidth={1.7} />
-              <Link
+              <LocaleLink
                 href="/products"
                 className="transition-colors hover:text-foreground"
               >
-                Products
-              </Link>
+                {dict.nav.products}
+              </LocaleLink>
               <ChevronRight size={11} aria-hidden strokeWidth={1.7} />
-              <Link
+              <LocaleLink
                 href={`/products#${FAMILY_ANCHOR[product.family]}`}
                 className="transition-colors hover:text-foreground"
               >
-                {product.family}
-              </Link>
+                {familyLabel(product.family, lang)}
+              </LocaleLink>
               <ChevronRight size={11} aria-hidden strokeWidth={1.7} />
               <span className="text-foreground" aria-current="page">
                 {product.name}
@@ -228,20 +235,20 @@ export default async function ProductDetailPage({ params }: Props) {
 
             <RevealUp delay={220}>
               <div className="mt-9 flex flex-wrap items-center gap-3">
-                <Link
+                <LocaleLink
                   href={`/contact?ref=${encodeURIComponent(product.id)}`}
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-burgundy"
                 >
                   <Send size={14} aria-hidden strokeWidth={1.75} />
-                  Request a quote
-                </Link>
-                <Link
+                  {dict.productsUi.requestQuote}
+                </LocaleLink>
+                <LocaleLink
                   href={`/products#${FAMILY_ANCHOR[product.family]}`}
                   className="inline-flex items-center gap-2 rounded-full border border-border bg-background/60 px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground"
                 >
                   <ArrowLeft size={14} aria-hidden strokeWidth={1.75} />
-                  Back to family
-                </Link>
+                  {dict.productsUi.backToFamily}
+                </LocaleLink>
               </div>
             </RevealUp>
           </div>
@@ -276,14 +283,21 @@ export default async function ProductDetailPage({ params }: Props) {
       {/* Spec strip */}
       <section className="border-y border-border/50 bg-muted/20 dark:border-white/[0.06] dark:bg-white/[0.025]">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-6 md:grid-cols-4 md:px-12 lg:px-20">
-          <SpecTile label="Family" value={product.family} />
-          <SpecTile label="Sub-family" value={product.subFamily} />
           <SpecTile
-            label="Voltage class"
+            label={dict.productsUi.family}
+            value={familyLabel(product.family, lang)}
+          />
+          <SpecTile label={dict.productsUi.subFamily} value={product.subFamily} />
+          <SpecTile
+            label={dict.productsUi.voltageClass}
             value={product.voltageClass ?? "—"}
             tabular
           />
-          <SpecTile label="Standards" value={product.standard ?? "—"} small />
+          <SpecTile
+            label={dict.productsUi.standards}
+            value={product.standard ?? "—"}
+            small
+          />
         </div>
       </section>
 
@@ -292,23 +306,26 @@ export default async function ProductDetailPage({ params }: Props) {
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-12 px-6 md:px-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-16 lg:px-20">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
-              01 · Engineering brief
+              01 · {dict.productsUi.briefEyebrow}
             </p>
             <RevealUp>
               <div className="mt-6 space-y-5 text-base leading-relaxed text-foreground/85 md:text-[17px] md:leading-[1.7]">
                 <p>{product.summary}</p>
                 <p>
                   <span className="font-medium text-foreground">
-                    Typical applications.
+                    {dict.productsUi.typicalApplications}
                   </span>{" "}
                   {product.applications}
                   {product.voltageClass &&
-                    ` Voltage class ${product.voltageClass}.`}
+                    ` ${dict.productsUi.voltageClassSentence.replace(
+                      "{value}",
+                      product.voltageClass,
+                    )}`}
                 </p>
                 {product.standard && (
                   <p>
                     <span className="font-medium text-foreground">
-                      Standards &amp; testing.
+                      {dict.productsUi.standardsAndTesting}
                     </span>{" "}
                     {product.standard}.
                   </p>
@@ -320,7 +337,7 @@ export default async function ProductDetailPage({ params }: Props) {
           <RevealUp delay={140}>
             <aside>
               <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
-                02 · Why this insulator
+                02 · {dict.productsUi.whyEyebrow}
               </p>
               <ul className="mt-6 space-y-4">
                 {benefits.map((b) => (
@@ -352,14 +369,14 @@ export default async function ProductDetailPage({ params }: Props) {
             <div className="mb-10 flex items-end justify-between gap-4">
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
-                  03 · Technical data
+                  03 · {dict.productsUi.technicalEyebrow}
                 </p>
                 <h2 className="mt-3 font-medium leading-tight tracking-tight text-foreground text-[clamp(1.6rem,3.4vw,2.25rem)]">
-                  Available references.
+                  {dict.productsUi.availableReferences}
                 </h2>
               </div>
               <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                {product.variants.length} ref.
+                {product.variants.length} {dict.productsUi.refsSuffix}
               </span>
             </div>
 
@@ -377,19 +394,19 @@ export default async function ProductDetailPage({ params }: Props) {
                     <thead>
                       <tr>
                         <th scope="col" className={techTableHeadStickyClass}>
-                          Type
+                          {th.type}
                         </th>
                         <th scope="col" className={techTableHeadCellClass}>
-                          Rated System Voltage (kV)
+                          {th.ratedVoltage}
                         </th>
                         <th scope="col" className={techTableHeadCellClass}>
-                          Section length (mm)
+                          {th.sectionLength}
                         </th>
                         <th scope="col" className={techTableHeadCellClass}>
-                          Creepage distance (mm)
+                          {th.creepageDistance}
                         </th>
                         <th scope="col" className={techTableHeadCellClass}>
-                          Notes
+                          {th.notes}
                         </th>
                       </tr>
                     </thead>
@@ -423,10 +440,10 @@ export default async function ProductDetailPage({ params }: Props) {
             </div>
 
             <p className="mt-3 text-[11px] text-muted-foreground md:hidden">
-              Swipe sideways to see all columns.
+              {dict.productsUi.swipeHint}
             </p>
             <p className="mt-3 hidden text-[11px] text-muted-foreground md:block">
-              Drag the table or use the scrollbar to see all columns.
+              {dict.productsUi.dragHint}
             </p>
           </div>
         </section>
@@ -439,25 +456,25 @@ export default async function ProductDetailPage({ params }: Props) {
             <div className="mb-10 flex items-end justify-between gap-4">
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
-                  04 · In the same family
+                  04 · {dict.productsUi.sameFamilyEyebrow}
                 </p>
                 <h2 className="mt-3 font-medium leading-tight tracking-tight text-foreground text-[clamp(1.5rem,3vw,2.1rem)]">
-                  Related references.
+                  {dict.productsUi.relatedReferences}
                 </h2>
               </div>
-              <Link
+              <LocaleLink
                 href={`/products#${FAMILY_ANCHOR[product.family]}`}
                 className="hidden items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground transition-colors hover:text-foreground/70 md:inline-flex"
               >
-                View family
+                {dict.productsUi.viewFamily}
                 <ArrowUpRight size={12} aria-hidden />
-              </Link>
+              </LocaleLink>
             </div>
 
             <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((r) => (
                 <li key={r.id}>
-                  <Link
+                  <LocaleLink
                     href={`/products/${r.id}`}
                     className="group interactive-lift flex h-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 dark:border-white/[0.08] dark:bg-card/40"
                   >
@@ -482,11 +499,11 @@ export default async function ProductDetailPage({ params }: Props) {
                         {r.summary}
                       </p>
                       <span className="mt-auto inline-flex items-center gap-1 pt-4 text-[10.5px] font-medium uppercase tracking-[0.18em] text-foreground/70 transition-colors group-hover:text-foreground">
-                        View detail
+                        {dict.productsUi.viewDetail}
                         <ArrowUpRight size={11} aria-hidden />
                       </span>
                     </div>
-                  </Link>
+                  </LocaleLink>
                 </li>
               ))}
             </ul>
@@ -536,6 +553,7 @@ function techBodyColumns(productId: string) {
 }
 
 function ProductTechnicalTable({ product }: { product: Product }) {
+  const th = techHeaders();
   const rows = product.variants ?? [];
   const fullElectrical = FULL_ELECTRICAL_SUBHEADER_IDS.has(product.id);
   const hasSwitching = !fullElectrical;
@@ -554,67 +572,67 @@ function ProductTechnicalTable({ product }: { product: Product }) {
       <thead>
         <tr>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadStickyClass}>
-            Type
+            {th.type}
           </th>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Rated System Voltage (kV)
+            {th.ratedVoltage}
           </th>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Specified mechanical load (kN)
+            {th.sml}
           </th>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Section length (mm)
+            {th.sectionLength}
           </th>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Arcing distance (mm)
+            {th.arcingDistance}
           </th>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Diameter of shed (mm)
+            {th.shedDiameter}
           </th>
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Creepage distance (mm)
+            {th.creepageDistance}
           </th>
           {fullElectrical ? (
             <>
               <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
-                Lightning impulse flashover voltage (kV)
+                {th.lightningImpulse}
               </th>
               <th colSpan={2} scope="colgroup" className={techTableHeadCellClass}>
-                Power frequency flashover voltage (kV)
+                {th.powerFrequency}
               </th>
             </>
           ) : (
             <>
               {hasSwitching ? (
                 <th scope="col" className={techTableHeadCellClass}>
-                  Switching Impulse withstand Voltage (kV)
+                  {th.switchingImpulse}
                 </th>
               ) : null}
               <th scope="col" className={techTableHeadCellClass}>
-                Lightning impulse flashover voltage (kV)
+                {th.lightningImpulse}
               </th>
               <th scope="col" className={techTableHeadCellClass}>
-                Wet Power frequency flashover voltage (kV)
+                {th.wetPowerFrequency}
               </th>
             </>
           )}
           <th rowSpan={rowSpan} scope="col" className={techTableHeadCellClass}>
-            Weight
+            {th.weight}
           </th>
         </tr>
         {fullElectrical ? (
           <tr>
             <th scope="col" className={techTableHeadCellClass}>
-              Positive
+              {th.positive}
             </th>
             <th scope="col" className={techTableHeadCellClass}>
-              Negative
+              {th.negative}
             </th>
             <th scope="col" className={techTableHeadCellClass}>
-              Dry
+              {th.dry}
             </th>
             <th scope="col" className={techTableHeadCellClass}>
-              Wet
+              {th.wet}
             </th>
           </tr>
         ) : null}
@@ -695,60 +713,121 @@ function SpecTile({
  * ages quickly), the page synthesises three short value props from the
  * product's family and subFamily. Stable, hand-curated copy per category.
  */
-function deriveBenefits(p: Product) {
-  const base = [
-    {
-      tag: "Hydrophobicity",
-      title: "Self-cleaning silicone housing",
-      body: "HTV silicone sheds repel pollution, salt and moisture so leakage currents stay low between cleanings.",
-    },
-    {
-      tag: "Mechanical",
-      title: "ECR fiberglass core",
-      body: "Boron-free ECR fiberglass rod absorbs cantilever and tension loads with no creep over the design life.",
-    },
-    {
-      tag: "Service life",
-      title: "Sealed triple-junction point",
-      body: "End fittings are hermetically sealed against moisture infiltration, the most common failure mode in HV insulators.",
-    },
-  ];
+type Benefit = { tag: string; title: string; body: string };
 
-  if (p.family === "Hybrid Insulators") {
-    base[1] = {
+/** Hand-curated benefit copy per locale; keys are shared across both. */
+const BENEFIT_COPY: Record<
+  Locale,
+  {
+    base: [Benefit, Benefit, Benefit];
+    hybridCore: Benefit;
+    bushingSafety: Benefit;
+    cableSealing: Benefit;
+    feederOperability: Benefit;
+    creepageRetrofit: Benefit;
+  }
+> = {
+  en: {
+    base: [
+      {
+        tag: "Hydrophobicity",
+        title: "Self-cleaning silicone housing",
+        body: "HTV silicone sheds repel pollution, salt and moisture so leakage currents stay low between cleanings.",
+      },
+      {
+        tag: "Mechanical",
+        title: "ECR fiberglass core",
+        body: "Boron-free ECR fiberglass rod absorbs cantilever and tension loads with no creep over the design life.",
+      },
+      {
+        tag: "Service life",
+        title: "Sealed triple-junction point",
+        body: "End fittings are hermetically sealed against moisture infiltration, the most common failure mode in HV insulators.",
+      },
+    ],
+    hybridCore: {
       tag: "Dielectric",
       title: "Porcelain core, silicone skin",
       body: "Mechanical rigidity of ceramic with the hydrophobic surface of silicone — engineered for polluted environments.",
-    };
-  }
-  if (p.family === "Transformer Bushings") {
-    base[2] = {
+    },
+    bushingSafety: {
       tag: "Safety",
       title: "Explosion-resistant housing",
       body: "Composite housing absorbs internal pressure rises far better than ceramic; no shattering at fault.",
-    };
-  }
-  if (p.family === "Cable Accessories") {
-    base[0] = {
+    },
+    cableSealing: {
       tag: "Sealing",
       title: "Stress-controlled silicone",
       body: "Molded silicone insert manages the electrical stress at the conductor-screen junction without lubricant migration.",
-    };
-  }
-  if (p.family === "Overhead Feeder Line Composite") {
-    base[2] = {
+    },
+    feederOperability: {
       tag: "Operability",
       title: "Field-serviceable hardware",
       body: "Composite-bodied switchgear designed for fast field swaps with standard hot-line tools.",
-    };
-  }
-  if (p.family === "Creepage Extenders & Covers") {
-    base[1] = {
+    },
+    creepageRetrofit: {
       tag: "Retrofit",
       title: "Drop-in upgrade path",
       body: "Adds creepage to an existing fleet without replacing core hardware — extends asset life by years.",
-    };
-  }
+    },
+  },
+  fa: {
+    base: [
+      {
+        tag: "آب‌گریزی",
+        title: "محفظهٔ سیلیکونی خودتمیزشونده",
+        body: "چترک‌های سیلیکون HTV آلودگی، نمک و رطوبت را پس می‌زنند، بنابراین جریان نشتی بین دو شست‌وشو پایین می‌ماند.",
+      },
+      {
+        tag: "مکانیکی",
+        title: "هستهٔ فایبرگلاس ECR",
+        body: "میلهٔ فایبرگلاس ECR بدون بور، بارهای خمشی و کششی را در تمام عمر طراحی بدون خزش تحمل می‌کند.",
+      },
+      {
+        tag: "عمر بهره‌برداری",
+        title: "نقطهٔ اتصال سه‌گانهٔ آب‌بند",
+        body: "یراق انتهایی به‌صورت هرمتیک در برابر نفوذ رطوبت آب‌بند شده است — شایع‌ترین مود خرابی در مقره‌های فشار قوی.",
+      },
+    ],
+    hybridCore: {
+      tag: "دی‌الکتریک",
+      title: "هستهٔ پرسلان، پوست سیلیکونی",
+      body: "صلبیت مکانیکی سرامیک همراه با سطح آب‌گریز سیلیکون — مهندسی‌شده برای محیط‌های آلوده.",
+    },
+    bushingSafety: {
+      tag: "ایمنی",
+      title: "محفظهٔ مقاوم در برابر انفجار",
+      body: "محفظهٔ کامپوزیتی افزایش فشار داخلی را بسیار بهتر از سرامیک جذب می‌کند؛ در خطا خرد نمی‌شود.",
+    },
+    cableSealing: {
+      tag: "آب‌بندی",
+      title: "سیلیکون با کنترل تنش",
+      body: "قطعهٔ سیلیکونی قالب‌گیری‌شده تنش الکتریکی را در محل اتصال هادی و شیلد، بدون مهاجرت روان‌کار مدیریت می‌کند.",
+    },
+    feederOperability: {
+      tag: "بهره‌برداری",
+      title: "یراق قابل سرویس در میدان",
+      body: "کلیدزنی با بدنهٔ کامپوزیتی، طراحی‌شده برای تعویض سریع در میدان با ابزار استاندارد هات‌لاین.",
+    },
+    creepageRetrofit: {
+      tag: "نوسازی",
+      title: "مسیر ارتقای جانشین‌پذیر",
+      body: "فاصلهٔ خزشی را به تجهیزات موجود می‌افزاید، بدون تغییر یراق اصلی — عمر دارایی را سال‌ها بیشتر می‌کند.",
+    },
+  },
+};
+
+function deriveBenefits(p: Product, locale: Locale): Benefit[] {
+  const copy = BENEFIT_COPY[locale];
+  const base: Benefit[] = [...copy.base];
+
+  if (p.family === "Hybrid Insulators") base[1] = copy.hybridCore;
+  if (p.family === "Transformer Bushings") base[2] = copy.bushingSafety;
+  if (p.family === "Cable Accessories") base[0] = copy.cableSealing;
+  if (p.family === "Overhead Feeder Line Composite")
+    base[2] = copy.feederOperability;
+  if (p.family === "Creepage Extenders & Covers")
+    base[1] = copy.creepageRetrofit;
 
   return base;
 }

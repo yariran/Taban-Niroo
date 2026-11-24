@@ -7,6 +7,8 @@ import {
   LOCALES,
   stripLocalePrefix,
   swapLocalePath,
+  isBlogEnabledForLocale,
+  localesForPath,
 } from "@/lib/i18n";
 
 describe("i18n helpers", () => {
@@ -41,6 +43,16 @@ describe("i18n helpers", () => {
       "/en/products?ref=1#specs",
     );
     expect(swapLocalePath("/en", "fa")).toBe("/fa");
+  });
+
+  it("publishes every path in both locales except the blog", () => {
+    expect(localesForPath("/products")).toEqual(["en", "fa"]);
+    expect(localesForPath("/")).toEqual(["en", "fa"]);
+    // Posts are per-locale documents, and there are no Persian ones yet.
+    expect(localesForPath("/blog")).toEqual(["en"]);
+    expect(localesForPath("/blog/a-post")).toEqual(["en"]);
+    expect(isBlogEnabledForLocale("en")).toBe(true);
+    expect(isBlogEnabledForLocale("fa")).toBe(false);
   });
 
   it("stripLocalePrefix peels the first segment", () => {

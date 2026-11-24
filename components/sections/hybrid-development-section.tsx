@@ -2,6 +2,7 @@
 
 import { RevealBlock, RevealText } from "@/components/ui/reveal-text";
 import { useLocale } from "@/components/locale-link";
+import { getDictionarySync } from "@/lib/i18n/dictionary-catalog";
 import type { ContentBlock } from "@/lib/cms-content";
 import { cmsText } from "@/lib/cms-resolve";
 import { pageHeadingScale } from "@/lib/i18n/type-scale";
@@ -52,6 +53,7 @@ const BENEFITS: readonly string[] = [
 
 export function HybridDevelopmentSection({ cms }: { cms?: ContentBlock } = {}) {
   const locale = useLocale();
+  const dict = getDictionarySync(locale);
   const eyebrow = cmsText(cms, "eyebrow", "Hybrid insulator development");
   const title = cmsText(cms, "title", "More than a decade");
   const titleLine2 = cmsText(cms, "titleLine2", "of hybrid engineering");
@@ -127,7 +129,7 @@ export function HybridDevelopmentSection({ cms }: { cms?: ContentBlock } = {}) {
           </RevealBlock>
 
           <p className="mt-14 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-burgundy md:mt-16">
-            In short, our hybrid insulators offer
+            {dict.sections.hybridShort}
           </p>
           <RevealBlock
             as="ul"
